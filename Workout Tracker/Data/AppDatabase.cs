@@ -1,8 +1,11 @@
 using SQLite;
 using Workout_Tracker.Model;
+using Workout_Tracker.Services;
 
 public class AppDatabase
 {
+    private static bool _isSeeded = false;
+
     public static SQLiteAsyncConnection Database
     {
         get
@@ -30,6 +33,13 @@ public class AppDatabase
                 field.CreateTableAsync<BodyMetric>().Wait();
                 field.CreateTableAsync<RecoveryLog>().Wait();
                 field.CreateTableAsync<CalorieLog>().Wait();
+
+                // Seed default data
+                if (!_isSeeded)
+                {
+                    DatabaseSeeder.SeedAsync().Wait();
+                    _isSeeded = true;
+                }
             }
 
             return field;
