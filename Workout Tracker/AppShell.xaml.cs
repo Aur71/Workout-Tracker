@@ -1,10 +1,9 @@
-﻿namespace Workout_Tracker
+namespace Workout_Tracker;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
