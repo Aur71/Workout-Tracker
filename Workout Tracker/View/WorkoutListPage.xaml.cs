@@ -6,4 +6,9 @@ public partial class WorkoutListPage : ContentPage
     {
         InitializeComponent();
     }
+
+    private async void OnAddWorkoutTapped(object sender, TappedEventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(NewWorkoutPage));
+    }
 }

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Workout_Tracker.View.NewWorkoutPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto">
+            <Label Text="Cancel"
+                   FontSize="15"
+                   TextColor="{StaticResource Primary}"
+                   VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCancelTapped" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label Grid.Column="1"
+                   Text="New Workout"
+                   FontSize="17"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+            <Label Grid.Column="2"
+                   Text="     "
+                   FontSize="15" />
+        </Grid>
+
+        <!-- Form Content -->
+        <ScrollView Grid.Row="1" Padding="20,16,20,20">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Form Card -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="20">
+
+                        <!-- Name Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Name"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Entry Placeholder="e.g. Push Day - Chest &amp; Triceps"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Goal Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Goal"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Picker Title="Select goal">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Strength</x:String>
+                                            <x:String>Hypertrophy</x:String>
+                                            <x:String>Power</x:String>
+                                            <x:String>Endurance</x:String>
+                                            <x:String>Recovery</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Duration Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Estimated Duration (minutes)"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Entry Placeholder="e.g. 45"
+                                       Keyboard="Numeric"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Notes Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Notes"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,8"
+                                    HeightRequest="100"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Editor Placeholder="Optional notes about this workout..."
+                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                        AutoSize="TextChanges" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Exercises Section -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Exercises"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                        <Label Text="No exercises added yet"
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                               HorizontalOptions="Center"
+                               Padding="0,8" />
+
+                        <Button Text="+ Add Exercises"
+                                BackgroundColor="Transparent"
+                                BorderColor="{StaticResource Primary}"
+                                BorderWidth="1.5"
+                                TextColor="{StaticResource Primary}"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                HeightRequest="44"
+                                Clicked="OnAddExercisesClicked" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Save Button -->
+        <Border Grid.Row="2"
+                StrokeThickness="0"
+                Padding="20,12,20,24"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
+            <Button Text="Save Workout"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="{StaticResource Black}"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="52"
+                    CornerRadius="12" />
+        </Border>
+
+    </Grid>
+
+</ContentPage>

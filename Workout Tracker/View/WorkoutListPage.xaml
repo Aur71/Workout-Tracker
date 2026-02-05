@@ -208,6 +208,9 @@
                         Radius="12"
                         Opacity="0.2" />
             </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnAddWorkoutTapped" />
+            </Border.GestureRecognizers>
             <Label Text="+"
                    FontSize="28"
                    TextColor="{StaticResource Black}"
