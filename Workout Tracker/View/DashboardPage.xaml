@@ -374,8 +374,6 @@
             </VerticalStackLayout>
 
             <!-- Bottom Spacing -->
-            <BoxView HeightRequest="20" Color="Transparent" />
-
         </VerticalStackLayout>
     </ScrollView>
 

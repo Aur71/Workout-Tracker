@@ -6,9 +6,16 @@
     xmlns:view="clr-namespace:Workout_Tracker.View"
     Title="Workout Tracker">
 
-    <ShellContent
-        Title="Dashboard"
-        ContentTemplate="{DataTemplate view:DashboardPage}"
-        Route="Dashboard" />
+    <TabBar>
+        <ShellContent
+            Title="Dashboard"
+            ContentTemplate="{DataTemplate view:DashboardPage}"
+            Route="Dashboard" />
+
+        <ShellContent
+            Title="Workouts"
+            ContentTemplate="{DataTemplate view:WorkoutListPage}"
+            Route="Workouts" />
+    </TabBar>
 
 </Shell>
