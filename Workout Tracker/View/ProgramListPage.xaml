@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Workout_Tracker.View.ProgramListPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="16">
+
+                <!-- Header -->
+                <Label Text="Programs"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       Padding="0,20,0,8"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                <!-- Active Program Card -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Active"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+
+                    <Border StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                            Padding="16">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource BlackBrush}"
+                                    Offset="0,2"
+                                    Radius="8"
+                                    Opacity="0.08" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProgramTapped" />
+                        </Border.GestureRecognizers>
+
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
+                            <!-- Program Header -->
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border StrokeThickness="0"
+                                        WidthRequest="4"
+                                        HeightRequest="40"
+                                        BackgroundColor="{StaticResource Primary}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="2" />
+                                    </Border.StrokeShape>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="12,0,0,0">
+                                    <Label Text="Strength Block"
+                                           FontSize="18"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                    <Label Text="Build maximal strength"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                </VerticalStackLayout>
+                                <Border Grid.Column="2"
+                                        StrokeThickness="0"
+                                        Padding="8,4"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="6" />
+                                    </Border.StrokeShape>
+                                    <Label Text="Active"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           TextColor="{StaticResource Primary}" />
+                                </Border>
+                            </Grid>
+
+                            <!-- Date Range -->
+                            <HorizontalStackLayout Grid.Row="1" Spacing="8">
+                                <Label Text="Jan 6 - Feb 16, 2025"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                <Label Text="·"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                <Label Text="6 weeks"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            </HorizontalStackLayout>
+
+                            <!-- Progress Bar -->
+                            <Grid Grid.Row="2" RowDefinitions="Auto,Auto" RowSpacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="Week 3 of 6"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                    <Label Grid.Column="1"
+                                           Text="50%"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Primary}" />
+                                </Grid>
+                                <Border Grid.Row="1"
+                                        StrokeThickness="0"
+                                        HeightRequest="6"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark=#252525}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="3" />
+                                    </Border.StrokeShape>
+                                    <Border StrokeThickness="0"
+                                            HeightRequest="6"
+                                            WidthRequest="140"
+                                            HorizontalOptions="Start"
+                                            BackgroundColor="{StaticResource Primary}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="3" />
+                                        </Border.StrokeShape>
+                                    </Border>
+                                </Border>
+                            </Grid>
+
+                            <!-- Stats -->
+                            <HorizontalStackLayout Grid.Row="3" Spacing="16">
+                                <Label Text="18 sessions"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                <Label Text="·"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                <Label Text="9 completed"
+                                       FontSize="13"
+                                       TextColor="{StaticResource Primary}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Upcoming Programs -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Upcoming"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+
+                    <Border StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                            Padding="16">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource BlackBrush}"
+                                    Offset="0,2"
+                                    Radius="8"
+                                    Opacity="0.08" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProgramTapped" />
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border StrokeThickness="0"
+                                    WidthRequest="4"
+                                    HeightRequest="40"
+                                    BackgroundColor="{StaticResource Secondary}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="2" />
+                                </Border.StrokeShape>
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Hypertrophy Block"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="Feb 17 - Mar 30"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                    <Label Text="·"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                    <Label Text="6 weeks"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Past Programs -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Completed"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+
+                    <!-- Past Program 1 -->
+                    <Border StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                            Padding="16">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource BlackBrush}"
+                                    Offset="0,2"
+                                    Radius="8"
+                                    Opacity="0.08" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProgramTapped" />
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Border StrokeThickness="0"
+                                    WidthRequest="4"
+                                    HeightRequest="40"
+                                    BackgroundColor="{StaticResource Tertiary}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="2" />
+                                </Border.StrokeShape>
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Base Building"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="Nov 25 - Jan 5"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                    <Label Text="·"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                    <Label Text="6 weeks"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2"
+                                   Text="&#x2713;"
+                                   FontSize="18"
+                                   TextColor="{StaticResource Success}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Past Program 2 -->
+                    <Border StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                            Padding="16">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource BlackBrush}"
+                                    Offset="0,2"
+                                    Radius="8"
+                                    Opacity="0.08" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProgramTapped" />
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Border StrokeThickness="0"
+                                    WidthRequest="4"
+                                    HeightRequest="40"
+                                    BackgroundColor="{StaticResource Gray400}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="2" />
+                                </Border.StrokeShape>
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Cut Phase"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="Oct 14 - Nov 24"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                    <Label Text="·"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                    <Label Text="6 weeks"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2"
+                                   Text="&#x2713;"
+                                   FontSize="18"
+                                   TextColor="{StaticResource Success}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Floating Action Button -->
+        <Border Grid.Row="1"
+                StrokeThickness="0"
+                WidthRequest="56"
+                HeightRequest="56"
+                Margin="0,0,20,24"
+                HorizontalOptions="End"
+                BackgroundColor="{StaticResource Primary}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource BlackBrush}"
+                        Offset="0,4"
+                        Radius="12"
+                        Opacity="0.2" />
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnAddProgramTapped" />
+            </Border.GestureRecognizers>
+            <Label Text="+"
+                   FontSize="28"
+                   TextColor="{StaticResource Black}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Border>
+    </Grid>
+
+</ContentPage>
