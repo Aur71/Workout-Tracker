@@ -5,32 +5,27 @@
              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
              Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*,Auto">
-
-        <!-- Header -->
-        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto">
-            <Label Text="Cancel"
-                   FontSize="15"
-                   TextColor="{StaticResource Primary}"
-                   VerticalOptions="Center">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnCancelTapped" />
-                </Label.GestureRecognizers>
-            </Label>
-            <Label Grid.Column="1"
-                   Text="New Workout"
-                   FontSize="17"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-            <Label Grid.Column="2"
-                   Text="     "
-                   FontSize="15" />
-        </Grid>
+    <Grid RowDefinitions="*,Auto">
 
         <!-- Form Content -->
-        <ScrollView Grid.Row="1" Padding="20,16,20,20">
+        <ScrollView Padding="20,0,20,20">
             <VerticalStackLayout Spacing="16">
+
+                <!-- Header -->
+                <VerticalStackLayout Spacing="8" Padding="0,20,0,0">
+                    <Label Text="Cancel"
+                           FontSize="15"
+                           TextColor="{StaticResource Primary}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCancelTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label x:Name="PageTitle"
+                           Text="New Workout"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                </VerticalStackLayout>
 
                 <!-- Form Card -->
                 <Border StrokeThickness="0"
@@ -177,7 +172,7 @@
         </ScrollView>
 
         <!-- Save Button -->
-        <Border Grid.Row="2"
+        <Border Grid.Row="1"
                 StrokeThickness="0"
                 Padding="20,12,20,24"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">

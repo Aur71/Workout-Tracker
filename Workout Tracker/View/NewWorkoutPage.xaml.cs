@@ -1,10 +1,18 @@
 namespace Workout_Tracker.View;
 
-public partial class NewWorkoutPage : ContentPage
+public partial class NewWorkoutPage : ContentPage, IQueryAttributable
 {
     public NewWorkoutPage()
     {
         InitializeComponent();
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("edit", out var editValue) && editValue?.ToString() == "true")
+        {
+            PageTitle.Text = "Edit Workout";
+        }
     }
 
     private async void OnCancelTapped(object sender, TappedEventArgs e)

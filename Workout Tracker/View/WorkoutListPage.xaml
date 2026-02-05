@@ -29,6 +29,9 @@
                                 Radius="8"
                                 Opacity="0.08" />
                     </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnWorkoutTapped" />
+                    </Border.GestureRecognizers>
 
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
                         <Grid ColumnDefinitions="*,Auto">
@@ -72,6 +75,9 @@
                                 Radius="8"
                                 Opacity="0.08" />
                     </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnWorkoutTapped" />
+                    </Border.GestureRecognizers>
 
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
                         <Grid ColumnDefinitions="*,Auto">
@@ -115,6 +121,9 @@
                                 Radius="8"
                                 Opacity="0.08" />
                     </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnWorkoutTapped" />
+                    </Border.GestureRecognizers>
 
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
                         <Grid ColumnDefinitions="*,Auto">
@@ -158,6 +167,9 @@
                                 Radius="8"
                                 Opacity="0.08" />
                     </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnWorkoutTapped" />
+                    </Border.GestureRecognizers>
 
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
                         <Grid ColumnDefinitions="*,Auto">
