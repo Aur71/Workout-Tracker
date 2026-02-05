@@ -9,9 +9,9 @@
 
         <!-- Header -->
         <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto">
-            <Label Text="&#x2190;"
-                   FontSize="24"
-                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+            <Label Text="Back"
+                   FontSize="15"
+                   TextColor="{StaticResource Primary}"
                    VerticalOptions="Center">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnBackTapped" />
