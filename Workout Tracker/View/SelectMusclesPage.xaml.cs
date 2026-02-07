@@ -1,14 +1,20 @@
+using Workout_Tracker.ViewModel;
+
 namespace Workout_Tracker.View;
 
 public partial class SelectMusclesPage : ContentPage
 {
-    public SelectMusclesPage()
+    private readonly SelectMusclesViewModel _vm;
+
+    public SelectMusclesPage(SelectMusclesViewModel vm)
     {
         InitializeComponent();
+        BindingContext = _vm = vm;
     }
 
-    private async void OnCancelTapped(object sender, TappedEventArgs e)
+    protected override async void OnAppearing()
     {
-        await Shell.Current.GoToAsync("..");
+        base.OnAppearing();
+        await _vm.LoadMusclesAsync();
     }
 }

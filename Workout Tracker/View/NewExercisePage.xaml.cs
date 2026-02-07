@@ -1,10 +1,13 @@
+using Workout_Tracker.ViewModel;
+
 namespace Workout_Tracker.View;
 
 public partial class NewExercisePage : ContentPage, IQueryAttributable
 {
-    public NewExercisePage()
+    public NewExercisePage(NewExerciseViewModel vm)
     {
         InitializeComponent();
+        BindingContext = vm;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -13,15 +16,5 @@ public partial class NewExercisePage : ContentPage, IQueryAttributable
         {
             PageTitle.Text = "Edit Exercise";
         }
-    }
-
-    private async void OnCancelTapped(object sender, TappedEventArgs e)
-    {
-        await Shell.Current.GoToAsync("..");
-    }
-
-    private async void OnSelectMusclesClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(SelectMusclesPage));
     }
 }

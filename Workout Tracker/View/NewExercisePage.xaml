@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             xmlns:model="clr-namespace:Workout_Tracker.Model"
              x:Class="Workout_Tracker.View.NewExercisePage"
+             x:DataType="vm:NewExerciseViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
              Shell.NavBarIsVisible="False">
 
@@ -17,7 +20,7 @@
                            FontSize="15"
                            TextColor="{StaticResource Primary}">
                         <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCancelTapped" />
+                            <TapGestureRecognizer Command="{Binding CancelCommand}" />
                         </Label.GestureRecognizers>
                     </Label>
                     <Label x:Name="PageTitle"
@@ -57,6 +60,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Entry Placeholder="e.g. Bench Press"
+                                       Text="{Binding Name}"
                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
                             </Border>
                         </VerticalStackLayout>
@@ -74,7 +78,8 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
-                                <Picker Title="Select type">
+                                <Picker Title="Select type"
+                                        SelectedItem="{Binding ExerciseType}">
                                     <Picker.ItemsSource>
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>Compound</x:String>
@@ -101,6 +106,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Entry Placeholder="e.g. Barbell, Dumbbell, Cable"
+                                       Text="{Binding Equipment}"
                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
                             </Border>
                         </VerticalStackLayout>
@@ -116,6 +122,7 @@
                                        TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                             </VerticalStackLayout>
                             <Switch Grid.Column="1"
+                                    IsToggled="{Binding IsTimeBased}"
                                     VerticalOptions="Center" />
                         </Grid>
 
@@ -153,6 +160,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Editor Placeholder="Brief description of the exercise..."
+                                        Text="{Binding Description}"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                         AutoSize="TextChanges" />
                             </Border>
@@ -173,6 +181,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Editor Placeholder="Step-by-step instructions on how to perform the exercise..."
+                                        Text="{Binding Instructions}"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                         AutoSize="TextChanges" />
                             </Border>
@@ -193,6 +202,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Editor Placeholder="Additional notes..."
+                                        Text="{Binding Notes}"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                         AutoSize="TextChanges" />
                             </Border>
@@ -221,21 +231,68 @@
                                FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
 
+                        <!-- No muscles placeholder -->
                         <Label Text="No muscles selected"
                                FontSize="13"
                                TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                HorizontalOptions="Center"
-                               Padding="0,8" />
+                               Padding="0,8"
+                               IsVisible="{Binding HasMuscles, Converter={StaticResource InvertedBoolConverter}}" />
+
+                        <!-- Selected muscles list -->
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedMuscles}"
+                                             Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="model:MuscleSelection">
+                                    <Border StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                            Padding="12,8"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                            <Label Text="{Binding Muscle.Name}"
+                                                   FontSize="14"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                            <Border Grid.Column="1"
+                                                    StrokeThickness="0"
+                                                    Padding="8,2"
+                                                    VerticalOptions="Center"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="4" />
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding Role}"
+                                                       FontSize="11"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+                                            </Border>
+                                            <Label Grid.Column="2"
+                                                   Text="&#x2715;"
+                                                   FontSize="16"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                                   VerticalOptions="Center">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewExerciseViewModel}}, Path=RemoveMuscleCommand}"
+                                                                          CommandParameter="{Binding}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
 
                         <Button Text="+ Select Muscles"
+                                Command="{Binding GoToSelectMusclesCommand}"
                                 BackgroundColor="Transparent"
                                 BorderColor="{StaticResource Primary}"
                                 BorderWidth="1.5"
                                 TextColor="{StaticResource Primary}"
                                 FontAttributes="Bold"
                                 CornerRadius="10"
-                                HeightRequest="44"
-                                Clicked="OnSelectMusclesClicked" />
+                                HeightRequest="44" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -248,6 +305,7 @@
                 Padding="20,12,20,24"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
             <Button Text="Save Exercise"
+                    Command="{Binding SaveCommand}"
                     BackgroundColor="{StaticResource Primary}"
                     TextColor="{StaticResource Black}"
                     FontAttributes="Bold"

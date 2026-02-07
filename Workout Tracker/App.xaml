@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Workout_Tracker"
+             xmlns:converters="clr-namespace:Workout_Tracker.Converters"
              x:Class="Workout_Tracker.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,50 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
+            <!-- Bool to Color converters for selection state -->
+            <converters:BoolToColorConverter x:Key="SelectedBorderConverter"
+                                             TrueColor="{StaticResource Primary}"
+                                             FalseColor="Transparent" />
+
+            <converters:BoolToColorConverter x:Key="SelectedCheckBgConverter"
+                                             TrueColor="{StaticResource Primary}"
+                                             FalseColor="Transparent" />
+
+            <!-- Bool to Double for border stroke thickness -->
+            <converters:BoolToDoubleConverter x:Key="SelectedStrokeThicknessConverter"
+                                              TrueValue="2"
+                                              FalseValue="1" />
+
+            <!-- Role converters for Primary button -->
+            <converters:RoleToColorConverter x:Key="RoleToPrimaryBgConverter"
+                                             TargetRole="primary"
+                                             ActiveColor="{StaticResource Primary}"
+                                             InactiveColor="Transparent" />
+
+            <converters:RoleToColorConverter x:Key="RoleToPrimaryTextConverter"
+                                             TargetRole="primary"
+                                             ActiveColor="{StaticResource Black}"
+                                             InactiveColor="{StaticResource Gray400}" />
+
+            <converters:RoleToFontAttributeConverter x:Key="RoleToPrimaryFontAttrConverter"
+                                                      TargetRole="primary" />
+
+            <!-- Role converters for Secondary button -->
+            <converters:RoleToColorConverter x:Key="RoleToSecondaryBgConverter"
+                                             TargetRole="secondary"
+                                             ActiveColor="{StaticResource Gray600}"
+                                             InactiveColor="Transparent" />
+
+            <converters:RoleToColorConverter x:Key="RoleToSecondaryTextConverter"
+                                             TargetRole="secondary"
+                                             ActiveColor="{StaticResource White}"
+                                             InactiveColor="{StaticResource Gray400}" />
+
+            <converters:RoleToFontAttributeConverter x:Key="RoleToSecondaryFontAttrConverter"
+                                                      TargetRole="secondary" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

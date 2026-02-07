@@ -3,7 +3,9 @@
     "allow": [
       "Bash(cd:*)",
       "Bash(dotnet add package:*)",
-      "Bash(git -C \"C:\\\\Users\\\\tumur\\\\source\\\\repos\\\\Workout Tracker\" status --short)"
+      "Bash(git -C \"C:\\\\Users\\\\tumur\\\\source\\\\repos\\\\Workout Tracker\" status --short)",
+      "Bash(dir:*)",
+      "Bash(dotnet build:*)"
     ]
   }
 }
