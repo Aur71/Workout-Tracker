@@ -9,21 +9,25 @@
     <TabBar>
         <ShellContent
             Title="Dashboard"
+            Icon="tab_dashboard.svg"
             ContentTemplate="{DataTemplate view:DashboardPage}"
             Route="Dashboard" />
 
         <ShellContent
             Title="Workouts"
+            Icon="tab_workouts.svg"
             ContentTemplate="{DataTemplate view:WorkoutListPage}"
             Route="Workouts" />
 
         <ShellContent
             Title="Exercises"
+            Icon="tab_exercises.svg"
             ContentTemplate="{DataTemplate view:ExerciseListPage}"
             Route="Exercises" />
 
         <ShellContent
             Title="Programs"
+            Icon="tab_programs.svg"
             ContentTemplate="{DataTemplate view:ProgramListPage}"
             Route="Programs" />
     </TabBar>
