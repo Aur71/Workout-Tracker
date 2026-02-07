@@ -44,12 +44,18 @@ public partial class ExerciseDetailViewModel : ObservableObject
     {
         if (Exercise == null) return;
 
+        var workoutCount = await _db.GetWorkoutCountForExerciseAsync(Exercise.Id);
+        var message = workoutCount > 0
+            ? $"Are you sure you want to delete \"{Exercise.Name}\"?\n\nThis exercise is used in {workoutCount} workout template{(workoutCount != 1 ? "s" : "")}. It will be removed from those workouts."
+            : $"Are you sure you want to delete \"{Exercise.Name}\"?";
+
         bool confirm = await Shell.Current.DisplayAlertAsync(
-            "Delete Exercise",
-            $"Are you sure you want to delete \"{Exercise.Name}\"?",
-            "Delete", "Cancel");
+            "Delete Exercise", message, "Delete", "Cancel");
 
         if (!confirm) return;
+
+        if (workoutCount > 0)
+            await _db.DeleteExerciseFromWorkoutsAsync(Exercise.Id);
 
         await _db.DeleteExerciseAsync(Exercise.Id);
         await Shell.Current.GoToAsync("..");

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             xmlns:model="clr-namespace:Workout_Tracker.Model"
              x:Class="Workout_Tracker.View.NewWorkoutPage"
+             x:DataType="vm:NewWorkoutViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
              Shell.NavBarIsVisible="False">
 
@@ -17,7 +20,7 @@
                            FontSize="15"
                            TextColor="{StaticResource Primary}">
                         <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCancelTapped" />
+                            <TapGestureRecognizer Command="{Binding CancelCommand}" />
                         </Label.GestureRecognizers>
                     </Label>
                     <Label x:Name="PageTitle"
@@ -57,6 +60,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Entry Placeholder="e.g. Push Day - Chest &amp; Triceps"
+                                       Text="{Binding Name}"
                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
                             </Border>
                         </VerticalStackLayout>
@@ -74,7 +78,8 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
-                                <Picker Title="Select goal">
+                                <Picker Title="Select goal"
+                                        SelectedItem="{Binding Goal}">
                                     <Picker.ItemsSource>
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>Strength</x:String>
@@ -102,6 +107,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Entry Placeholder="e.g. 45"
+                                       Text="{Binding EstimatedDurationText}"
                                        Keyboard="Numeric"
                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
                             </Border>
@@ -122,6 +128,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Editor Placeholder="Optional notes about this workout..."
+                                        Text="{Binding Notes}"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                         AutoSize="TextChanges" />
                             </Border>
@@ -150,21 +157,68 @@
                                FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
 
+                        <!-- No exercises placeholder -->
                         <Label Text="No exercises added yet"
                                FontSize="13"
                                TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                HorizontalOptions="Center"
-                               Padding="0,8" />
+                               Padding="0,8"
+                               IsVisible="{Binding HasExercises, Converter={StaticResource InvertedBoolConverter}}" />
+
+                        <!-- Selected exercises list -->
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedExercises}"
+                                             Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="model:ExerciseSelection">
+                                    <Border StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                            Padding="12,8"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                            <Label Text="{Binding Exercise.Name}"
+                                                   FontSize="14"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                            <Border Grid.Column="1"
+                                                    StrokeThickness="0"
+                                                    Padding="6,2"
+                                                    VerticalOptions="Center"
+                                                    BackgroundColor="{Binding Exercise.TypeBadgeBg}">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="4" />
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding Exercise.TypeDisplay}"
+                                                       FontSize="11"
+                                                       TextColor="{Binding Exercise.TypeBadgeTextColor}" />
+                                            </Border>
+                                            <Label Grid.Column="2"
+                                                   Text="&#x2715;"
+                                                   FontSize="16"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                                   VerticalOptions="Center">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewWorkoutViewModel}}, Path=RemoveExerciseCommand}"
+                                                                          CommandParameter="{Binding}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
 
                         <Button Text="+ Add Exercises"
+                                Command="{Binding GoToAddExercisesCommand}"
                                 BackgroundColor="Transparent"
                                 BorderColor="{StaticResource Primary}"
                                 BorderWidth="1.5"
                                 TextColor="{StaticResource Primary}"
                                 FontAttributes="Bold"
                                 CornerRadius="10"
-                                HeightRequest="44"
-                                Clicked="OnAddExercisesClicked" />
+                                HeightRequest="44" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -177,6 +231,7 @@
                 Padding="20,12,20,24"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
             <Button Text="Save Workout"
+                    Command="{Binding SaveCommand}"
                     BackgroundColor="{StaticResource Primary}"
                     TextColor="{StaticResource Black}"
                     FontAttributes="Bold"

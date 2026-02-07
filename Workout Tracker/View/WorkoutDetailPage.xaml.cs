@@ -1,21 +1,23 @@
+using Workout_Tracker.ViewModel;
+
 namespace Workout_Tracker.View;
 
-public partial class WorkoutDetailPage : ContentPage
+public partial class WorkoutDetailPage : ContentPage, IQueryAttributable
 {
-    public WorkoutDetailPage()
+    private readonly WorkoutDetailViewModel _vm;
+
+    public WorkoutDetailPage(WorkoutDetailViewModel vm)
     {
         InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
     }
 
-    private async void OnBackTapped(object sender, TappedEventArgs e)
+    public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        await Shell.Current.GoToAsync("..");
-    }
-
-    private async void OnEditTapped(object sender, TappedEventArgs e)
-    {
-        // Navigate to NewWorkoutPage in edit mode
-        // Later we'll also pass the workout ID as a parameter
-        await Shell.Current.GoToAsync($"{nameof(NewWorkoutPage)}?edit=true");
+        if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out var id))
+        {
+            await _vm.LoadWorkoutAsync(id);
+        }
     }
 }

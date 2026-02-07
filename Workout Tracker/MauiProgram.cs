@@ -26,12 +26,20 @@ namespace Workout_Tracker
             builder.Services.AddTransient<ExerciseDetailViewModel>();
             builder.Services.AddTransient<NewExerciseViewModel>();
             builder.Services.AddTransient<SelectMusclesViewModel>();
+            builder.Services.AddTransient<WorkoutListViewModel>();
+            builder.Services.AddTransient<WorkoutDetailViewModel>();
+            builder.Services.AddTransient<NewWorkoutViewModel>();
+            builder.Services.AddTransient<AddExercisesViewModel>();
 
             // Pages
             builder.Services.AddTransient<ExerciseListPage>();
             builder.Services.AddTransient<ExerciseDetailPage>();
             builder.Services.AddTransient<NewExercisePage>();
             builder.Services.AddTransient<SelectMusclesPage>();
+            builder.Services.AddTransient<WorkoutListPage>();
+            builder.Services.AddTransient<WorkoutDetailPage>();
+            builder.Services.AddTransient<NewWorkoutPage>();
+            builder.Services.AddTransient<AddExercisesPage>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

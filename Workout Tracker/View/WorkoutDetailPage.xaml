@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             xmlns:model="clr-namespace:Workout_Tracker.Model"
              x:Class="Workout_Tracker.View.WorkoutDetailPage"
+             x:DataType="vm:WorkoutDetailViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
              Shell.NavBarIsVisible="False">
 
@@ -14,7 +17,7 @@
                    TextColor="{StaticResource Primary}"
                    VerticalOptions="Center">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnBackTapped" />
+                    <TapGestureRecognizer Command="{Binding BackCommand}" />
                 </Label.GestureRecognizers>
             </Label>
             <Label Grid.Column="2"
@@ -23,7 +26,7 @@
                    TextColor="{StaticResource Primary}"
                    VerticalOptions="Center">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnEditTapped" />
+                    <TapGestureRecognizer Command="{Binding EditCommand}" />
                 </Label.GestureRecognizers>
             </Label>
         </Grid>
@@ -33,7 +36,7 @@
             <VerticalStackLayout Spacing="20">
 
                 <!-- Workout Title -->
-                <Label Text="Push Day - Chest &amp; Triceps"
+                <Label Text="{Binding Workout.Name}"
                        FontSize="26"
                        FontAttributes="Bold"
                        TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
@@ -42,19 +45,21 @@
                 <HorizontalStackLayout Spacing="12">
                     <Border StrokeThickness="0"
                             Padding="10,6"
-                            BackgroundColor="{AppThemeBinding Light=#FFF0EE, Dark=#3D1A1A}">
+                            IsVisible="{Binding Workout.HasGoal}"
+                            BackgroundColor="{Binding Workout.GoalBadgeBg}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="6" />
                         </Border.StrokeShape>
-                        <Label Text="Hypertrophy"
+                        <Label Text="{Binding Workout.GoalDisplay}"
                                FontSize="12"
-                               TextColor="{StaticResource Secondary}" />
+                               TextColor="{Binding Workout.GoalBadgeTextColor}" />
                     </Border>
-                    <Label Text="~45 min"
+                    <Label Text="{Binding Workout.DurationDisplay}"
                            FontSize="14"
+                           IsVisible="{Binding Workout.DurationDisplay, Converter={StaticResource StringNotEmptyConverter}}"
                            TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
                            VerticalOptions="Center" />
-                    <Label Text="4 exercises"
+                    <Label Text="{Binding Workout.ExerciseCountDisplay}"
                            FontSize="14"
                            TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
                            VerticalOptions="Center" />
@@ -63,7 +68,8 @@
                 <!-- Notes Card -->
                 <Border StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
+                        Padding="16"
+                        IsVisible="{Binding HasNotes}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
@@ -72,7 +78,7 @@
                                FontSize="13"
                                FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                        <Label Text="Focus on mind-muscle connection. Rest 60-90 seconds between sets."
+                        <Label Text="{Binding Workout.Notes}"
                                FontSize="14"
                                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
                                LineHeight="1.4" />
@@ -80,205 +86,78 @@
                 </Border>
 
                 <!-- Exercises Section -->
-                <VerticalStackLayout Spacing="12">
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding HasExercises}">
                     <Label Text="Exercises"
                            FontSize="18"
                            FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
 
-                    <!-- Exercise 1 -->
-                    <Border StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                            <Border StrokeThickness="0"
-                                    WidthRequest="32"
-                                    HeightRequest="32"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}"
-                                    VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <Label Text="1"
-                                       FontSize="14"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-                                <Label Text="Bench Press"
-                                       FontSize="15"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                                <HorizontalStackLayout Spacing="8">
-                                    <Border StrokeThickness="0"
-                                            Padding="6,2"
-                                            BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="4" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Compound"
-                                               FontSize="11"
-                                               TextColor="{StaticResource Primary}" />
-                                    </Border>
-                                    <Label Text="Chest"
-                                           FontSize="12"
-                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                           VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Border>
-
-                    <!-- Exercise 2 -->
-                    <Border StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                            <Border StrokeThickness="0"
-                                    WidthRequest="32"
-                                    HeightRequest="32"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}"
-                                    VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <Label Text="2"
-                                       FontSize="14"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-                                <Label Text="Incline Dumbbell Press"
-                                       FontSize="15"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                                <HorizontalStackLayout Spacing="8">
-                                    <Border StrokeThickness="0"
-                                            Padding="6,2"
-                                            BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="4" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Compound"
-                                               FontSize="11"
-                                               TextColor="{StaticResource Primary}" />
-                                    </Border>
-                                    <Label Text="Chest"
-                                           FontSize="12"
-                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                           VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Border>
-
-                    <!-- Exercise 3 -->
-                    <Border StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                            <Border StrokeThickness="0"
-                                    WidthRequest="32"
-                                    HeightRequest="32"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}"
-                                    VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <Label Text="3"
-                                       FontSize="14"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-                                <Label Text="Cable Flyes"
-                                       FontSize="15"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                                <HorizontalStackLayout Spacing="8">
-                                    <Border StrokeThickness="0"
-                                            Padding="6,2"
-                                            BackgroundColor="{AppThemeBinding Light=#FFF0EE, Dark=#3D1A1A}">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="4" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Isolation"
-                                               FontSize="11"
-                                               TextColor="{StaticResource Secondary}" />
-                                    </Border>
-                                    <Label Text="Chest"
-                                           FontSize="12"
-                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                           VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Border>
-
-                    <!-- Exercise 4 -->
-                    <Border StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                            <Border StrokeThickness="0"
-                                    WidthRequest="32"
-                                    HeightRequest="32"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}"
-                                    VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <Label Text="4"
-                                       FontSize="14"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-                                <Label Text="Tricep Pushdown"
-                                       FontSize="15"
-                                       FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                                <HorizontalStackLayout Spacing="8">
-                                    <Border StrokeThickness="0"
-                                            Padding="6,2"
-                                            BackgroundColor="{AppThemeBinding Light=#FFF0EE, Dark=#3D1A1A}">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="4" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Isolation"
-                                               FontSize="11"
-                                               TextColor="{StaticResource Secondary}" />
-                                    </Border>
-                                    <Label Text="Triceps"
-                                           FontSize="12"
-                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                           VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Border>
-
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Workout.Exercises}"
+                                         Spacing="12">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="model:WorkoutExerciseDisplay">
+                                <Border StrokeThickness="0"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                                        Padding="16">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                                        <Border StrokeThickness="0"
+                                                WidthRequest="32"
+                                                HeightRequest="32"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}"
+                                                VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="8" />
+                                            </Border.StrokeShape>
+                                            <Label Text="{Binding Order}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                            <Label Text="{Binding ExerciseName}"
+                                                   FontSize="15"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Border StrokeThickness="0"
+                                                        Padding="6,2"
+                                                        BackgroundColor="{Binding TypeBadgeBg}">
+                                                    <Border.StrokeShape>
+                                                        <RoundRectangle CornerRadius="4" />
+                                                    </Border.StrokeShape>
+                                                    <Label Text="{Binding TypeDisplay}"
+                                                           FontSize="11"
+                                                           TextColor="{Binding TypeBadgeTextColor}" />
+                                                </Border>
+                                                <Label Text="{Binding PrimaryMuscle}"
+                                                       FontSize="12"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                                       VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
+
+                <!-- Delete Button -->
+                <Button Text="Delete Workout"
+                        Command="{Binding DeleteCommand}"
+                        BackgroundColor="Transparent"
+                        BorderColor="{StaticResource Secondary}"
+                        BorderWidth="1.5"
+                        TextColor="{StaticResource Secondary}"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        HeightRequest="44"
+                        Margin="0,8,0,0" />
 
             </VerticalStackLayout>
         </ScrollView>
