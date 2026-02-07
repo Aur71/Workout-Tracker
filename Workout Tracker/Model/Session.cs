@@ -8,9 +8,6 @@ public class Session
     public int Id { get; set; }
 
     [Indexed]
-    public int? WorkoutId { get; set; }
-
-    [Indexed]
     public int? ProgramId { get; set; }
 
     [NotNull, Indexed]
