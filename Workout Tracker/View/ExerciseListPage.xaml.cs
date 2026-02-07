@@ -1,19 +1,20 @@
+using Workout_Tracker.ViewModel;
+
 namespace Workout_Tracker.View;
 
 public partial class ExerciseListPage : ContentPage
 {
-    public ExerciseListPage()
+    private readonly ExerciseListViewModel _vm;
+
+    public ExerciseListPage(ExerciseListViewModel vm)
     {
         InitializeComponent();
+        BindingContext = _vm = vm;
     }
 
-    private async void OnAddExerciseTapped(object sender, TappedEventArgs e)
+    protected override async void OnAppearing()
     {
-        await Shell.Current.GoToAsync(nameof(NewExercisePage));
-    }
-
-    private async void OnExerciseTapped(object sender, TappedEventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(ExerciseDetailPage));
+        base.OnAppearing();
+        await _vm.LoadExercisesAsync();
     }
 }

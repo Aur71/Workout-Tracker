@@ -22,10 +22,14 @@ namespace Workout_Tracker
             builder.Services.AddSingleton<DatabaseService>();
 
             // ViewModels
+            builder.Services.AddTransient<ExerciseListViewModel>();
+            builder.Services.AddTransient<ExerciseDetailViewModel>();
             builder.Services.AddTransient<NewExerciseViewModel>();
             builder.Services.AddTransient<SelectMusclesViewModel>();
 
             // Pages
+            builder.Services.AddTransient<ExerciseListPage>();
+            builder.Services.AddTransient<ExerciseDetailPage>();
             builder.Services.AddTransient<NewExercisePage>();
             builder.Services.AddTransient<SelectMusclesPage>();
 

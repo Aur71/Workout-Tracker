@@ -12,6 +12,9 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <converters:FilterChipBgConverter x:Key="FilterChipBgConverter" />
+            <converters:FilterChipTextConverter x:Key="FilterChipTextConverter" />
 
             <!-- Bool to Color converters for selection state -->
             <converters:BoolToColorConverter x:Key="SelectedBorderConverter"

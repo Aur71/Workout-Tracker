@@ -1,19 +1,22 @@
+using Workout_Tracker.ViewModel;
+
 namespace Workout_Tracker.View;
 
-public partial class ExerciseDetailPage : ContentPage
+public partial class ExerciseDetailPage : ContentPage, IQueryAttributable
 {
-    public ExerciseDetailPage()
+    private readonly ExerciseDetailViewModel _vm;
+
+    public ExerciseDetailPage(ExerciseDetailViewModel vm)
     {
         InitializeComponent();
+        BindingContext = _vm = vm;
     }
 
-    private async void OnBackTapped(object sender, TappedEventArgs e)
+    public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        await Shell.Current.GoToAsync("..");
-    }
-
-    private async void OnEditTapped(object sender, TappedEventArgs e)
-    {
-        await Shell.Current.GoToAsync($"{nameof(NewExercisePage)}?edit=true");
+        if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+        {
+            await _vm.LoadExerciseAsync(id);
+        }
     }
 }

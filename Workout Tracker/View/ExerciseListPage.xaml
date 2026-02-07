@@ -1,447 +1,183 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             xmlns:model="clr-namespace:Workout_Tracker.Model"
              x:Class="Workout_Tracker.View.ExerciseListPage"
+             x:DataType="vm:ExerciseListViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="*,Auto">
-        <ScrollView>
-            <VerticalStackLayout Padding="20" Spacing="16">
 
-                <!-- Header -->
-                <Label Text="Exercises"
-                       FontSize="28"
-                       FontAttributes="Bold"
-                       Padding="0,20,0,0"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+        <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20,0">
 
-                <!-- Search Bar -->
-                <Border StrokeThickness="1"
-                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                        Padding="12,0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10" />
-                    </Border.StrokeShape>
-                    <Grid ColumnDefinitions="Auto,*">
-                        <Label Text="&#x1F50D;"
-                               FontSize="16"
-                               VerticalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                        <Entry Grid.Column="1"
-                               Placeholder="Search exercises..."
-                               PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
-                               Margin="8,0,0,0" />
-                    </Grid>
-                </Border>
+            <!-- Header -->
+            <Label Text="Exercises"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   Padding="0,20,0,16"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
 
-                <!-- Filter Chips -->
-                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                    <HorizontalStackLayout Spacing="8">
-                        <!-- All - Selected -->
+            <!-- Search Bar -->
+            <Border Grid.Row="1"
+                    StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                    Padding="12,0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Text="&#x1F50D;"
+                           FontSize="16"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                    <Entry Grid.Column="1"
+                           Placeholder="Search exercises..."
+                           Text="{Binding SearchText}"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                           Margin="8,0,0,0" />
+                </Grid>
+            </Border>
+
+            <!-- Filter Chips -->
+            <ScrollView Grid.Row="2" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Padding="0,16,0,0">
+                <HorizontalStackLayout Spacing="8">
+                    <Border StrokeThickness="0"
+                            Padding="14,8"
+                            BackgroundColor="{Binding SelectedFilter, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=All}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="All" />
+                        </Border.GestureRecognizers>
+                        <Label Text="All"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{Binding SelectedFilter, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=All}" />
+                    </Border>
+                    <Border StrokeThickness="0"
+                            Padding="14,8"
+                            BackgroundColor="{Binding SelectedFilter, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=Compound}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Compound" />
+                        </Border.GestureRecognizers>
+                        <Label Text="Compound"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{Binding SelectedFilter, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=Compound}" />
+                    </Border>
+                    <Border StrokeThickness="0"
+                            Padding="14,8"
+                            BackgroundColor="{Binding SelectedFilter, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=Isolation}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Isolation" />
+                        </Border.GestureRecognizers>
+                        <Label Text="Isolation"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{Binding SelectedFilter, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=Isolation}" />
+                    </Border>
+                    <Border StrokeThickness="0"
+                            Padding="14,8"
+                            BackgroundColor="{Binding SelectedFilter, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=Cardio}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Cardio" />
+                        </Border.GestureRecognizers>
+                        <Label Text="Cardio"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{Binding SelectedFilter, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=Cardio}" />
+                    </Border>
+                    <Border StrokeThickness="0"
+                            Padding="14,8"
+                            BackgroundColor="{Binding SelectedFilter, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=Mobility}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Mobility" />
+                        </Border.GestureRecognizers>
+                        <Label Text="Mobility"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{Binding SelectedFilter, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=Mobility}" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- Exercise Cards -->
+            <CollectionView Grid.Row="3"
+                            ItemsSource="{Binding Exercises}"
+                            Margin="0,16,0,0">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:ExerciseDisplay">
                         <Border StrokeThickness="0"
-                                Padding="14,8"
-                                BackgroundColor="{StaticResource Primary}">
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                                Padding="16">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
+                                <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
-                            <Label Text="All"
-                                   FontSize="13"
-                                   FontAttributes="Bold"
-                                   TextColor="{StaticResource Black}" />
+                            <Border.Shadow>
+                                <Shadow Brush="{StaticResource BlackBrush}"
+                                        Offset="0,2"
+                                        Radius="8"
+                                        Opacity="0.08" />
+                            </Border.Shadow>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ExerciseListViewModel}}, Path=GoToDetailCommand}"
+                                                      CommandParameter="{Binding}" />
+                            </Border.GestureRecognizers>
+                            <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                    <Border Grid.Column="1"
+                                            StrokeThickness="0"
+                                            Padding="8,4"
+                                            BackgroundColor="{Binding TypeBadgeBg}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="6" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding TypeDisplay}"
+                                               FontSize="11"
+                                               TextColor="{Binding TypeBadgeTextColor}" />
+                                    </Border>
+                                </Grid>
+                                <HorizontalStackLayout Grid.Row="1" Spacing="12">
+                                    <Label Text="{Binding EquipmentDisplay}"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                    <Label Text="·"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                    <Label Text="{Binding PrimaryMuscle}"
+                                           FontSize="13"
+                                           TextColor="{StaticResource Primary}" />
+                                </HorizontalStackLayout>
+                            </Grid>
                         </Border>
-                        <!-- Compound -->
-                        <Border StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                Padding="14,8"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Label Text="Compound"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                        </Border>
-                        <!-- Isolation -->
-                        <Border StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                Padding="14,8"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Label Text="Isolation"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                        </Border>
-                        <!-- Cardio -->
-                        <Border StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                Padding="14,8"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Label Text="Cardio"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                        </Border>
-                        <!-- Mobility -->
-                        <Border StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                Padding="14,8"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Label Text="Mobility"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                        </Border>
-                    </HorizontalStackLayout>
-                </ScrollView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                <!-- Exercise Cards -->
-
-                <!-- Exercise 1: Bench Press -->
-                <Border StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource BlackBrush}"
-                                Offset="0,2"
-                                Radius="8"
-                                Opacity="0.08" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnExerciseTapped" />
-                    </Border.GestureRecognizers>
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Bench Press"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                            <Border Grid.Column="1"
-                                    StrokeThickness="0"
-                                    Padding="8,4"
-                                    BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="6" />
-                                </Border.StrokeShape>
-                                <Label Text="Compound"
-                                       FontSize="11"
-                                       TextColor="{StaticResource Primary}" />
-                            </Border>
-                        </Grid>
-                        <HorizontalStackLayout Grid.Row="1" Spacing="12">
-                            <Label Text="Barbell"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                            <Label Text="·"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                            <Label Text="Chest"
-                                   FontSize="13"
-                                   TextColor="{StaticResource Primary}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-
-                <!-- Exercise 2: Incline Dumbbell Press -->
-                <Border StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource BlackBrush}"
-                                Offset="0,2"
-                                Radius="8"
-                                Opacity="0.08" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnExerciseTapped" />
-                    </Border.GestureRecognizers>
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Incline Dumbbell Press"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                            <Border Grid.Column="1"
-                                    StrokeThickness="0"
-                                    Padding="8,4"
-                                    BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="6" />
-                                </Border.StrokeShape>
-                                <Label Text="Compound"
-                                       FontSize="11"
-                                       TextColor="{StaticResource Primary}" />
-                            </Border>
-                        </Grid>
-                        <HorizontalStackLayout Grid.Row="1" Spacing="12">
-                            <Label Text="Dumbbell"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                            <Label Text="·"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                            <Label Text="Chest"
-                                   FontSize="13"
-                                   TextColor="{StaticResource Primary}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-
-                <!-- Exercise 3: Cable Flyes -->
-                <Border StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource BlackBrush}"
-                                Offset="0,2"
-                                Radius="8"
-                                Opacity="0.08" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnExerciseTapped" />
-                    </Border.GestureRecognizers>
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Cable Flyes"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                            <Border Grid.Column="1"
-                                    StrokeThickness="0"
-                                    Padding="8,4"
-                                    BackgroundColor="{AppThemeBinding Light=#FFF0EE, Dark=#3D1A1A}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="6" />
-                                </Border.StrokeShape>
-                                <Label Text="Isolation"
-                                       FontSize="11"
-                                       TextColor="{StaticResource Secondary}" />
-                            </Border>
-                        </Grid>
-                        <HorizontalStackLayout Grid.Row="1" Spacing="12">
-                            <Label Text="Cable"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                            <Label Text="·"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                            <Label Text="Chest"
-                                   FontSize="13"
-                                   TextColor="{StaticResource Primary}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-
-                <!-- Exercise 4: Tricep Pushdown -->
-                <Border StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource BlackBrush}"
-                                Offset="0,2"
-                                Radius="8"
-                                Opacity="0.08" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnExerciseTapped" />
-                    </Border.GestureRecognizers>
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Tricep Pushdown"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                            <Border Grid.Column="1"
-                                    StrokeThickness="0"
-                                    Padding="8,4"
-                                    BackgroundColor="{AppThemeBinding Light=#FFF0EE, Dark=#3D1A1A}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="6" />
-                                </Border.StrokeShape>
-                                <Label Text="Isolation"
-                                       FontSize="11"
-                                       TextColor="{StaticResource Secondary}" />
-                            </Border>
-                        </Grid>
-                        <HorizontalStackLayout Grid.Row="1" Spacing="12">
-                            <Label Text="Cable"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                            <Label Text="·"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                            <Label Text="Triceps"
-                                   FontSize="13"
-                                   TextColor="{StaticResource Primary}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-
-                <!-- Exercise 5: Pull-ups -->
-                <Border StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource BlackBrush}"
-                                Offset="0,2"
-                                Radius="8"
-                                Opacity="0.08" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnExerciseTapped" />
-                    </Border.GestureRecognizers>
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Pull-ups"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                            <Border Grid.Column="1"
-                                    StrokeThickness="0"
-                                    Padding="8,4"
-                                    BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="6" />
-                                </Border.StrokeShape>
-                                <Label Text="Compound"
-                                       FontSize="11"
-                                       TextColor="{StaticResource Primary}" />
-                            </Border>
-                        </Grid>
-                        <HorizontalStackLayout Grid.Row="1" Spacing="12">
-                            <Label Text="Bodyweight"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                            <Label Text="·"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                            <Label Text="Back"
-                                   FontSize="13"
-                                   TextColor="{StaticResource Primary}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-
-                <!-- Exercise 6: Barbell Row -->
-                <Border StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource BlackBrush}"
-                                Offset="0,2"
-                                Radius="8"
-                                Opacity="0.08" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnExerciseTapped" />
-                    </Border.GestureRecognizers>
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Barbell Row"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                            <Border Grid.Column="1"
-                                    StrokeThickness="0"
-                                    Padding="8,4"
-                                    BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="6" />
-                                </Border.StrokeShape>
-                                <Label Text="Compound"
-                                       FontSize="11"
-                                       TextColor="{StaticResource Primary}" />
-                            </Border>
-                        </Grid>
-                        <HorizontalStackLayout Grid.Row="1" Spacing="12">
-                            <Label Text="Barbell"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                            <Label Text="·"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                            <Label Text="Back"
-                                   FontSize="13"
-                                   TextColor="{StaticResource Primary}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-
-                <!-- Exercise 7: Running -->
-                <Border StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource BlackBrush}"
-                                Offset="0,2"
-                                Radius="8"
-                                Opacity="0.08" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnExerciseTapped" />
-                    </Border.GestureRecognizers>
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Running"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                            <Border Grid.Column="1"
-                                    StrokeThickness="0"
-                                    Padding="8,4"
-                                    BackgroundColor="{AppThemeBinding Light=#EEF4FF, Dark=#1A2A3D}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="6" />
-                                </Border.StrokeShape>
-                                <Label Text="Cardio"
-                                       FontSize="11"
-                                       TextColor="{StaticResource Tertiary}" />
-                            </Border>
-                        </Grid>
-                        <HorizontalStackLayout Grid.Row="1" Spacing="12">
-                            <Label Text="No Equipment"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                            <Label Text="·"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                            <Label Text="Full Body"
-                                   FontSize="13"
-                                   TextColor="{StaticResource Primary}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-
-            </VerticalStackLayout>
-        </ScrollView>
+        </Grid>
 
         <!-- Floating Action Button -->
         <Border Grid.Row="1"
@@ -461,7 +197,7 @@
                         Opacity="0.2" />
             </Border.Shadow>
             <Border.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnAddExerciseTapped" />
+                <TapGestureRecognizer Command="{Binding GoToAddCommand}" />
             </Border.GestureRecognizers>
             <Label Text="+"
                    FontSize="28"
