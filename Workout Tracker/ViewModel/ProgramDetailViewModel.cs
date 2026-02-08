@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Workout_Tracker.Model;
@@ -18,9 +19,18 @@ public partial class ProgramDetailViewModel : ObservableObject
     [ObservableProperty]
     private ProgramDisplay? _program;
 
+    public ObservableCollection<SessionDisplay> Sessions { get; } = [];
+
+    [ObservableProperty]
+    private int _totalSessions;
+
+    [ObservableProperty]
+    private int _plannedSessions;
+
     public bool HasGoal => Program?.HasGoal == true;
     public bool HasNotes => Program?.HasNotes == true;
     public bool HasDuration => Program?.HasDuration == true;
+    public bool HasSessions => Sessions.Count > 0;
 
     public async Task LoadProgramAsync(int id)
     {
@@ -41,6 +51,48 @@ public partial class ProgramDetailViewModel : ObservableObject
         OnPropertyChanged(nameof(HasGoal));
         OnPropertyChanged(nameof(HasNotes));
         OnPropertyChanged(nameof(HasDuration));
+
+        await LoadSessionsAsync(id);
+    }
+
+    private async Task LoadSessionsAsync(int programId)
+    {
+        var sessions = await _db.GetSessionsForProgramAsync(programId);
+        Sessions.Clear();
+        foreach (var s in sessions)
+            Sessions.Add(s);
+
+        TotalSessions = Sessions.Count;
+        PlannedSessions = Sessions.Count(s => s.ExerciseCount > 0);
+        OnPropertyChanged(nameof(HasSessions));
+    }
+
+    [RelayCommand]
+    private async Task AddSession()
+    {
+        if (Program == null) return;
+        await Shell.Current.GoToAsync($"{nameof(NewSessionPage)}?programId={Program.Id}");
+    }
+
+    [RelayCommand]
+    private async Task OpenSession(SessionDisplay session)
+    {
+        await Shell.Current.GoToAsync($"{nameof(NewSessionPage)}?edit=true&id={session.Id}");
+    }
+
+    [RelayCommand]
+    private async Task DeleteSession(SessionDisplay session)
+    {
+        bool confirm = await Shell.Current.DisplayAlertAsync(
+            "Delete Session",
+            $"Delete session on {session.DateDisplay}?",
+            "Delete", "Cancel");
+
+        if (!confirm) return;
+
+        await _db.DeleteSessionAsync(session.Id);
+        if (Program != null)
+            await LoadSessionsAsync(Program.Id);
     }
 
     [RelayCommand]

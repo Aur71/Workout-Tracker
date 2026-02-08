@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             xmlns:model="clr-namespace:Workout_Tracker.Model"
+             x:Class="Workout_Tracker.View.NewSessionPage"
+             x:DataType="vm:NewSessionViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Form Content -->
+        <ScrollView Padding="20,0,20,20">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Header -->
+                <VerticalStackLayout Spacing="8" Padding="0,20,0,0">
+                    <Label Text="Cancel"
+                           FontSize="15"
+                           TextColor="{StaticResource Primary}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CancelCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label x:Name="PageTitle"
+                           Text="New Session"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                </VerticalStackLayout>
+
+                <!-- Date & Notes Card -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="20">
+
+                        <!-- Date Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Date"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <DatePicker Date="{Binding SessionDate}"
+                                            Format="ddd, MMM d yyyy"
+                                            TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Notes Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Notes"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,8"
+                                    HeightRequest="80"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Editor Placeholder="Optional session notes..."
+                                        Text="{Binding Notes}"
+                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                        AutoSize="TextChanges" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Exercises Section -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Exercises"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                        <!-- No exercises placeholder -->
+                        <Label Text="No exercises added yet"
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                               HorizontalOptions="Center"
+                               Padding="0,8"
+                               IsVisible="{Binding HasExercises, Converter={StaticResource InvertedBoolConverter}}" />
+
+                        <!-- Exercise list -->
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Exercises}"
+                                             Spacing="10">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="model:SessionExerciseDisplay">
+                                    <Border StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                            Padding="12,10"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10" />
+                                        </Border.StrokeShape>
+
+                                        <VerticalStackLayout Spacing="8">
+
+                                            <!-- Exercise Header -->
+                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="6">
+                                                <!-- Name + info -->
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="{Binding ExerciseName}"
+                                                           FontSize="14"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                                    <HorizontalStackLayout Spacing="6">
+                                                        <Border StrokeThickness="0"
+                                                                Padding="5,1"
+                                                                BackgroundColor="{Binding TypeBadgeBg}">
+                                                            <Border.StrokeShape>
+                                                                <RoundRectangle CornerRadius="4" />
+                                                            </Border.StrokeShape>
+                                                            <Label Text="{Binding TypeDisplay}"
+                                                                   FontSize="10"
+                                                                   TextColor="{Binding TypeBadgeTextColor}" />
+                                                        </Border>
+                                                        <Label Text="{Binding PrimaryMuscle}"
+                                                               FontSize="11"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                                               VerticalOptions="Center" />
+                                                    </HorizontalStackLayout>
+                                                </VerticalStackLayout>
+
+                                                <!-- Move Up -->
+                                                <Label Grid.Column="1"
+                                                       Text="&#x25B2;"
+                                                       FontSize="14"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                                       VerticalOptions="Center">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewSessionViewModel}}, Path=MoveUpCommand}"
+                                                                              CommandParameter="{Binding}" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+                                                <!-- Move Down -->
+                                                <Label Grid.Column="2"
+                                                       Text="&#x25BC;"
+                                                       FontSize="14"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                                       VerticalOptions="Center">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewSessionViewModel}}, Path=MoveDownCommand}"
+                                                                              CommandParameter="{Binding}" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+                                                <!-- Expand/Collapse -->
+                                                <Label Grid.Column="3"
+                                                       Text="{Binding SetCountDisplay}"
+                                                       FontSize="11"
+                                                       TextColor="{StaticResource Primary}"
+                                                       VerticalOptions="Center">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewSessionViewModel}}, Path=ToggleExpandCommand}"
+                                                                              CommandParameter="{Binding}" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+                                                <!-- Remove -->
+                                                <Label Grid.Column="4"
+                                                       Text="&#x2715;"
+                                                       FontSize="16"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                                       VerticalOptions="Center">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewSessionViewModel}}, Path=RemoveExerciseCommand}"
+                                                                              CommandParameter="{Binding}" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+                                            </Grid>
+
+                                            <!-- Sets Section (collapsible) -->
+                                            <VerticalStackLayout Spacing="6"
+                                                                 IsVisible="{Binding IsExpanded}">
+
+                                                <!-- Rep-based header + rows -->
+                                                <VerticalStackLayout Spacing="4"
+                                                                     IsVisible="{Binding IsTimeBased, Converter={StaticResource InvertedBoolConverter}}">
+                                                    <Grid ColumnDefinitions="30,*,*,40,28" ColumnSpacing="6" Padding="0,4,0,0">
+                                                        <Label Text="Set" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                        <Label Grid.Column="1" Text="Rep Min" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                        <Label Grid.Column="2" Text="Rep Max" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                        <Label Grid.Column="3" Text="Warm" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                    </Grid>
+                                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}" Spacing="4">
+                                                        <BindableLayout.ItemTemplate>
+                                                            <DataTemplate x:DataType="model:SetDisplay">
+                                                                <Grid ColumnDefinitions="30,*,*,40,28" ColumnSpacing="6">
+                                                                    <Label Text="{Binding DisplayLabel}" FontSize="13" FontAttributes="Bold"
+                                                                           HorizontalTextAlignment="Center" VerticalOptions="Center"
+                                                                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                                                    <Border Grid.Column="1" StrokeThickness="1"
+                                                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                                            Padding="8,0" HeightRequest="40"
+                                                                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                                                                        <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
+                                                                        <Entry Text="{Binding RepMinText}" Keyboard="Numeric" Placeholder="min"
+                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                    </Border>
+                                                                    <Border Grid.Column="2" StrokeThickness="1"
+                                                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                                            Padding="8,0" HeightRequest="40"
+                                                                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                                                                        <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
+                                                                        <Entry Text="{Binding RepMaxText}" Keyboard="Numeric" Placeholder="max"
+                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                    </Border>
+                                                                    <Switch Grid.Column="3" IsToggled="{Binding IsWarmup}" Scale="0.6"
+                                                                            HorizontalOptions="Center" VerticalOptions="Center" OnColor="{StaticResource Primary}" />
+                                                                    <Label Grid.Column="4" Text="&#x2715;" FontSize="14"
+                                                                           TextColor="{StaticResource Error}"
+                                                                           HorizontalTextAlignment="Center" VerticalOptions="Center"
+                                                                           Padding="4">
+                                                                        <Label.GestureRecognizers>
+                                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewSessionViewModel}}, Path=RemoveSetCommand}"
+                                                                                                  CommandParameter="{Binding}" />
+                                                                        </Label.GestureRecognizers>
+                                                                    </Label>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </BindableLayout.ItemTemplate>
+                                                    </VerticalStackLayout>
+                                                </VerticalStackLayout>
+
+                                                <!-- Time-based header + rows -->
+                                                <VerticalStackLayout Spacing="4"
+                                                                     IsVisible="{Binding IsTimeBased}">
+                                                    <Grid ColumnDefinitions="30,*,*,40,28" ColumnSpacing="6" Padding="0,4,0,0">
+                                                        <Label Text="Set" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                        <Label Grid.Column="1" Text="Dur Min" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                        <Label Grid.Column="2" Text="Dur Max" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                        <Label Grid.Column="3" Text="Warm" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                                    </Grid>
+                                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}" Spacing="4">
+                                                        <BindableLayout.ItemTemplate>
+                                                            <DataTemplate x:DataType="model:SetDisplay">
+                                                                <Grid ColumnDefinitions="30,*,*,40,28" ColumnSpacing="6">
+                                                                    <Label Text="{Binding DisplayLabel}" FontSize="13" FontAttributes="Bold"
+                                                                           HorizontalTextAlignment="Center" VerticalOptions="Center"
+                                                                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                                                    <Border Grid.Column="1" StrokeThickness="1"
+                                                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                                            Padding="8,0" HeightRequest="40"
+                                                                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                                                                        <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
+                                                                        <Entry Text="{Binding DurationMinText}" Keyboard="Numeric" Placeholder="sec"
+                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                    </Border>
+                                                                    <Border Grid.Column="2" StrokeThickness="1"
+                                                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                                            Padding="8,0" HeightRequest="40"
+                                                                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                                                                        <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
+                                                                        <Entry Text="{Binding DurationMaxText}" Keyboard="Numeric" Placeholder="sec"
+                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                    </Border>
+                                                                    <Switch Grid.Column="3" IsToggled="{Binding IsWarmup}" Scale="0.6"
+                                                                            HorizontalOptions="Center" VerticalOptions="Center" OnColor="{StaticResource Primary}" />
+                                                                    <Label Grid.Column="4" Text="&#x2715;" FontSize="14"
+                                                                           TextColor="{StaticResource Error}"
+                                                                           HorizontalTextAlignment="Center" VerticalOptions="Center"
+                                                                           Padding="4">
+                                                                        <Label.GestureRecognizers>
+                                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewSessionViewModel}}, Path=RemoveSetCommand}"
+                                                                                                  CommandParameter="{Binding}" />
+                                                                        </Label.GestureRecognizers>
+                                                                    </Label>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </BindableLayout.ItemTemplate>
+                                                    </VerticalStackLayout>
+                                                </VerticalStackLayout>
+
+                                                <!-- Add Set button -->
+                                                <Label Text="+ Add Set"
+                                                       FontSize="13"
+                                                       TextColor="{StaticResource Primary}"
+                                                       FontAttributes="Bold"
+                                                       HorizontalOptions="Center"
+                                                       Padding="0,4">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewSessionViewModel}}, Path=AddSetCommand}"
+                                                                              CommandParameter="{Binding}" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+                                            </VerticalStackLayout>
+
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <!-- Add Exercises / From Template buttons -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Text="+ Add Exercises"
+                                    Command="{Binding GoToAddExercisesCommand}"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="{StaticResource Primary}"
+                                    BorderWidth="1.5"
+                                    TextColor="{StaticResource Primary}"
+                                    FontAttributes="Bold"
+                                    CornerRadius="10"
+                                    HeightRequest="44"
+                                    FontSize="13" />
+                            <Button Grid.Column="1"
+                                    Text="From Template"
+                                    Command="{Binding FromTemplateCommand}"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="{StaticResource Primary}"
+                                    BorderWidth="1.5"
+                                    TextColor="{StaticResource Primary}"
+                                    FontAttributes="Bold"
+                                    CornerRadius="10"
+                                    HeightRequest="44"
+                                    FontSize="13" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Save Button -->
+        <Border Grid.Row="1"
+                StrokeThickness="0"
+                Padding="20,12,20,24"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
+            <Button Text="Save Session"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="{StaticResource Black}"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="52"
+                    CornerRadius="12" />
+        </Border>
+
+    </Grid>
+
+</ContentPage>

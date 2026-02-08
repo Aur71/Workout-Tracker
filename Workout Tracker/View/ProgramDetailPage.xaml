@@ -135,7 +135,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Session Stats Card (static for now) -->
+                <!-- Session Stats Card -->
                 <Border StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
                         Padding="16">
@@ -148,9 +148,9 @@
                                 Radius="8"
                                 Opacity="0.08" />
                     </Border.Shadow>
-                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="0"
+                            <Label Text="{Binding TotalSessions}"
                                    FontSize="28"
                                    FontAttributes="Bold"
                                    HorizontalTextAlignment="Center"
@@ -161,23 +161,12 @@
                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label Text="0"
+                            <Label Text="{Binding PlannedSessions}"
                                    FontSize="28"
                                    FontAttributes="Bold"
                                    HorizontalTextAlignment="Center"
                                    TextColor="{StaticResource Primary}" />
-                            <Label Text="Completed"
-                                   FontSize="11"
-                                   HorizontalTextAlignment="Center"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2" Spacing="4">
-                            <Label Text="0"
-                                   FontSize="28"
-                                   FontAttributes="Bold"
-                                   HorizontalTextAlignment="Center"
-                                   TextColor="{StaticResource Secondary}" />
-                            <Label Text="Remaining"
+                            <Label Text="Planned"
                                    FontSize="11"
                                    HorizontalTextAlignment="Center"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
@@ -211,18 +200,80 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Schedule Section (static placeholder for now) -->
+                <!-- Sessions Section -->
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Schedule"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Sessions"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                        <Button Grid.Column="1"
+                                Text="+ Add Session"
+                                Command="{Binding AddSessionCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource Primary}"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                Padding="0"
+                                HeightRequest="32" />
+                    </Grid>
 
+                    <!-- No sessions placeholder -->
                     <Label Text="No sessions scheduled yet"
                            FontSize="13"
                            TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                            HorizontalOptions="Center"
-                           Padding="0,12" />
+                           Padding="0,12"
+                           IsVisible="{Binding HasSessions, Converter={StaticResource InvertedBoolConverter}}" />
+
+                    <!-- Session list -->
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sessions}"
+                                         Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="model:SessionDisplay">
+                                <Border StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                        Padding="14,12"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgramDetailViewModel}}, Path=OpenSessionCommand}"
+                                                              CommandParameter="{Binding}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="4">
+                                        <Label Text="{Binding DateDisplay}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                        <Label Grid.Column="1"
+                                               Text="&#x2715;"
+                                               FontSize="16"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                               VerticalOptions="Center">
+                                            <Label.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgramDetailViewModel}}, Path=DeleteSessionCommand}"
+                                                                      CommandParameter="{Binding}" />
+                                            </Label.GestureRecognizers>
+                                        </Label>
+                                        <HorizontalStackLayout Grid.Row="1" Spacing="8">
+                                            <Label Text="{Binding ExerciseCountDisplay}"
+                                                   FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                            <Label Text="·"
+                                                   FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                            <Label Text="{Binding SetCountDisplay}"
+                                                   FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
 
                 <!-- Delete Button -->
