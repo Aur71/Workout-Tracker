@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
              x:Class="Workout_Tracker.View.NewProgramPage"
+             x:DataType="vm:NewProgramViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
              Shell.NavBarIsVisible="False">
 
@@ -17,7 +19,7 @@
                            FontSize="15"
                            TextColor="{StaticResource Primary}">
                         <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCancelTapped" />
+                            <TapGestureRecognizer Command="{Binding CancelCommand}" />
                         </Label.GestureRecognizers>
                     </Label>
                     <Label x:Name="PageTitle"
@@ -57,6 +59,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Entry Placeholder="e.g. Strength Block"
+                                       Text="{Binding Name}"
                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
                             </Border>
                         </VerticalStackLayout>
@@ -75,6 +78,7 @@
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Entry Placeholder="e.g. Build maximal strength"
+                                       Text="{Binding Goal}"
                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
                             </Border>
                         </VerticalStackLayout>
@@ -111,12 +115,29 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
-                                <DatePicker Format="MMM d, yyyy" />
+                                <DatePicker Format="MMM d, yyyy"
+                                            Date="{Binding StartDate}" />
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- End Date Field -->
-                        <VerticalStackLayout Spacing="8">
+                        <!-- End Date Toggle -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Set end date"
+                                       FontSize="14"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                <Label Text="Optionally define when the program ends"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1"
+                                    IsToggled="{Binding HasEndDate}"
+                                    VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- End Date Field (visible when toggled) -->
+                        <VerticalStackLayout Spacing="8"
+                                             IsVisible="{Binding HasEndDate}">
                             <Label Text="End Date"
                                    FontSize="13"
                                    FontAttributes="Bold"
@@ -128,7 +149,8 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
-                                <DatePicker Format="MMM d, yyyy" />
+                                <DatePicker Format="MMM d, yyyy"
+                                            Date="{Binding EndDateValue}" />
                             </Border>
                         </VerticalStackLayout>
 
@@ -155,67 +177,9 @@
                                FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
 
-                        <HorizontalStackLayout Spacing="12">
-                            <!-- Primary/Teal - Selected -->
-                            <Border StrokeThickness="3"
-                                    Stroke="{StaticResource Primary}"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    BackgroundColor="{StaticResource Primary}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="20" />
-                                </Border.StrokeShape>
-                                <Label Text="&#x2713;"
-                                       FontSize="16"
-                                       TextColor="{StaticResource Black}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-                            <!-- Secondary/Coral -->
-                            <Border StrokeThickness="0"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    BackgroundColor="{StaticResource Secondary}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="20" />
-                                </Border.StrokeShape>
-                            </Border>
-                            <!-- Tertiary/Blue -->
-                            <Border StrokeThickness="0"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    BackgroundColor="{StaticResource Tertiary}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="20" />
-                                </Border.StrokeShape>
-                            </Border>
-                            <!-- Success/Green -->
-                            <Border StrokeThickness="0"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    BackgroundColor="{StaticResource Success}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="20" />
-                                </Border.StrokeShape>
-                            </Border>
-                            <!-- Warning/Amber -->
-                            <Border StrokeThickness="0"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    BackgroundColor="{StaticResource Warning}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="20" />
-                                </Border.StrokeShape>
-                            </Border>
-                            <!-- Gray -->
-                            <Border StrokeThickness="0"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    BackgroundColor="{StaticResource Gray400}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="20" />
-                                </Border.StrokeShape>
-                            </Border>
+                        <HorizontalStackLayout Spacing="12"
+                                               x:Name="ColorPicker">
+                            <!-- Colors are handled in code-behind via tap events -->
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
@@ -248,6 +212,7 @@
                                 <RoundRectangle CornerRadius="10" />
                             </Border.StrokeShape>
                             <Editor Placeholder="Program notes, goals, reminders..."
+                                    Text="{Binding Notes}"
                                     PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                     AutoSize="TextChanges" />
                         </Border>
@@ -297,6 +262,7 @@
                 Padding="20,12,20,24"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
             <Button Text="Save Program"
+                    Command="{Binding SaveCommand}"
                     BackgroundColor="{StaticResource Primary}"
                     TextColor="{StaticResource Black}"
                     FontAttributes="Bold"

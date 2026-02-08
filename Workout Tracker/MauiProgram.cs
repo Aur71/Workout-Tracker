@@ -30,6 +30,7 @@ namespace Workout_Tracker
             builder.Services.AddTransient<WorkoutDetailViewModel>();
             builder.Services.AddTransient<NewWorkoutViewModel>();
             builder.Services.AddTransient<AddExercisesViewModel>();
+            builder.Services.AddTransient<NewProgramViewModel>();
 
             // Pages
             builder.Services.AddTransient<ExerciseListPage>();
@@ -40,6 +41,7 @@ namespace Workout_Tracker
             builder.Services.AddTransient<WorkoutDetailPage>();
             builder.Services.AddTransient<NewWorkoutPage>();
             builder.Services.AddTransient<AddExercisesPage>();
+            builder.Services.AddTransient<NewProgramPage>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

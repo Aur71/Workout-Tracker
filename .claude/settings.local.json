@@ -5,7 +5,8 @@
       "Bash(dotnet add package:*)",
       "Bash(git -C \"C:\\\\Users\\\\tumur\\\\source\\\\repos\\\\Workout Tracker\" status --short)",
       "Bash(dir:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(xargs:*)"
     ]
   }
 }

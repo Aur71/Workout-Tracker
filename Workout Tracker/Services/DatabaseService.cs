@@ -1,4 +1,5 @@
 using Workout_Tracker.Model;
+using Program = Workout_Tracker.Model.Program;
 
 namespace Workout_Tracker.Services;
 
@@ -302,6 +303,41 @@ public class DatabaseService
                 .Where(we => we.ExerciseId == exerciseId)
                 .CountAsync();
         });
+    }
+
+    // ── Program methods ──
+
+    public async Task<int> SaveProgramAsync(Program program)
+    {
+        return await Task.Run(async () =>
+        {
+            await AppDatabase.Database.InsertAsync(program);
+            return program.Id;
+        });
+    }
+
+    public async Task<Program?> GetProgramByIdAsync(int id)
+    {
+        return await Task.Run(async () =>
+            await AppDatabase.Database.Table<Program>().FirstOrDefaultAsync(p => p.Id == id));
+    }
+
+    public async Task<List<Program>> GetAllProgramsAsync()
+    {
+        return await Task.Run(async () =>
+            await AppDatabase.Database.Table<Program>().ToListAsync());
+    }
+
+    public async Task UpdateProgramAsync(Program program)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.UpdateAsync(program));
+    }
+
+    public async Task DeleteProgramAsync(int id)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.DeleteAsync(new Program { Id = id }));
     }
 
     public async Task DeleteExerciseFromWorkoutsAsync(int exerciseId)
