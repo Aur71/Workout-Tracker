@@ -6,7 +6,8 @@
       "Bash(git -C \"C:\\\\Users\\\\tumur\\\\source\\\\repos\\\\Workout Tracker\" status --short)",
       "Bash(dir:*)",
       "Bash(dotnet build:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(findstr:*)"
     ]
   }
 }

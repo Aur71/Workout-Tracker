@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             xmlns:model="clr-namespace:Workout_Tracker.Model"
+             x:Class="Workout_Tracker.View.CalendarPage"
+             x:DataType="vm:CalendarViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Header -->
+            <Grid ColumnDefinitions="*,Auto" Padding="0,20,0,8">
+                <Label Text="Calendar"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                <Border Grid.Column="1"
+                        StrokeThickness="0"
+                        BackgroundColor="Transparent"
+                        Padding="8,4"
+                        VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToTodayCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Today"
+                           FontSize="14"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Calendar Card -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="{StaticResource BlackBrush}"
+                            Offset="0,2"
+                            Radius="8"
+                            Opacity="0.08" />
+                </Border.Shadow>
+
+                <VerticalStackLayout Spacing="16">
+
+                    <!-- Month Navigation Header -->
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Border StrokeThickness="0"
+                                BackgroundColor="Transparent"
+                                Padding="8,4">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PreviousMonthCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="&#x2039;"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+                        </Border>
+
+                        <Label Grid.Column="1"
+                               Text="{Binding MonthYearDisplay}"
+                               FontSize="17"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                        <Border Grid.Column="2"
+                                StrokeThickness="0"
+                                BackgroundColor="Transparent"
+                                Padding="8,4">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding NextMonthCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="&#x203A;"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+                        </Border>
+                    </Grid>
+
+                    <!-- Weekday Headers -->
+                    <Grid ColumnDefinitions="*,*,*,*,*,*,*">
+                        <Label Grid.Column="0" Text="Sun" FontSize="12" HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                        <Label Grid.Column="1" Text="Mon" FontSize="12" HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                        <Label Grid.Column="2" Text="Tue" FontSize="12" HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                        <Label Grid.Column="3" Text="Wed" FontSize="12" HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                        <Label Grid.Column="4" Text="Thu" FontSize="12" HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                        <Label Grid.Column="5" Text="Fri" FontSize="12" HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                        <Label Grid.Column="6" Text="Sat" FontSize="12" HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                    </Grid>
+
+                    <!-- Calendar Grid (FlexLayout wrapping 42 cells) -->
+                    <FlexLayout BindableLayout.ItemsSource="{Binding CalendarDays}"
+                                Wrap="Wrap"
+                                JustifyContent="Start"
+                                AlignContent="Start">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="model:CalendarDay">
+                                <Border StrokeThickness="0"
+                                        BackgroundColor="Transparent"
+                                        WidthRequest="46"
+                                        HeightRequest="52"
+                                        Padding="0">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarViewModel}}, Path=SelectDayCellCommand}"
+                                                              CommandParameter="{Binding}" />
+                                    </Border.GestureRecognizers>
+
+                                    <VerticalStackLayout HorizontalOptions="Center"
+                                                         VerticalOptions="Center"
+                                                         Spacing="2">
+                                        <!-- Day Number Circle -->
+                                        <Border StrokeThickness="0"
+                                                WidthRequest="28"
+                                                HeightRequest="28"
+                                                BackgroundColor="Transparent"
+                                                HorizontalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="14" />
+                                            </Border.StrokeShape>
+
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border"
+                                                             Binding="{Binding IsSelected}"
+                                                             Value="True">
+                                                    <Setter Property="BackgroundColor"
+                                                            Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border"
+                                                             Binding="{Binding IsToday}"
+                                                             Value="True">
+                                                    <Setter Property="BackgroundColor"
+                                                            Value="{StaticResource Primary}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+
+                                            <Label Text="{Binding DayNumber}"
+                                                   FontSize="13"
+                                                   HorizontalTextAlignment="Center"
+                                                   VerticalTextAlignment="Center"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label"
+                                                                 Binding="{Binding IsPast}"
+                                                                 Value="True">
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label"
+                                                                 Binding="{Binding IsCurrentMonth}"
+                                                                 Value="False">
+                                                        <Setter Property="Opacity" Value="0.3" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label"
+                                                                 Binding="{Binding IsToday}"
+                                                                 Value="True">
+                                                        <Setter Property="Opacity" Value="1" />
+                                                        <Setter Property="FontAttributes" Value="Bold" />
+                                                        <Setter Property="TextColor" Value="{StaticResource Black}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Border>
+
+                                        <!-- Session Dots -->
+                                        <HorizontalStackLayout HorizontalOptions="Center"
+                                                                Spacing="2"
+                                                                HeightRequest="8"
+                                                                IsVisible="{Binding HasSessions}"
+                                                                BindableLayout.ItemsSource="{Binding VisibleDots}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="model:CalendarSessionIndicator">
+                                                    <Ellipse WidthRequest="5"
+                                                             HeightRequest="5"
+                                                             Fill="{Binding DotColor}" />
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Selected Day Section -->
+            <VerticalStackLayout Spacing="12"
+                                 IsVisible="{Binding HasDaySelected}">
+
+                <Label Text="{Binding SelectedDayLabel}"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                <!-- No sessions placeholder -->
+                <Label Text="No sessions on this day"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                       HorizontalOptions="Center"
+                       Padding="0,20"
+                       IsVisible="{Binding HasSelectedDaySessions, Converter={StaticResource InvertedBoolConverter}}" />
+
+                <!-- Session Cards -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedDaySessions}"
+                                     Spacing="10"
+                                     IsVisible="{Binding HasSelectedDaySessions}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="model:CalendarSessionIndicator">
+                            <Border StrokeThickness="0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                                    Padding="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <Border.Shadow>
+                                    <Shadow Brush="{StaticResource BlackBrush}"
+                                            Offset="0,1"
+                                            Radius="4"
+                                            Opacity="0.06" />
+                                </Border.Shadow>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarViewModel}}, Path=OpenSessionCommand}"
+                                                          CommandParameter="{Binding}" />
+                                </Border.GestureRecognizers>
+
+                                <Grid ColumnDefinitions="4,*,Auto" Padding="0,0,16,0">
+                                    <!-- Colored bar -->
+                                    <Border StrokeThickness="0"
+                                            BackgroundColor="{Binding DotColor}"
+                                            WidthRequest="4">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="2,0,2,0" />
+                                        </Border.StrokeShape>
+                                    </Border>
+
+                                    <!-- Info -->
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Padding="12,14"
+                                                         Spacing="4">
+                                        <Label Text="{Binding ProgramNameDisplay}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="{Binding ExerciseCountDisplay}"
+                                                   FontSize="13"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                            <Label Text="·"
+                                                   FontSize="13"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                            <Label Text="{Binding SetCountDisplay}"
+                                                   FontSize="13"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+
+                                    <!-- Chevron -->
+                                    <Label Grid.Column="2"
+                                           Text="&#x203A;"
+                                           FontSize="22"
+                                           VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

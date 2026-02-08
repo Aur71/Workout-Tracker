@@ -574,6 +574,49 @@ public class DatabaseService
         });
     }
 
+    public async Task<List<CalendarSessionIndicator>> GetAllSessionsForMonthAsync(int year, int month)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var sessions = allSessions
+                .Where(s => s.Date.Year == year && s.Date.Month == month)
+                .ToList();
+
+            if (sessions.Count == 0)
+                return new List<CalendarSessionIndicator>();
+
+            var programs = await db.Table<Program>().ToListAsync();
+            var programDict = programs.ToDictionary(p => p.Id);
+
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var sets = await db.Table<Set>().ToListAsync();
+
+            return sessions.Select(s =>
+            {
+                var seIds = sessionExercises
+                    .Where(se => se.SessionId == s.Id)
+                    .Select(se => se.Id)
+                    .ToList();
+
+                Program? program = s.ProgramId.HasValue && programDict.TryGetValue(s.ProgramId.Value, out var p)
+                    ? p : null;
+
+                return new CalendarSessionIndicator
+                {
+                    SessionId = s.Id,
+                    ProgramId = s.ProgramId,
+                    ProgramName = program?.Name,
+                    ProgramColor = program?.Color,
+                    Date = s.Date,
+                    ExerciseCount = seIds.Count,
+                    SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId))
+                };
+            }).ToList();
+        });
+    }
+
     public async Task DeleteExerciseFromSessionsAsync(int exerciseId)
     {
         await Task.Run(async () =>
