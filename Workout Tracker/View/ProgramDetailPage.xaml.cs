@@ -1,19 +1,31 @@
+using Workout_Tracker.ViewModel;
+
 namespace Workout_Tracker.View;
 
-public partial class ProgramDetailPage : ContentPage
+public partial class ProgramDetailPage : ContentPage, IQueryAttributable
 {
-    public ProgramDetailPage()
+    private readonly ProgramDetailViewModel _vm;
+    private int? _programId;
+
+    public ProgramDetailPage(ProgramDetailViewModel vm)
     {
         InitializeComponent();
+        BindingContext = _vm = vm;
     }
 
-    private async void OnBackTapped(object sender, TappedEventArgs e)
+    public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        await Shell.Current.GoToAsync("..");
+        if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+        {
+            _programId = id;
+            await _vm.LoadProgramAsync(id);
+        }
     }
 
-    private async void OnEditTapped(object sender, TappedEventArgs e)
+    protected override async void OnAppearing()
     {
-        await Shell.Current.GoToAsync($"{nameof(NewProgramPage)}?edit=true");
+        base.OnAppearing();
+        if (_programId.HasValue && _vm.Program != null)
+            await _vm.LoadProgramAsync(_programId.Value);
     }
 }

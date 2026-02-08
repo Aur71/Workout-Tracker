@@ -46,6 +46,42 @@ public class ProgramDisplay
 
     public bool HasGoal => !string.IsNullOrWhiteSpace(Goal);
 
+    public bool HasNotes => !string.IsNullOrWhiteSpace(Notes);
+
+    public string StatusDisplay
+    {
+        get
+        {
+            var today = DateTime.Today;
+            if (StartDate <= today && (!EndDate.HasValue || EndDate.Value >= today))
+                return "Active";
+            if (StartDate > today)
+                return "Upcoming";
+            return "Completed";
+        }
+    }
+
+    public Color StatusBadgeBg
+    {
+        get
+        {
+            var isDark = Application.Current!.RequestedTheme == AppTheme.Dark;
+            return StatusDisplay switch
+            {
+                "Active" => isDark ? Microsoft.Maui.Graphics.Color.FromArgb("#1A3D33") : Microsoft.Maui.Graphics.Color.FromArgb("#E8FFF6"),
+                "Upcoming" => isDark ? Microsoft.Maui.Graphics.Color.FromArgb("#1A2A3D") : Microsoft.Maui.Graphics.Color.FromArgb("#EEF4FF"),
+                _ => isDark ? Microsoft.Maui.Graphics.Color.FromArgb("#2A2A2A") : Microsoft.Maui.Graphics.Color.FromArgb("#F0F0F0")
+            };
+        }
+    }
+
+    public Color StatusBadgeTextColor => StatusDisplay switch
+    {
+        "Active" => Microsoft.Maui.Graphics.Color.FromArgb("#00D9A5"),
+        "Upcoming" => Microsoft.Maui.Graphics.Color.FromArgb("#4A6CF7"),
+        _ => Microsoft.Maui.Graphics.Color.FromArgb("#8A8A8A")
+    };
+
     public double ProgressFraction
     {
         get
