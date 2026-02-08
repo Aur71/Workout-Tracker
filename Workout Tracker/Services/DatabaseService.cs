@@ -617,6 +617,152 @@ public class DatabaseService
         });
     }
 
+    // ── Body Metric methods ──
+
+    public async Task<int> SaveBodyMetricAsync(BodyMetric metric)
+    {
+        return await Task.Run(async () =>
+        {
+            await AppDatabase.Database.InsertAsync(metric);
+            return metric.Id;
+        });
+    }
+
+    public async Task<BodyMetric?> GetBodyMetricByIdAsync(int id)
+    {
+        return await Task.Run(async () =>
+            await AppDatabase.Database.Table<BodyMetric>().FirstOrDefaultAsync(m => m.Id == id));
+    }
+
+    public async Task UpdateBodyMetricAsync(BodyMetric metric)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.UpdateAsync(metric));
+    }
+
+    public async Task DeleteBodyMetricAsync(int id)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.DeleteAsync(new BodyMetric { Id = id }));
+    }
+
+    // ── Recovery Log methods ──
+
+    public async Task<int> SaveRecoveryLogAsync(RecoveryLog log)
+    {
+        return await Task.Run(async () =>
+        {
+            await AppDatabase.Database.InsertAsync(log);
+            return log.Id;
+        });
+    }
+
+    public async Task<RecoveryLog?> GetRecoveryLogByIdAsync(int id)
+    {
+        return await Task.Run(async () =>
+            await AppDatabase.Database.Table<RecoveryLog>().FirstOrDefaultAsync(r => r.Id == id));
+    }
+
+    public async Task UpdateRecoveryLogAsync(RecoveryLog log)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.UpdateAsync(log));
+    }
+
+    public async Task DeleteRecoveryLogAsync(int id)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.DeleteAsync(new RecoveryLog { Id = id }));
+    }
+
+    // ── Calorie Log methods ──
+
+    public async Task<int> SaveCalorieLogAsync(CalorieLog log)
+    {
+        return await Task.Run(async () =>
+        {
+            await AppDatabase.Database.InsertAsync(log);
+            return log.Id;
+        });
+    }
+
+    public async Task<CalorieLog?> GetCalorieLogByIdAsync(int id)
+    {
+        return await Task.Run(async () =>
+            await AppDatabase.Database.Table<CalorieLog>().FirstOrDefaultAsync(c => c.Id == id));
+    }
+
+    public async Task UpdateCalorieLogAsync(CalorieLog log)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.UpdateAsync(log));
+    }
+
+    public async Task DeleteCalorieLogAsync(int id)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.DeleteAsync(new CalorieLog { Id = id }));
+    }
+
+    // ── All Logs ──
+
+    public async Task<List<LogEntry>> GetAllLogsAsync()
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var entries = new List<LogEntry>();
+
+            var bodyMetrics = await db.Table<BodyMetric>().ToListAsync();
+            foreach (var m in bodyMetrics)
+            {
+                var parts = new List<string>();
+                if (m.Bodyweight.HasValue) parts.Add($"{m.Bodyweight:0.#} kg");
+                if (m.BodyFat.HasValue) parts.Add($"{m.BodyFat:0.#}% BF");
+                entries.Add(new LogEntry
+                {
+                    Id = m.Id,
+                    Date = m.Date,
+                    LogType = "body_metric",
+                    Summary = parts.Count > 0 ? string.Join(" \u00b7 ", parts) : "Body metric logged"
+                });
+            }
+
+            var recoveryLogs = await db.Table<RecoveryLog>().ToListAsync();
+            foreach (var r in recoveryLogs)
+            {
+                var parts = new List<string>();
+                if (r.SleepHours.HasValue) parts.Add($"{r.SleepHours:0.#}h sleep");
+                if (r.SorenessLevel.HasValue) parts.Add($"Soreness {r.SorenessLevel}/5");
+                if (r.StressLevel.HasValue) parts.Add($"Stress {r.StressLevel}/5");
+                entries.Add(new LogEntry
+                {
+                    Id = r.Id,
+                    Date = r.Date,
+                    LogType = "recovery",
+                    Summary = parts.Count > 0 ? string.Join(" \u00b7 ", parts) : "Recovery logged"
+                });
+            }
+
+            var calorieLogs = await db.Table<CalorieLog>().ToListAsync();
+            foreach (var c in calorieLogs)
+            {
+                var parts = new List<string>();
+                if (c.TotalCalories.HasValue) parts.Add($"{c.TotalCalories} cal");
+                if (!string.IsNullOrEmpty(c.ActivityLevel)) parts.Add(c.ActivityLevel);
+                entries.Add(new LogEntry
+                {
+                    Id = c.Id,
+                    Date = c.Date,
+                    LogType = "calorie",
+                    Summary = parts.Count > 0 ? string.Join(" \u00b7 ", parts) : "Calories logged"
+                });
+            }
+
+            return entries.OrderByDescending(e => e.Date).ToList();
+        });
+    }
+
     public async Task DeleteExerciseFromSessionsAsync(int exerciseId)
     {
         await Task.Run(async () =>

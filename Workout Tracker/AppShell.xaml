@@ -36,6 +36,12 @@
             Icon="tab_programs.svg"
             ContentTemplate="{DataTemplate view:ProgramListPage}"
             Route="Programs" />
+
+        <ShellContent
+            Title="Logs"
+            Icon="tab_logs.svg"
+            ContentTemplate="{DataTemplate view:LogListPage}"
+            Route="Logs" />
     </TabBar>
 
 </Shell>

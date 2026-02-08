@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             x:Class="Workout_Tracker.View.NewLogPage"
+             x:DataType="vm:NewLogViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Form Content -->
+        <ScrollView Padding="20,0,20,20">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Header -->
+                <VerticalStackLayout Spacing="8" Padding="0,20,0,0">
+                    <Label Text="Cancel"
+                           FontSize="15"
+                           TextColor="{StaticResource Primary}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CancelCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label x:Name="PageTitle"
+                           Text="New Log"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                </VerticalStackLayout>
+
+                <!-- Date Card -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Date"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                        <Border StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                Padding="12,0"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <DatePicker Format="MMM d, yyyy"
+                                        Date="{Binding Date}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Body Metric Section -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16"
+                        IsVisible="{Binding IsBodyMetric}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="20">
+                        <!-- Bodyweight -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Bodyweight (kg)"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Entry Placeholder="e.g. 72.5"
+                                       Text="{Binding BodyweightText}"
+                                       Keyboard="Numeric"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Body Fat -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Body Fat %"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Entry Placeholder="e.g. 15.0"
+                                       Text="{Binding BodyFatText}"
+                                       Keyboard="Numeric"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Notes -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Notes"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,8"
+                                    HeightRequest="100"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Editor Placeholder="Any notes..."
+                                        Text="{Binding Notes}"
+                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                        AutoSize="TextChanges" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Recovery Section -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16"
+                        IsVisible="{Binding IsRecovery}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="20">
+                        <!-- Sleep Hours -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Sleep Hours"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Entry Placeholder="e.g. 8.0"
+                                       Text="{Binding SleepHoursText}"
+                                       Keyboard="Numeric"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Soreness Level -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Soreness Level"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <HorizontalStackLayout Spacing="10"
+                                                   x:Name="SorenessContainer">
+                                <!-- Chips built in code-behind -->
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <!-- Stress Level -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Stress Level"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <HorizontalStackLayout Spacing="10"
+                                                   x:Name="StressContainer">
+                                <!-- Chips built in code-behind -->
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Calorie Section -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16"
+                        IsVisible="{Binding IsCalorie}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="20">
+                        <!-- Total Calories -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Total Calories"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Entry Placeholder="e.g. 2200"
+                                       Text="{Binding TotalCaloriesText}"
+                                       Keyboard="Numeric"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Activity Level -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Activity Level"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                            <FlexLayout Wrap="Wrap"
+                                        JustifyContent="Start"
+                                        x:Name="ActivityContainer">
+                                <!-- Chips built in code-behind -->
+                            </FlexLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Save Button -->
+        <Border Grid.Row="1"
+                StrokeThickness="0"
+                Padding="20,12,20,24"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
+            <Button Text="Save Log"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="{StaticResource Black}"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="52"
+                    CornerRadius="12" />
+        </Border>
+
+    </Grid>
+
+</ContentPage>
