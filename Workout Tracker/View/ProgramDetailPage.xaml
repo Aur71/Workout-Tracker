@@ -243,12 +243,27 @@
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgramDetailViewModel}}, Path=OpenSessionCommand}"
                                                               CommandParameter="{Binding}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="4">
+                                    <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="4">
                                         <Label Text="{Binding DateDisplay}"
                                                FontSize="15"
                                                FontAttributes="Bold"
                                                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                                        <Label Grid.Column="1"
+                                        <!-- Completed badge -->
+                                        <Border Grid.Column="1"
+                                                StrokeThickness="0"
+                                                Padding="8,3"
+                                                BackgroundColor="{Binding CompletedBadgeBg}"
+                                                VerticalOptions="Center"
+                                                IsVisible="{Binding ShowCompletedBadge}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="6" />
+                                            </Border.StrokeShape>
+                                            <Label Text="Completed"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding CompletedBadgeTextColor}" />
+                                        </Border>
+                                        <Label Grid.Column="2"
                                                Text="&#x2715;"
                                                FontSize="16"
                                                TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"

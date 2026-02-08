@@ -25,4 +25,6 @@ public class Session
     public int? Week { get; set; }
 
     public int? Day { get; set; }
+
+    public bool IsCompleted { get; set; }
 }

@@ -37,8 +37,12 @@ namespace Workout_Tracker
             builder.Services.AddTransient<NewSessionViewModel>();
             builder.Services.AddTransient<LogListViewModel>();
             builder.Services.AddTransient<NewLogViewModel>();
+            builder.Services.AddTransient<DashboardViewModel>();
+            builder.Services.AddTransient<ActiveWorkoutViewModel>();
 
             // Pages
+            builder.Services.AddTransient<DashboardPage>();
+            builder.Services.AddTransient<ActiveWorkoutPage>();
             builder.Services.AddTransient<ExerciseListPage>();
             builder.Services.AddTransient<ExerciseDetailPage>();
             builder.Services.AddTransient<NewExercisePage>();

@@ -77,7 +77,10 @@ public partial class ProgramDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task OpenSession(SessionDisplay session)
     {
-        await Shell.Current.GoToAsync($"{nameof(NewSessionPage)}?edit=true&id={session.Id}");
+        if (session.IsCompleted)
+            await Shell.Current.GoToAsync($"{nameof(ActiveWorkoutPage)}?sessionId={session.Id}");
+        else
+            await Shell.Current.GoToAsync($"{nameof(NewSessionPage)}?edit=true&id={session.Id}");
     }
 
     [RelayCommand]

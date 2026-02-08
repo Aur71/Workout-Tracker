@@ -436,7 +436,8 @@ public class DatabaseService
                     Date = s.Date,
                     Notes = s.Notes,
                     ExerciseCount = seIds.Count,
-                    SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId))
+                    SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId)),
+                    IsCompleted = s.IsCompleted
                 };
             }).ToList();
         });
@@ -760,6 +761,233 @@ public class DatabaseService
             }
 
             return entries.OrderByDescending(e => e.Date).ToList();
+        });
+    }
+
+    // ── Dashboard methods ──
+
+    public async Task<List<DashboardSessionDisplay>> GetSessionsForDateAsync(DateTime date)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var sessions = allSessions.Where(s => s.Date.Date == date.Date).ToList();
+
+            if (sessions.Count == 0)
+                return new List<DashboardSessionDisplay>();
+
+            var programs = await db.Table<Program>().ToListAsync();
+            var programDict = programs.ToDictionary(p => p.Id);
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var sets = await db.Table<Set>().ToListAsync();
+
+            return sessions.Select(s =>
+            {
+                var seIds = sessionExercises
+                    .Where(se => se.SessionId == s.Id)
+                    .Select(se => se.Id)
+                    .ToList();
+
+                Program? program = s.ProgramId.HasValue && programDict.TryGetValue(s.ProgramId.Value, out var p)
+                    ? p : null;
+
+                return new DashboardSessionDisplay
+                {
+                    SessionId = s.Id,
+                    ProgramId = s.ProgramId,
+                    ProgramName = program?.Name,
+                    ProgramColor = program?.Color,
+                    Date = s.Date,
+                    ExerciseCount = seIds.Count,
+                    SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId)),
+                    IsCompleted = s.IsCompleted,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime
+                };
+            }).ToList();
+        });
+    }
+
+    public async Task<List<DashboardSessionDisplay>> GetUpcomingSessionsAsync(int days = 7)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var tomorrow = DateTime.Today.AddDays(1);
+            var endDate = DateTime.Today.AddDays(days);
+
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var sessions = allSessions
+                .Where(s => s.Date.Date >= tomorrow && s.Date.Date <= endDate)
+                .OrderBy(s => s.Date)
+                .ToList();
+
+            if (sessions.Count == 0)
+                return new List<DashboardSessionDisplay>();
+
+            var programs = await db.Table<Program>().ToListAsync();
+            var programDict = programs.ToDictionary(p => p.Id);
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var sets = await db.Table<Set>().ToListAsync();
+
+            return sessions.Select(s =>
+            {
+                var seIds = sessionExercises
+                    .Where(se => se.SessionId == s.Id)
+                    .Select(se => se.Id)
+                    .ToList();
+
+                Program? program = s.ProgramId.HasValue && programDict.TryGetValue(s.ProgramId.Value, out var p)
+                    ? p : null;
+
+                return new DashboardSessionDisplay
+                {
+                    SessionId = s.Id,
+                    ProgramId = s.ProgramId,
+                    ProgramName = program?.Name,
+                    ProgramColor = program?.Color,
+                    Date = s.Date,
+                    ExerciseCount = seIds.Count,
+                    SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId)),
+                    IsCompleted = s.IsCompleted,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime
+                };
+            }).ToList();
+        });
+    }
+
+    public async Task<(int WorkoutCount, int TotalSets, double TotalVolume)> GetWeeklyStatsAsync()
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var today = DateTime.Today;
+            int diff = ((int)today.DayOfWeek - 1 + 7) % 7;
+            var monday = today.AddDays(-diff);
+
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var completedSessions = allSessions
+                .Where(s => s.IsCompleted && s.Date.Date >= monday && s.Date.Date <= today)
+                .ToList();
+
+            var workoutCount = completedSessions.Count;
+
+            var sessionIds = completedSessions.Select(s => s.Id).ToHashSet();
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var relevantSeIds = sessionExercises
+                .Where(se => sessionIds.Contains(se.SessionId))
+                .Select(se => se.Id)
+                .ToHashSet();
+
+            var sets = await db.Table<Set>().ToListAsync();
+            var completedSets = sets
+                .Where(s => relevantSeIds.Contains(s.SessionExerciseId) && s.Completed)
+                .ToList();
+
+            var totalSets = completedSets.Count;
+            var totalVolume = completedSets
+                .Where(s => s.Reps.HasValue && s.Weight.HasValue)
+                .Sum(s => s.Reps!.Value * s.Weight!.Value);
+
+            return (workoutCount, totalSets, totalVolume);
+        });
+    }
+
+    public async Task<List<ActiveExerciseDisplay>> GetActiveWorkoutDataAsync(int sessionId)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var sessionExercises = await db.Table<SessionExercise>()
+                .Where(se => se.SessionId == sessionId)
+                .OrderBy(se => se.Order)
+                .ToListAsync();
+
+            var exercises = await db.Table<Exercise>().ToListAsync();
+            var exerciseMuscles = await db.Table<ExerciseMuscle>().ToListAsync();
+            var muscles = await db.Table<Muscle>().ToListAsync();
+            var sets = await db.Table<Set>().ToListAsync();
+
+            var muscleDict = muscles.ToDictionary(m => m.Id, m => m.Name);
+            var exerciseDict = exercises.ToDictionary(e => e.Id);
+
+            return sessionExercises.Select(se =>
+            {
+                exerciseDict.TryGetValue(se.ExerciseId, out var ex);
+                var primaryMuscle = ex != null
+                    ? exerciseMuscles
+                        .Where(em => em.ExerciseId == ex.Id && em.Type == "primary")
+                        .Select(em => muscleDict.GetValueOrDefault(em.MuscleId))
+                        .FirstOrDefault()
+                    : null;
+
+                var display = new ActiveExerciseDisplay
+                {
+                    SessionExerciseId = se.Id,
+                    ExerciseId = se.ExerciseId,
+                    ExerciseName = ex?.Name ?? "Unknown",
+                    ExerciseType = ex?.ExerciseType,
+                    PrimaryMuscle = primaryMuscle,
+                    IsTimeBased = ex?.IsTimeBased ?? false,
+                    Order = se.Order,
+                    Notes = se.Notes
+                };
+
+                var exerciseSets = sets
+                    .Where(s => s.SessionExerciseId == se.Id)
+                    .OrderBy(s => s.SetNumber)
+                    .Select(s => new ActiveSetDisplay
+                    {
+                        SetId = s.Id,
+                        SetNumber = s.SetNumber,
+                        IsWarmup = s.IsWarmup,
+                        PlannedRepMin = s.RepMin,
+                        PlannedRepMax = s.RepMax,
+                        PlannedDurationMin = s.DurationMin,
+                        PlannedDurationMax = s.DurationMax,
+                        RepsText = s.Reps?.ToString() ?? "",
+                        WeightText = s.Weight?.ToString() ?? "",
+                        DurationText = s.DurationSeconds?.ToString() ?? "",
+                        RpeText = s.Rpe?.ToString() ?? "",
+                        Completed = s.Completed
+                    });
+
+                foreach (var set in exerciseSets)
+                    display.Sets.Add(set);
+
+                return display;
+            }).ToList();
+        });
+    }
+
+    public async Task SaveActiveWorkoutSetsAsync(List<ActiveExerciseDisplay> exercises)
+    {
+        await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            foreach (var ex in exercises)
+            {
+                foreach (var set in ex.Sets)
+                {
+                    int.TryParse(set.RepsText, out var reps);
+                    double.TryParse(set.WeightText, out var weight);
+                    int.TryParse(set.DurationText, out var duration);
+                    double.TryParse(set.RpeText, out var rpe);
+
+                    var dbSet = await db.Table<Set>().FirstOrDefaultAsync(s => s.Id == set.SetId);
+                    if (dbSet != null)
+                    {
+                        dbSet.Reps = reps > 0 ? reps : null;
+                        dbSet.Weight = weight > 0 ? weight : null;
+                        dbSet.DurationSeconds = duration > 0 ? duration : null;
+                        dbSet.Rpe = rpe > 0 ? rpe : null;
+                        dbSet.Completed = set.Completed;
+                        await db.UpdateAsync(dbSet);
+                    }
+                }
+            }
         });
     }
 
