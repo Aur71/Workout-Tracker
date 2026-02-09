@@ -991,6 +991,373 @@ public class DatabaseService
         });
     }
 
+    public async Task OffsetSessionDatesAsync(int programId, TimeSpan offset)
+    {
+        await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var sessions = await db.Table<Session>()
+                .Where(s => s.ProgramId == programId)
+                .ToListAsync();
+
+            foreach (var session in sessions)
+            {
+                session.Date += offset;
+                await db.UpdateAsync(session);
+            }
+        });
+    }
+
+    // ── Duplicate Program ──
+
+    public async Task<int> DuplicateProgramAsync(int sourceProgramId, string newName, DateTime newStartDate)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+
+            Program? source = await db.Table<Program>().FirstOrDefaultAsync(p => p.Id == sourceProgramId);
+            if (source == null) return -1;
+
+            var dateOffset = newStartDate - source.StartDate;
+
+            Program newProgram = new Program
+            {
+                Name = newName,
+                Goal = source.Goal,
+                StartDate = newStartDate,
+                EndDate = source.EndDate.HasValue ? source.EndDate.Value + dateOffset : null,
+                Notes = source.Notes,
+                Color = source.Color
+            };
+            await db.InsertAsync(newProgram);
+
+            var sessions = await db.Table<Session>()
+                .Where(s => s.ProgramId == sourceProgramId)
+                .ToListAsync();
+
+            foreach (var session in sessions)
+            {
+                var newSession = new Session
+                {
+                    ProgramId = newProgram.Id,
+                    Date = session.Date + dateOffset,
+                    Notes = session.Notes,
+                    Week = session.Week,
+                    Day = session.Day,
+                    IsCompleted = false
+                };
+                await db.InsertAsync(newSession);
+
+                var sessionExercises = await db.Table<SessionExercise>()
+                    .Where(se => se.SessionId == session.Id)
+                    .OrderBy(se => se.Order)
+                    .ToListAsync();
+
+                foreach (var se in sessionExercises)
+                {
+                    var newSe = new SessionExercise
+                    {
+                        SessionId = newSession.Id,
+                        ExerciseId = se.ExerciseId,
+                        Order = se.Order,
+                        Notes = se.Notes
+                    };
+                    await db.InsertAsync(newSe);
+
+                    var sets = await db.Table<Set>()
+                        .Where(s => s.SessionExerciseId == se.Id)
+                        .OrderBy(s => s.SetNumber)
+                        .ToListAsync();
+
+                    foreach (var set in sets)
+                    {
+                        var newSet = new Set
+                        {
+                            SessionExerciseId = newSe.Id,
+                            SetNumber = set.SetNumber,
+                            IsWarmup = set.IsWarmup,
+                            RepMin = set.RepMin,
+                            RepMax = set.RepMax,
+                            DurationMin = set.DurationMin,
+                            DurationMax = set.DurationMax,
+                            Completed = false
+                        };
+                        await db.InsertAsync(newSet);
+                    }
+                }
+            }
+
+            return newProgram.Id;
+        });
+    }
+
+    // ── Analytics methods ──
+
+    public async Task<AnalyticsSummary> GetAnalyticsSummaryAsync(DateTime from, DateTime to)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var completedSessions = allSessions
+                .Where(s => s.IsCompleted && s.Date.Date >= from.Date && s.Date.Date <= to.Date)
+                .ToList();
+
+            var sessionIds = completedSessions.Select(s => s.Id).ToHashSet();
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var relevantSe = sessionExercises.Where(se => sessionIds.Contains(se.SessionId)).ToList();
+            var relevantSeIds = relevantSe.Select(se => se.Id).ToHashSet();
+
+            var sets = await db.Table<Set>().ToListAsync();
+            var completedSets = sets
+                .Where(s => relevantSeIds.Contains(s.SessionExerciseId) && s.Completed)
+                .ToList();
+
+            var totalVolume = completedSets
+                .Where(s => s.Reps.HasValue && s.Weight.HasValue)
+                .Sum(s => s.Reps!.Value * s.Weight!.Value);
+
+            var durationsMinutes = completedSessions
+                .Where(s => s.StartTime.HasValue && s.EndTime.HasValue)
+                .Select(s => (s.EndTime!.Value - s.StartTime!.Value).TotalMinutes)
+                .ToList();
+
+            var energyLevels = completedSessions
+                .Where(s => s.EnergyLevel.HasValue)
+                .Select(s => (double)s.EnergyLevel!.Value)
+                .ToList();
+
+            return new AnalyticsSummary
+            {
+                TotalSessions = completedSessions.Count,
+                TotalExercises = relevantSe.Select(se => se.ExerciseId).Distinct().Count(),
+                TotalSetsCompleted = completedSets.Count,
+                TotalVolume = totalVolume,
+                AvgSessionDurationMinutes = durationsMinutes.Count > 0 ? durationsMinutes.Average() : 0,
+                AvgEnergyLevel = energyLevels.Count > 0 ? energyLevels.Average() : 0
+            };
+        });
+    }
+
+    public async Task<List<MuscleVolumeData>> GetMuscleVolumeAsync(DateTime from, DateTime to)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var completedSessionIds = allSessions
+                .Where(s => s.IsCompleted && s.Date.Date >= from.Date && s.Date.Date <= to.Date)
+                .Select(s => s.Id)
+                .ToHashSet();
+
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var relevantSe = sessionExercises.Where(se => completedSessionIds.Contains(se.SessionId)).ToList();
+            var relevantSeIds = relevantSe.Select(se => se.Id).ToHashSet();
+
+            var sets = await db.Table<Set>().ToListAsync();
+            var completedSets = sets
+                .Where(s => relevantSeIds.Contains(s.SessionExerciseId) && s.Completed && !s.IsWarmup)
+                .ToList();
+
+            // Build a map: sessionExerciseId -> exerciseId
+            var seToExercise = relevantSe.ToDictionary(se => se.Id, se => se.ExerciseId);
+
+            var exerciseMuscles = await db.Table<ExerciseMuscle>().ToListAsync();
+            var muscles = await db.Table<Muscle>().ToListAsync();
+            var muscleDict = muscles.ToDictionary(m => m.Id, m => m.Name);
+
+            var muscleVolume = new Dictionary<string, (double Sets, double Volume)>();
+
+            foreach (var set in completedSets)
+            {
+                if (!seToExercise.TryGetValue(set.SessionExerciseId, out var exerciseId))
+                    continue;
+
+                var eMuscles = exerciseMuscles.Where(em => em.ExerciseId == exerciseId).ToList();
+                var volume = (set.Reps ?? 0) * (set.Weight ?? 0);
+
+                foreach (var em in eMuscles)
+                {
+                    var name = muscleDict.GetValueOrDefault(em.MuscleId, "Unknown");
+                    double weight = em.Type == "primary" ? 1.0 : 0.5;
+
+                    if (!muscleVolume.ContainsKey(name))
+                        muscleVolume[name] = (0, 0);
+
+                    var current = muscleVolume[name];
+                    muscleVolume[name] = (current.Sets + weight, current.Volume + volume * weight);
+                }
+            }
+
+            return muscleVolume
+                .Select(kv => new MuscleVolumeData
+                {
+                    MuscleName = kv.Key,
+                    TotalSets = kv.Value.Sets,
+                    TotalVolume = kv.Value.Volume
+                })
+                .OrderByDescending(m => m.TotalSets)
+                .ToList();
+        });
+    }
+
+    public async Task<List<ExerciseProgressionPoint>> GetExerciseProgressionAsync(int exerciseId, DateTime from, DateTime to)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var completedSessions = allSessions
+                .Where(s => s.IsCompleted && s.Date.Date >= from.Date && s.Date.Date <= to.Date)
+                .ToDictionary(s => s.Id);
+
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var relevantSe = sessionExercises
+                .Where(se => se.ExerciseId == exerciseId && completedSessions.ContainsKey(se.SessionId))
+                .ToList();
+
+            var relevantSeIds = relevantSe.Select(se => se.Id).ToHashSet();
+            var sets = await db.Table<Set>().ToListAsync();
+            var relevantSets = sets
+                .Where(s => relevantSeIds.Contains(s.SessionExerciseId) && s.Completed && !s.IsWarmup)
+                .ToList();
+
+            // Group by session date
+            var seToSession = relevantSe.ToDictionary(se => se.Id, se => se.SessionId);
+
+            // Get program goals for context
+            var programs = await db.Table<Program>().ToListAsync();
+            var programDict = programs.ToDictionary(p => p.Id);
+
+            var grouped = relevantSets
+                .GroupBy(s =>
+                {
+                    var sessionId = seToSession[s.SessionExerciseId];
+                    return completedSessions[sessionId].Date.Date;
+                })
+                .OrderBy(g => g.Key);
+
+            return grouped.Select(g =>
+            {
+                var sessionSets = g.ToList();
+                var bestWeight = sessionSets.Where(s => s.Weight.HasValue).Max(s => s.Weight) ?? 0;
+                var bestSet = sessionSets
+                    .Where(s => s.Weight.HasValue && s.Reps.HasValue && s.Weight.Value > 0 && s.Reps.Value <= 10)
+                    .OrderByDescending(s => s.Weight!.Value * (1 + s.Reps!.Value / 30.0))
+                    .FirstOrDefault();
+                var e1rm = bestSet != null
+                    ? bestSet.Weight!.Value * (1 + bestSet.Reps!.Value / 30.0)
+                    : 0;
+
+                var totalVolume = sessionSets
+                    .Where(s => s.Reps.HasValue && s.Weight.HasValue)
+                    .Sum(s => s.Reps!.Value * s.Weight!.Value);
+
+                // Find program goal
+                var sessionId = seToSession[sessionSets.First().SessionExerciseId];
+                var session = completedSessions[sessionId];
+                string? goal = null;
+                if (session.ProgramId.HasValue && programDict.TryGetValue(session.ProgramId.Value, out var prog))
+                    goal = prog.Goal;
+
+                return new ExerciseProgressionPoint
+                {
+                    Date = g.Key,
+                    BestWeight = bestWeight,
+                    EstimatedOneRepMax = Math.Round(e1rm, 1),
+                    TotalVolume = totalVolume,
+                    TotalSets = sessionSets.Count,
+                    TotalReps = sessionSets.Where(s => s.Reps.HasValue).Sum(s => s.Reps!.Value),
+                    ProgramGoal = goal
+                };
+            }).ToList();
+        });
+    }
+
+    public async Task<List<SessionAdherenceData>> GetSessionAdherenceAsync(DateTime from, DateTime to)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var allSessions = await db.Table<Session>().ToListAsync();
+            var sessions = allSessions
+                .Where(s => s.Date.Date >= from.Date && s.Date.Date <= to.Date)
+                .OrderBy(s => s.Date)
+                .ToList();
+
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var sets = await db.Table<Set>().ToListAsync();
+
+            return sessions.Select(s =>
+            {
+                var seIds = sessionExercises
+                    .Where(se => se.SessionId == s.Id)
+                    .Select(se => se.Id)
+                    .ToHashSet();
+
+                var sessionSets = sets
+                    .Where(st => seIds.Contains(st.SessionExerciseId) && !st.IsWarmup)
+                    .ToList();
+
+                return new SessionAdherenceData
+                {
+                    Date = s.Date,
+                    PlannedSets = sessionSets.Count,
+                    CompletedSets = sessionSets.Count(st => st.Completed),
+                    SessionCompleted = s.IsCompleted
+                };
+            }).ToList();
+        });
+    }
+
+    public async Task<List<BodyMetricPoint>> GetBodyMetricTrendAsync(DateTime from, DateTime to)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var allMetrics = await db.Table<BodyMetric>().ToListAsync();
+            return allMetrics
+                .Where(m => m.Date.Date >= from.Date && m.Date.Date <= to.Date)
+                .OrderBy(m => m.Date)
+                .Select(m => new BodyMetricPoint
+                {
+                    Date = m.Date,
+                    Bodyweight = m.Bodyweight,
+                    BodyFat = m.BodyFat
+                })
+                .ToList();
+        });
+    }
+
+    public async Task<List<ExercisePickerItem>> GetExercisesWithCompletedSetsAsync()
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var sets = await db.Table<Set>().ToListAsync();
+            var completedSeIds = sets
+                .Where(s => s.Completed)
+                .Select(s => s.SessionExerciseId)
+                .Distinct()
+                .ToHashSet();
+
+            var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
+            var exerciseIds = sessionExercises
+                .Where(se => completedSeIds.Contains(se.Id))
+                .Select(se => se.ExerciseId)
+                .Distinct()
+                .ToHashSet();
+
+            var exercises = await db.Table<Exercise>().ToListAsync();
+            return exercises
+                .Where(e => exerciseIds.Contains(e.Id))
+                .OrderBy(e => e.Name)
+                .Select(e => new ExercisePickerItem { Id = e.Id, Name = e.Name })
+                .ToList();
+        });
+    }
+
     public async Task DeleteExerciseFromSessionsAsync(int exerciseId)
     {
         await Task.Run(async () =>

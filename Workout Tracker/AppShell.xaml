@@ -14,6 +14,12 @@
             Route="Dashboard" />
 
         <ShellContent
+            Title="Analytics"
+            Icon="tab_analytics.svg"
+            ContentTemplate="{DataTemplate view:AnalyticsPage}"
+            Route="Analytics" />
+
+        <ShellContent
             Title="Calendar"
             Icon="tab_calendar.svg"
             ContentTemplate="{DataTemplate view:CalendarPage}"

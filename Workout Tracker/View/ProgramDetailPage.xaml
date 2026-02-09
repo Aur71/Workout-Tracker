@@ -11,7 +11,7 @@
     <Grid RowDefinitions="Auto,*">
 
         <!-- Header -->
-        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto">
+        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="0">
             <Label Text="Back"
                    FontSize="15"
                    TextColor="{StaticResource Primary}"
@@ -21,7 +21,23 @@
                 </Label.GestureRecognizers>
             </Label>
             <Label Grid.Column="2"
+                   Text="Duplicate"
+                   FontSize="15"
+                   Padding="0,0,12,0"
+                   TextColor="{StaticResource Primary}"
+                   VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding DuplicateCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <BoxView Grid.Column="3"
+                     WidthRequest="1"
+                     HeightRequest="16"
+                     Color="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                     VerticalOptions="Center" />
+            <Label Grid.Column="4"
                    Text="Edit"
+                   Padding="12,0,0,0"
                    FontSize="15"
                    TextColor="{StaticResource Primary}"
                    VerticalOptions="Center">

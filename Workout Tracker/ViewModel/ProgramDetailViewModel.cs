@@ -99,6 +99,36 @@ public partial class ProgramDetailViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task Duplicate()
+    {
+        if (Program == null) return;
+
+        string? newName = await Shell.Current.DisplayPromptAsync(
+            "Duplicate Program",
+            "Enter a name for the new program:",
+            initialValue: $"{Program.Name} (Copy)",
+            maxLength: 200);
+
+        if (newName == null) return; // cancelled
+
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            await Shell.Current.DisplayAlertAsync("Invalid Name", "Program name cannot be empty.", "OK");
+            return;
+        }
+
+        int newId = await _db.DuplicateProgramAsync(Program.Id, newName.Trim(), DateTime.Today);
+
+        if (newId < 0)
+        {
+            await Shell.Current.DisplayAlertAsync("Error", "Could not duplicate program. Source program not found.", "OK");
+            return;
+        }
+
+        await Shell.Current.GoToAsync($"../{nameof(ProgramDetailPage)}?id={newId}");
+    }
+
+    [RelayCommand]
     private async Task Edit()
     {
         if (Program == null) return;

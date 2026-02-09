@@ -55,6 +55,8 @@ public partial class NewProgramViewModel : ObservableObject
             EndDateValue = DateTime.Today.AddDays(42);
     }
 
+    private DateTime? _originalStartDate;
+
     public async Task LoadProgramAsync(int id)
     {
         if (_editProgramId.HasValue) return;
@@ -66,6 +68,7 @@ public partial class NewProgramViewModel : ObservableObject
         Name = program.Name;
         Goal = program.Goal;
         StartDate = program.StartDate;
+        _originalStartDate = program.StartDate;
         Notes = program.Notes;
         SelectedColor = program.Color ?? "#00D9A5";
 
@@ -105,6 +108,12 @@ public partial class NewProgramViewModel : ObservableObject
         {
             program.Id = _editProgramId.Value;
             await _db.UpdateProgramAsync(program);
+
+            if (_originalStartDate.HasValue && StartDate.Date != _originalStartDate.Value.Date)
+            {
+                var offset = StartDate.Date - _originalStartDate.Value.Date;
+                await _db.OffsetSessionDatesAsync(_editProgramId.Value, offset);
+            }
         }
         else
         {

@@ -1,4 +1,5 @@
 using Workout_Tracker.Model;
+using Program = Workout_Tracker.Model.Program;
 
 namespace Workout_Tracker.Services;
 
