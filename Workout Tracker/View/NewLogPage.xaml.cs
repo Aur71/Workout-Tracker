@@ -28,6 +28,7 @@ public partial class NewLogPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        Content.Opacity = 0;
         if (query.TryGetValue("type", out var typeValue))
         {
             var type = typeValue?.ToString() ?? "";
@@ -44,6 +45,7 @@ public partial class NewLogPage : ContentPage, IQueryAttributable
                 RebuildChips();
             }
         }
+        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 
     private void RebuildChips()

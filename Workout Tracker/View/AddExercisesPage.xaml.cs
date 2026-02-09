@@ -16,6 +16,8 @@ public partial class AddExercisesPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        Content.Opacity = 0;
         await _vm.LoadExercisesAsync();
+        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 }

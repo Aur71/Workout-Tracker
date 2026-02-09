@@ -15,6 +15,8 @@ public partial class LogListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        Content.Opacity = 0;
         await _vm.LoadLogsAsync();
+        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 }

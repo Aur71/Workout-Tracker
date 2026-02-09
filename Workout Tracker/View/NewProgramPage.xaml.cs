@@ -20,6 +20,7 @@ public partial class NewProgramPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        Content.Opacity = 0;
         if (query.TryGetValue("edit", out var editValue) && editValue?.ToString() == "true")
         {
             PageTitle.Text = "Edit Program";
@@ -30,6 +31,7 @@ public partial class NewProgramPage : ContentPage, IQueryAttributable
                 UpdateColorSelection();
             }
         }
+        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 
     private void BuildColorPicker()
