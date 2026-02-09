@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             x:Class="Workout_Tracker.View.SettingsPage"
+             x:DataType="vm:SettingsViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Header -->
+            <Label Text="Settings"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   Padding="0,20,0,8"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+            <!-- Export Card -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                    Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="{StaticResource BlackBrush}"
+                            Offset="0,2"
+                            Radius="8"
+                            Opacity="0.08" />
+                </Border.Shadow>
+
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Export Data"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                    <Label Text="Save all your workouts, programs, sessions, and logs to a JSON file. You can store it in your cloud drive, SD card, or share it to another device."
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+
+                    <Grid HeightRequest="48" Margin="0,4,0,0">
+                        <Button Text="Export Backup"
+                                Command="{Binding ExportDataCommand}"
+                                IsVisible="{Binding IsExporting, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="{StaticResource Primary}"
+                                TextColor="{StaticResource Black}"
+                                FontAttributes="Bold"
+                                CornerRadius="12"
+                                HeightRequest="48" />
+
+                        <HorizontalStackLayout IsVisible="{Binding IsExporting}"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"
+                                               Spacing="8">
+                            <ActivityIndicator IsRunning="{Binding IsExporting}"
+                                               HeightRequest="20"
+                                               WidthRequest="20"
+                                               Color="{StaticResource Primary}" />
+                            <Label Text="Exporting..."
+                                   FontSize="14"
+                                   VerticalOptions="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Import Card -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                    Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="{StaticResource BlackBrush}"
+                            Offset="0,2"
+                            Radius="8"
+                            Opacity="0.08" />
+                </Border.Shadow>
+
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Import Data"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                    <Label Text="Restore your data from a previously exported backup file. Select a .json file to import."
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+
+                    <Border StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#3D2E1A}"
+                            Padding="12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <Label Text="Warning: Importing will replace ALL existing data. Make sure to export your current data first if you want to keep it."
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light=#E65100, Dark={StaticResource Warning}}" />
+                    </Border>
+
+                    <Grid HeightRequest="48" Margin="0,4,0,0">
+                        <Button Text="Import Backup"
+                                Command="{Binding ImportDataCommand}"
+                                IsVisible="{Binding IsImporting, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                FontAttributes="Bold"
+                                CornerRadius="12"
+                                HeightRequest="48" />
+
+                        <HorizontalStackLayout IsVisible="{Binding IsImporting}"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"
+                                               Spacing="8">
+                            <ActivityIndicator IsRunning="{Binding IsImporting}"
+                                               HeightRequest="20"
+                                               WidthRequest="20"
+                                               Color="{StaticResource Primary}" />
+                            <Label Text="Importing..."
+                                   FontSize="14"
+                                   VerticalOptions="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

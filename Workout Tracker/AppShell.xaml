@@ -48,6 +48,12 @@
             Icon="tab_logs.svg"
             ContentTemplate="{DataTemplate view:LogListPage}"
             Route="Logs" />
+
+        <ShellContent
+            Title="Settings"
+            Icon="tab_settings.svg"
+            ContentTemplate="{DataTemplate view:SettingsPage}"
+            Route="Settings" />
     </TabBar>
 
 </Shell>
