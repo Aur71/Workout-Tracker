@@ -3,7 +3,7 @@ using UIKit;
 
 namespace Workout_Tracker
 {
-    public class Program
+    public class AppEntry
     {
         // This is the main entry point of the application.
         static void Main(string[] args)
