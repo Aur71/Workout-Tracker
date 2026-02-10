@@ -15,13 +15,11 @@ public partial class ActiveWorkoutPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        Content.Opacity = 0;
         if (query.TryGetValue("sessionId", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
         {
             _sessionId = id;
             await _vm.LoadSessionAsync(id);
         }
-        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 
     protected override async void OnAppearing()
@@ -29,9 +27,7 @@ public partial class ActiveWorkoutPage : ContentPage, IQueryAttributable
         base.OnAppearing();
         if (_sessionId.HasValue && _vm.Exercises.Count > 0)
         {
-            Content.Opacity = 0;
             await _vm.LoadSessionAsync(_sessionId.Value);
-            await Content.FadeTo(1, 250, Easing.CubicOut);
         }
     }
 }

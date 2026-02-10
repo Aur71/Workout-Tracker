@@ -14,7 +14,6 @@ public partial class NewExercisePage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        Content.Opacity = 0;
         if (query.TryGetValue("edit", out var editValue) && editValue?.ToString() == "true")
         {
             PageTitle.Text = "Edit Exercise";
@@ -24,6 +23,5 @@ public partial class NewExercisePage : ContentPage, IQueryAttributable
                 await _vm.LoadExerciseAsync(id);
             }
         }
-        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 }

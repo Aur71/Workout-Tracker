@@ -10,10 +10,4 @@ public partial class SettingsPage : ContentPage
         BindingContext = vm;
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        Content.Opacity = 0;
-        await Content.FadeTo(1, 250, Easing.CubicOut);
-    }
 }

@@ -15,8 +15,6 @@ public partial class SelectMusclesPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        Content.Opacity = 0;
         await _vm.LoadMusclesAsync();
-        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 }

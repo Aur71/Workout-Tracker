@@ -14,7 +14,6 @@ public partial class NewSessionPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        Content.Opacity = 0;
         if (query.TryGetValue("edit", out var editVal) && editVal?.ToString() == "true"
             && query.TryGetValue("id", out var idVal) && int.TryParse(idVal?.ToString(), out int id))
         {
@@ -25,6 +24,5 @@ public partial class NewSessionPage : ContentPage, IQueryAttributable
         {
             await _vm.InitAsync(pid);
         }
-        await Content.FadeTo(1, 250, Easing.CubicOut);
     }
 }
