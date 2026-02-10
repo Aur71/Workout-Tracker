@@ -1,0 +1,4 @@
+- Export / import program
+- Add rest time to the program
+- Optimize app performance
+- Add dynamic time filter for the analyitics page

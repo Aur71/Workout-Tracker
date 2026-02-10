@@ -48,3 +48,4 @@ public class AppDatabase
         private set;
     }
 }
+
