@@ -10,9 +10,12 @@ public partial class NewLogViewModel : ObservableObject
     private readonly DatabaseService _db;
     private int? _editId;
 
-    public NewLogViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public NewLogViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     [ObservableProperty]
@@ -135,6 +138,8 @@ public partial class NewLogViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
+        await _loading.RunAsync(async () =>
+        {
         switch (LogType)
         {
             case "body_metric":
@@ -199,6 +204,7 @@ public partial class NewLogViewModel : ObservableObject
         }
 
         await Shell.Current.GoToAsync("..");
+        }, "Saving...");
     }
 
     [RelayCommand]

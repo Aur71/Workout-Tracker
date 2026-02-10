@@ -13,9 +13,12 @@ public partial class CalendarViewModel : ObservableObject
     private DateTime _currentMonth;
     private CalendarDay? _selectedDay;
 
-    public CalendarViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public CalendarViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
         _currentMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
     }
 
@@ -36,21 +39,24 @@ public partial class CalendarViewModel : ObservableObject
 
     public async Task LoadMonthAsync()
     {
-        var indicators = await _db.GetAllSessionsForMonthAsync(_currentMonth.Year, _currentMonth.Month);
-        var grouped = indicators.GroupBy(i => i.Date.Date).ToDictionary(g => g.Key, g => g.ToList());
+        await _loading.RunAsync(async () =>
+        {
+            var indicators = await _db.GetAllSessionsForMonthAsync(_currentMonth.Year, _currentMonth.Month);
+            var grouped = indicators.GroupBy(i => i.Date.Date).ToDictionary(g => g.Key, g => g.ToList());
 
-        MonthYearDisplay = _currentMonth.ToString("MMMM yyyy");
-        BuildCalendarGrid(grouped);
+            MonthYearDisplay = _currentMonth.ToString("MMMM yyyy");
+            BuildCalendarGrid(grouped);
 
-        // Auto-select today if in current month, otherwise first of month
-        var today = DateTime.Today;
-        CalendarDay? autoSelect = null;
-        if (today.Year == _currentMonth.Year && today.Month == _currentMonth.Month)
-            autoSelect = CalendarDays.FirstOrDefault(d => d.IsToday);
-        autoSelect ??= CalendarDays.FirstOrDefault(d => d.IsCurrentMonth);
+            // Auto-select today if in current month, otherwise first of month
+            var today = DateTime.Today;
+            CalendarDay? autoSelect = null;
+            if (today.Year == _currentMonth.Year && today.Month == _currentMonth.Month)
+                autoSelect = CalendarDays.FirstOrDefault(d => d.IsToday);
+            autoSelect ??= CalendarDays.FirstOrDefault(d => d.IsCurrentMonth);
 
-        if (autoSelect != null)
-            SelectDayCellCommand.Execute(autoSelect);
+            if (autoSelect != null)
+                SelectDayCellCommand.Execute(autoSelect);
+        }, "Loading...");
     }
 
     private void BuildCalendarGrid(Dictionary<DateTime, List<CalendarSessionIndicator>> sessionsByDate)

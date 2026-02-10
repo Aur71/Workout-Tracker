@@ -12,9 +12,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     private Session? _session;
     private IDispatcherTimer? _timer;
 
-    public ActiveWorkoutViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public ActiveWorkoutViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     public ObservableCollection<ActiveExerciseDisplay> Exercises { get; } = [];
@@ -48,6 +51,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     public async Task LoadSessionAsync(int sessionId)
     {
+        await _loading.RunAsync(async () =>
+        {
         _session = await _db.GetSessionByIdAsync(sessionId);
         if (_session == null) return;
 
@@ -112,6 +117,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             IsWorkoutActive = true;
             StartTimer();
         }
+        }, "Loading...");
     }
 
     private void UpdateProgress()
@@ -173,16 +179,19 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     {
         if (_session == null) return;
 
-        // Save all sets
-        await _db.SaveActiveWorkoutSetsAsync(Exercises.ToList());
+        await _loading.RunAsync(async () =>
+        {
+            // Save all sets
+            await _db.SaveActiveWorkoutSetsAsync(Exercises.ToList());
 
-        // Mark session completed
-        _session.EndTime = DateTime.Now.TimeOfDay;
-        _session.IsCompleted = true;
-        await _db.UpdateSessionAsync(_session);
+            // Mark session completed
+            _session.EndTime = DateTime.Now.TimeOfDay;
+            _session.IsCompleted = true;
+            await _db.UpdateSessionAsync(_session);
 
-        _timer?.Stop();
-        await Shell.Current.GoToAsync("..");
+            _timer?.Stop();
+            await Shell.Current.GoToAsync("..");
+        }, "Saving...");
     }
 
     [RelayCommand]

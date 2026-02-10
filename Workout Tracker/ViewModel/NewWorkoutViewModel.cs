@@ -14,9 +14,12 @@ public partial class NewWorkoutViewModel : ObservableObject, IRecipient<Exercise
     private readonly DatabaseService _db;
     private int? _editWorkoutId;
 
-    public NewWorkoutViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public NewWorkoutViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
         WeakReferenceMessenger.Default.Register(this);
     }
 
@@ -99,35 +102,38 @@ public partial class NewWorkoutViewModel : ObservableObject, IRecipient<Exercise
             return;
         }
 
-        int? duration = null;
-        if (!string.IsNullOrWhiteSpace(EstimatedDurationText) && int.TryParse(EstimatedDurationText, out var d))
-            duration = d;
-
-        var workout = new Workout
+        await _loading.RunAsync(async () =>
         {
-            Name = Name.Trim(),
-            Goal = Goal?.ToLower(),
-            EstimatedDuration = duration,
-            Notes = Notes
-        };
+            int? duration = null;
+            if (!string.IsNullOrWhiteSpace(EstimatedDurationText) && int.TryParse(EstimatedDurationText, out var d))
+                duration = d;
 
-        if (_editWorkoutId.HasValue)
-        {
-            workout.Id = _editWorkoutId.Value;
-            await _db.UpdateWorkoutAsync(workout);
-            await _db.DeleteWorkoutExercisesAsync(workout.Id);
-            if (SelectedExercises.Count > 0)
-                await _db.SaveWorkoutExercisesAsync(workout.Id, SelectedExercises.ToList());
-        }
-        else
-        {
-            var id = await _db.SaveWorkoutAsync(workout);
-            if (SelectedExercises.Count > 0)
-                await _db.SaveWorkoutExercisesAsync(id, SelectedExercises.ToList());
-        }
+            var workout = new Workout
+            {
+                Name = Name.Trim(),
+                Goal = Goal?.ToLower(),
+                EstimatedDuration = duration,
+                Notes = Notes
+            };
 
-        WeakReferenceMessenger.Default.Unregister<ExerciseSelectionMessage>(this);
-        await Shell.Current.GoToAsync("..");
+            if (_editWorkoutId.HasValue)
+            {
+                workout.Id = _editWorkoutId.Value;
+                await _db.UpdateWorkoutAsync(workout);
+                await _db.DeleteWorkoutExercisesAsync(workout.Id);
+                if (SelectedExercises.Count > 0)
+                    await _db.SaveWorkoutExercisesAsync(workout.Id, SelectedExercises.ToList());
+            }
+            else
+            {
+                var id = await _db.SaveWorkoutAsync(workout);
+                if (SelectedExercises.Count > 0)
+                    await _db.SaveWorkoutExercisesAsync(id, SelectedExercises.ToList());
+            }
+
+            WeakReferenceMessenger.Default.Unregister<ExerciseSelectionMessage>(this);
+            await Shell.Current.GoToAsync("..");
+        }, "Saving...");
     }
 
     [RelayCommand]

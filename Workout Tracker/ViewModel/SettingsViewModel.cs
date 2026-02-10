@@ -7,10 +7,12 @@ namespace Workout_Tracker.ViewModel;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly DataTransferService _transfer;
+    private readonly LoadingService _loading;
 
-    public SettingsViewModel(DataTransferService transfer)
+    public SettingsViewModel(DataTransferService transfer, LoadingService loading)
     {
         _transfer = transfer;
+        _loading = loading;
     }
 
     [ObservableProperty]
@@ -27,13 +29,16 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IsExporting = true;
-            var filePath = await _transfer.ExportAsync();
-
-            await Share.Default.RequestAsync(new ShareFileRequest
+            await _loading.RunAsync(async () =>
             {
-                Title = "Export Workout Data",
-                File = new ShareFile(filePath)
-            });
+                var filePath = await _transfer.ExportAsync();
+
+                await Share.Default.RequestAsync(new ShareFileRequest
+                {
+                    Title = "Export Workout Data",
+                    File = new ShareFile(filePath)
+                });
+            }, "Exporting...");
         }
         catch (Exception ex)
         {
@@ -80,8 +85,11 @@ public partial class SettingsViewModel : ObservableObject
 
             IsImporting = true;
 
-            using var stream = await result.OpenReadAsync();
-            await _transfer.ImportAsync(stream);
+            await _loading.RunAsync(async () =>
+            {
+                using var stream = await result.OpenReadAsync();
+                await _transfer.ImportAsync(stream);
+            }, "Importing...");
 
             await page.DisplayAlert("Import Complete", "Your data has been restored successfully.", "OK");
         }

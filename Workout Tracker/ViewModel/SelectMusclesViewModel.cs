@@ -16,9 +16,12 @@ public partial class SelectMusclesViewModel : ObservableObject
     // Static property for passing previous selections from NewExerciseViewModel
     public static List<MuscleSelection>? PreviousSelections { get; set; }
 
-    public SelectMusclesViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public SelectMusclesViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     public ObservableCollection<MuscleSelection> Muscles { get; } = [];
@@ -40,23 +43,26 @@ public partial class SelectMusclesViewModel : ObservableObject
 
     public async Task LoadMusclesAsync()
     {
-        var muscles = await _db.GetAllMusclesAsync();
-        var previous = PreviousSelections;
-
-        _allMuscles = muscles.Select(m =>
+        await _loading.RunAsync(async () =>
         {
-            var prev = previous?.FirstOrDefault(p => p.Muscle.Id == m.Id);
-            return new MuscleSelection
-            {
-                Muscle = m,
-                IsSelected = prev != null,
-                Role = prev?.Role ?? "primary"
-            };
-        }).ToList();
+            var muscles = await _db.GetAllMusclesAsync();
+            var previous = PreviousSelections;
 
-        PreviousSelections = null;
-        FilterMuscles();
-        UpdateCount();
+            _allMuscles = muscles.Select(m =>
+            {
+                var prev = previous?.FirstOrDefault(p => p.Muscle.Id == m.Id);
+                return new MuscleSelection
+                {
+                    Muscle = m,
+                    IsSelected = prev != null,
+                    Role = prev?.Role ?? "primary"
+                };
+            }).ToList();
+
+            PreviousSelections = null;
+            FilterMuscles();
+            UpdateCount();
+        }, "Loading...");
     }
 
     private void FilterMuscles()

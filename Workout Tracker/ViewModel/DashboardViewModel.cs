@@ -11,9 +11,12 @@ public partial class DashboardViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
-    public DashboardViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public DashboardViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     public ObservableCollection<DashboardSessionDisplay> TodaySessions { get; } = [];
@@ -42,6 +45,8 @@ public partial class DashboardViewModel : ObservableObject
 
     public async Task LoadAsync()
     {
+        await _loading.RunAsync(async () =>
+        {
         // Time-based greeting
         var hour = DateTime.Now.Hour;
         GreetingText = hour switch
@@ -72,6 +77,7 @@ public partial class DashboardViewModel : ObservableObject
         WeeklyWorkoutCount = workouts.ToString();
         WeeklySetCount = sets.ToString();
         WeeklyVolumeDisplay = volume >= 1000 ? $"{volume / 1000.0:0.#}k" : volume.ToString("0");
+        }, "Loading...");
     }
 
     [RelayCommand]

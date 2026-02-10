@@ -14,9 +14,12 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
     private readonly DatabaseService _db;
     private int? _editExerciseId;
 
-    public NewExerciseViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public NewExerciseViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
         WeakReferenceMessenger.Default.Register(this);
     }
 
@@ -112,34 +115,37 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
             return;
         }
 
-        var exercise = new Exercise
+        await _loading.RunAsync(async () =>
         {
-            Name = Name.Trim(),
-            ExerciseType = ExerciseType?.ToLower(),
-            Equipment = Equipment,
-            IsTimeBased = IsTimeBased,
-            Description = Description,
-            Instructions = Instructions,
-            Notes = Notes
-        };
+            var exercise = new Exercise
+            {
+                Name = Name.Trim(),
+                ExerciseType = ExerciseType?.ToLower(),
+                Equipment = Equipment,
+                IsTimeBased = IsTimeBased,
+                Description = Description,
+                Instructions = Instructions,
+                Notes = Notes
+            };
 
-        if (_editExerciseId.HasValue)
-        {
-            exercise.Id = _editExerciseId.Value;
-            await _db.UpdateExerciseAsync(exercise);
-            await _db.DeleteExerciseMusclesAsync(exercise.Id);
-            if (SelectedMuscles.Count > 0)
-                await _db.SaveExerciseMusclesAsync(exercise.Id, SelectedMuscles.ToList());
-        }
-        else
-        {
-            var id = await _db.SaveExerciseAsync(exercise);
-            if (SelectedMuscles.Count > 0)
-                await _db.SaveExerciseMusclesAsync(id, SelectedMuscles.ToList());
-        }
+            if (_editExerciseId.HasValue)
+            {
+                exercise.Id = _editExerciseId.Value;
+                await _db.UpdateExerciseAsync(exercise);
+                await _db.DeleteExerciseMusclesAsync(exercise.Id);
+                if (SelectedMuscles.Count > 0)
+                    await _db.SaveExerciseMusclesAsync(exercise.Id, SelectedMuscles.ToList());
+            }
+            else
+            {
+                var id = await _db.SaveExerciseAsync(exercise);
+                if (SelectedMuscles.Count > 0)
+                    await _db.SaveExerciseMusclesAsync(id, SelectedMuscles.ToList());
+            }
 
-        WeakReferenceMessenger.Default.Unregister<MuscleSelectionMessage>(this);
-        await Shell.Current.GoToAsync("..");
+            WeakReferenceMessenger.Default.Unregister<MuscleSelectionMessage>(this);
+            await Shell.Current.GoToAsync("..");
+        }, "Saving...");
     }
 
     [RelayCommand]

@@ -10,9 +10,12 @@ public partial class NewProgramViewModel : ObservableObject
     private readonly DatabaseService _db;
     private int? _editProgramId;
 
-    public NewProgramViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public NewProgramViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     [ObservableProperty]
@@ -94,33 +97,36 @@ public partial class NewProgramViewModel : ObservableObject
             return;
         }
 
-        var program = new Program
+        await _loading.RunAsync(async () =>
         {
-            Name = Name.Trim(),
-            Goal = Goal,
-            StartDate = StartDate,
-            EndDate = HasEndDate ? EndDateValue : null,
-            Notes = Notes,
-            Color = SelectedColor
-        };
-
-        if (_editProgramId.HasValue)
-        {
-            program.Id = _editProgramId.Value;
-            await _db.UpdateProgramAsync(program);
-
-            if (_originalStartDate.HasValue && StartDate.Date != _originalStartDate.Value.Date)
+            var program = new Program
             {
-                var offset = StartDate.Date - _originalStartDate.Value.Date;
-                await _db.OffsetSessionDatesAsync(_editProgramId.Value, offset);
-            }
-        }
-        else
-        {
-            await _db.SaveProgramAsync(program);
-        }
+                Name = Name.Trim(),
+                Goal = Goal,
+                StartDate = StartDate,
+                EndDate = HasEndDate ? EndDateValue : null,
+                Notes = Notes,
+                Color = SelectedColor
+            };
 
-        await Shell.Current.GoToAsync("..");
+            if (_editProgramId.HasValue)
+            {
+                program.Id = _editProgramId.Value;
+                await _db.UpdateProgramAsync(program);
+
+                if (_originalStartDate.HasValue && StartDate.Date != _originalStartDate.Value.Date)
+                {
+                    var offset = StartDate.Date - _originalStartDate.Value.Date;
+                    await _db.OffsetSessionDatesAsync(_editProgramId.Value, offset);
+                }
+            }
+            else
+            {
+                await _db.SaveProgramAsync(program);
+            }
+
+            await Shell.Current.GoToAsync("..");
+        }, "Saving...");
     }
 
     [RelayCommand]

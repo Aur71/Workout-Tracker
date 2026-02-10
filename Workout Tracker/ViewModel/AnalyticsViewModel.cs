@@ -12,9 +12,12 @@ public partial class AnalyticsViewModel : ObservableObject
     private readonly DatabaseService _db;
     private bool _exercisesLoaded;
 
-    public AnalyticsViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public AnalyticsViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     // ── Time range ──
@@ -108,6 +111,8 @@ public partial class AnalyticsViewModel : ObservableObject
 
     public async Task LoadAsync()
     {
+        await _loading.RunAsync(async () =>
+        {
         IsLoading = true;
 
         try
@@ -159,6 +164,7 @@ public partial class AnalyticsViewModel : ObservableObject
         {
             IsLoading = false;
         }
+        }, "Loading...");
     }
 
     private (DateTime from, DateTime to) GetDateRange()

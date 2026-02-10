@@ -21,6 +21,7 @@ namespace Workout_Tracker
             // Services
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<DataTransferService>();
+            builder.Services.AddSingleton<LoadingService>();
 
             // ViewModels
             builder.Services.AddTransient<ExerciseListViewModel>();

@@ -11,9 +11,12 @@ public partial class ProgramListViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
-    public ProgramListViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public ProgramListViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     public ObservableCollection<ProgramDisplay> ActivePrograms { get; } = [];
@@ -34,38 +37,41 @@ public partial class ProgramListViewModel : ObservableObject
 
     public async Task LoadProgramsAsync()
     {
-        var programs = await _db.GetAllProgramsAsync();
-        var today = DateTime.Today;
-
-        var displays = programs.Select(p => new ProgramDisplay
+        await _loading.RunAsync(async () =>
         {
-            Id = p.Id,
-            Name = p.Name,
-            Goal = p.Goal,
-            StartDate = p.StartDate,
-            EndDate = p.EndDate,
-            Notes = p.Notes,
-            Color = p.Color
-        }).ToList();
+            var programs = await _db.GetAllProgramsAsync();
+            var today = DateTime.Today;
 
-        ActivePrograms.Clear();
-        UpcomingPrograms.Clear();
-        CompletedPrograms.Clear();
+            var displays = programs.Select(p => new ProgramDisplay
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Goal = p.Goal,
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                Notes = p.Notes,
+                Color = p.Color
+            }).ToList();
 
-        foreach (var p in displays)
-        {
-            if (p.StartDate <= today && (!p.EndDate.HasValue || p.EndDate.Value >= today))
-                ActivePrograms.Add(p);
-            else if (p.StartDate > today)
-                UpcomingPrograms.Add(p);
-            else
-                CompletedPrograms.Add(p);
-        }
+            ActivePrograms.Clear();
+            UpcomingPrograms.Clear();
+            CompletedPrograms.Clear();
 
-        HasActive = ActivePrograms.Count > 0;
-        HasUpcoming = UpcomingPrograms.Count > 0;
-        HasCompleted = CompletedPrograms.Count > 0;
-        IsEmpty = !HasActive && !HasUpcoming && !HasCompleted;
+            foreach (var p in displays)
+            {
+                if (p.StartDate <= today && (!p.EndDate.HasValue || p.EndDate.Value >= today))
+                    ActivePrograms.Add(p);
+                else if (p.StartDate > today)
+                    UpcomingPrograms.Add(p);
+                else
+                    CompletedPrograms.Add(p);
+            }
+
+            HasActive = ActivePrograms.Count > 0;
+            HasUpcoming = UpcomingPrograms.Count > 0;
+            HasCompleted = CompletedPrograms.Count > 0;
+            IsEmpty = !HasActive && !HasUpcoming && !HasCompleted;
+        }, "Loading...");
     }
 
     [RelayCommand]

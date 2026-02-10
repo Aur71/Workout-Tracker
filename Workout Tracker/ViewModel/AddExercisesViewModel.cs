@@ -15,9 +15,12 @@ public partial class AddExercisesViewModel : ObservableObject
 
     public static List<ExerciseSelection>? PreviousSelections { get; set; }
 
-    public AddExercisesViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public AddExercisesViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     public ObservableCollection<ExerciseSelection> Exercises { get; } = [];
@@ -39,22 +42,25 @@ public partial class AddExercisesViewModel : ObservableObject
 
     public async Task LoadExercisesAsync()
     {
-        var exercises = await _db.GetAllExercisesAsync();
-        var previous = PreviousSelections;
-
-        _allExercises = exercises.Select(e =>
+        await _loading.RunAsync(async () =>
         {
-            var prev = previous?.FirstOrDefault(p => p.Exercise.Id == e.Id);
-            return new ExerciseSelection
-            {
-                Exercise = e,
-                IsSelected = prev != null
-            };
-        }).ToList();
+            var exercises = await _db.GetAllExercisesAsync();
+            var previous = PreviousSelections;
 
-        PreviousSelections = null;
-        FilterExercises();
-        UpdateCount();
+            _allExercises = exercises.Select(e =>
+            {
+                var prev = previous?.FirstOrDefault(p => p.Exercise.Id == e.Id);
+                return new ExerciseSelection
+                {
+                    Exercise = e,
+                    IsSelected = prev != null
+                };
+            }).ToList();
+
+            PreviousSelections = null;
+            FilterExercises();
+            UpdateCount();
+        }, "Loading...");
     }
 
     private void FilterExercises()

@@ -11,9 +11,12 @@ public partial class ProgramDetailViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
-    public ProgramDetailViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public ProgramDetailViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     [ObservableProperty]
@@ -34,25 +37,28 @@ public partial class ProgramDetailViewModel : ObservableObject
 
     public async Task LoadProgramAsync(int id)
     {
-        var p = await _db.GetProgramByIdAsync(id);
-        if (p == null) return;
-
-        Program = new ProgramDisplay
+        await _loading.RunAsync(async () =>
         {
-            Id = p.Id,
-            Name = p.Name,
-            Goal = p.Goal,
-            StartDate = p.StartDate,
-            EndDate = p.EndDate,
-            Notes = p.Notes,
-            Color = p.Color
-        };
+            var p = await _db.GetProgramByIdAsync(id);
+            if (p == null) return;
 
-        OnPropertyChanged(nameof(HasGoal));
-        OnPropertyChanged(nameof(HasNotes));
-        OnPropertyChanged(nameof(HasDuration));
+            Program = new ProgramDisplay
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Goal = p.Goal,
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                Notes = p.Notes,
+                Color = p.Color
+            };
 
-        await LoadSessionsAsync(id);
+            OnPropertyChanged(nameof(HasGoal));
+            OnPropertyChanged(nameof(HasNotes));
+            OnPropertyChanged(nameof(HasDuration));
+
+            await LoadSessionsAsync(id);
+        }, "Loading...");
     }
 
     private async Task LoadSessionsAsync(int programId)
@@ -93,9 +99,12 @@ public partial class ProgramDetailViewModel : ObservableObject
 
         if (!confirm) return;
 
-        await _db.DeleteSessionAsync(session.Id);
-        if (Program != null)
-            await LoadSessionsAsync(Program.Id);
+        await _loading.RunAsync(async () =>
+        {
+            await _db.DeleteSessionAsync(session.Id);
+            if (Program != null)
+                await LoadSessionsAsync(Program.Id);
+        }, "Deleting...");
     }
 
     [RelayCommand]
@@ -117,15 +126,18 @@ public partial class ProgramDetailViewModel : ObservableObject
             return;
         }
 
-        int newId = await _db.DuplicateProgramAsync(Program.Id, newName.Trim(), DateTime.Today);
-
-        if (newId < 0)
+        await _loading.RunAsync(async () =>
         {
-            await Shell.Current.DisplayAlertAsync("Error", "Could not duplicate program. Source program not found.", "OK");
-            return;
-        }
+            int newId = await _db.DuplicateProgramAsync(Program.Id, newName.Trim(), DateTime.Today);
 
-        await Shell.Current.GoToAsync($"../{nameof(ProgramDetailPage)}?id={newId}");
+            if (newId < 0)
+            {
+                await Shell.Current.DisplayAlertAsync("Error", "Could not duplicate program. Source program not found.", "OK");
+                return;
+            }
+
+            await Shell.Current.GoToAsync($"../{nameof(ProgramDetailPage)}?id={newId}");
+        }, "Duplicating...");
     }
 
     [RelayCommand]
@@ -147,8 +159,11 @@ public partial class ProgramDetailViewModel : ObservableObject
 
         if (!confirm) return;
 
-        await _db.DeleteProgramAsync(Program.Id);
-        await Shell.Current.GoToAsync("..");
+        await _loading.RunAsync(async () =>
+        {
+            await _db.DeleteProgramAsync(Program.Id);
+            await Shell.Current.GoToAsync("..");
+        }, "Deleting...");
     }
 
     [RelayCommand]

@@ -10,9 +10,12 @@ public partial class ExerciseDetailViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
-    public ExerciseDetailViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public ExerciseDetailViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     [ObservableProperty]
@@ -25,11 +28,14 @@ public partial class ExerciseDetailViewModel : ObservableObject
 
     public async Task LoadExerciseAsync(int id)
     {
-        Exercise = await _db.GetExerciseByIdAsync(id);
-        OnPropertyChanged(nameof(HasDescription));
-        OnPropertyChanged(nameof(HasInstructions));
-        OnPropertyChanged(nameof(HasNotes));
-        OnPropertyChanged(nameof(HasMuscles));
+        await _loading.RunAsync(async () =>
+        {
+            Exercise = await _db.GetExerciseByIdAsync(id);
+            OnPropertyChanged(nameof(HasDescription));
+            OnPropertyChanged(nameof(HasInstructions));
+            OnPropertyChanged(nameof(HasNotes));
+            OnPropertyChanged(nameof(HasMuscles));
+        }, "Loading...");
     }
 
     [RelayCommand]
@@ -54,11 +60,14 @@ public partial class ExerciseDetailViewModel : ObservableObject
 
         if (!confirm) return;
 
-        if (workoutCount > 0)
-            await _db.DeleteExerciseFromWorkoutsAsync(Exercise.Id);
+        await _loading.RunAsync(async () =>
+        {
+            if (workoutCount > 0)
+                await _db.DeleteExerciseFromWorkoutsAsync(Exercise.Id);
 
-        await _db.DeleteExerciseAsync(Exercise.Id);
-        await Shell.Current.GoToAsync("..");
+            await _db.DeleteExerciseAsync(Exercise.Id);
+            await Shell.Current.GoToAsync("..");
+        }, "Deleting...");
     }
 
     [RelayCommand]

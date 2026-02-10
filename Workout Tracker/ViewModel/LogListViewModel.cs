@@ -11,9 +11,12 @@ public partial class LogListViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
-    public LogListViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public LogListViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     public ObservableCollection<LogGroup> LogGroups { get; } = [];
@@ -23,23 +26,26 @@ public partial class LogListViewModel : ObservableObject
 
     public async Task LoadLogsAsync()
     {
-        var entries = await _db.GetAllLogsAsync();
+        await _loading.RunAsync(async () =>
+        {
+            var entries = await _db.GetAllLogsAsync();
 
-        LogGroups.Clear();
+            LogGroups.Clear();
 
-        var groups = entries
-            .GroupBy(e => e.Date.Date)
-            .OrderByDescending(g => g.Key)
-            .Select(g => new LogGroup
-            {
-                DateHeader = g.Key.ToString("MMMM d, yyyy"),
-                Entries = g.ToList()
-            });
+            var groups = entries
+                .GroupBy(e => e.Date.Date)
+                .OrderByDescending(g => g.Key)
+                .Select(g => new LogGroup
+                {
+                    DateHeader = g.Key.ToString("MMMM d, yyyy"),
+                    Entries = g.ToList()
+                });
 
-        foreach (var group in groups)
-            LogGroups.Add(group);
+            foreach (var group in groups)
+                LogGroups.Add(group);
 
-        IsEmpty = LogGroups.Count == 0;
+            IsEmpty = LogGroups.Count == 0;
+        }, "Loading...");
     }
 
     [RelayCommand]
@@ -79,19 +85,22 @@ public partial class LogListViewModel : ObservableObject
 
         if (!confirm) return;
 
-        switch (entry.LogType)
+        await _loading.RunAsync(async () =>
         {
-            case "body_metric":
-                await _db.DeleteBodyMetricAsync(entry.Id);
-                break;
-            case "recovery":
-                await _db.DeleteRecoveryLogAsync(entry.Id);
-                break;
-            case "calorie":
-                await _db.DeleteCalorieLogAsync(entry.Id);
-                break;
-        }
+            switch (entry.LogType)
+            {
+                case "body_metric":
+                    await _db.DeleteBodyMetricAsync(entry.Id);
+                    break;
+                case "recovery":
+                    await _db.DeleteRecoveryLogAsync(entry.Id);
+                    break;
+                case "calorie":
+                    await _db.DeleteCalorieLogAsync(entry.Id);
+                    break;
+            }
 
-        await LoadLogsAsync();
+            await LoadLogsAsync();
+        }, "Deleting...");
     }
 }

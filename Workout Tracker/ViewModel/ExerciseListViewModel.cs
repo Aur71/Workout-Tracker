@@ -12,9 +12,12 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly DatabaseService _db;
     private List<ExerciseDisplay> _allExercises = [];
 
-    public ExerciseListViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public ExerciseListViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     public ObservableCollection<ExerciseDisplay> Exercises { get; } = [];
@@ -29,8 +32,11 @@ public partial class ExerciseListViewModel : ObservableObject
 
     public async Task LoadExercisesAsync()
     {
-        _allExercises = await _db.GetAllExercisesAsync();
-        ApplyFilters();
+        await _loading.RunAsync(async () =>
+        {
+            _allExercises = await _db.GetAllExercisesAsync();
+            ApplyFilters();
+        }, "Loading...");
     }
 
     private void ApplyFilters()

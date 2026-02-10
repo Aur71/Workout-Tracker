@@ -15,9 +15,12 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     private int _programId;
     private int? _editSessionId;
 
-    public NewSessionViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public NewSessionViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
         WeakReferenceMessenger.Default.Register(this);
     }
 
@@ -131,31 +134,34 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
             Exercises.Clear();
         }
 
-        int order = 1;
-        foreach (var we in selected.Exercises)
+        await _loading.RunAsync(async () =>
         {
-            var ex = new SessionExerciseDisplay
+            int order = 1;
+            foreach (var we in selected.Exercises)
             {
-                ExerciseId = we.ExerciseId,
-                ExerciseName = we.ExerciseName,
-                ExerciseType = we.ExerciseType,
-                PrimaryMuscle = we.PrimaryMuscle,
-                IsTimeBased = false, // Will be resolved below
-                Order = order++
-            };
+                var ex = new SessionExerciseDisplay
+                {
+                    ExerciseId = we.ExerciseId,
+                    ExerciseName = we.ExerciseName,
+                    ExerciseType = we.ExerciseType,
+                    PrimaryMuscle = we.PrimaryMuscle,
+                    IsTimeBased = false, // Will be resolved below
+                    Order = order++
+                };
 
-            // Look up IsTimeBased from the exercise
-            var exerciseDisplay = await _db.GetExerciseByIdAsync(we.ExerciseId);
-            if (exerciseDisplay != null)
-                ex.IsTimeBased = exerciseDisplay.IsTimeBased;
+                // Look up IsTimeBased from the exercise
+                var exerciseDisplay = await _db.GetExerciseByIdAsync(we.ExerciseId);
+                if (exerciseDisplay != null)
+                    ex.IsTimeBased = exerciseDisplay.IsTimeBased;
 
-            // Add 3 default empty sets
-            for (int i = 1; i <= 3; i++)
-                ex.Sets.Add(new SetDisplay { SetNumber = i });
+                // Add 3 default empty sets
+                for (int i = 1; i <= 3; i++)
+                    ex.Sets.Add(new SetDisplay { SetNumber = i });
 
-            Exercises.Add(ex);
-        }
-        OnPropertyChanged(nameof(HasExercises));
+                Exercises.Add(ex);
+            }
+            OnPropertyChanged(nameof(HasExercises));
+        }, "Loading template...");
     }
 
     [RelayCommand]
@@ -219,30 +225,33 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     [RelayCommand]
     private async Task Save()
     {
-        var session = new Session
+        await _loading.RunAsync(async () =>
         {
-            ProgramId = _programId,
-            Date = SessionDate,
-            Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
-        };
+            var session = new Session
+            {
+                ProgramId = _programId,
+                Date = SessionDate,
+                Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
+            };
 
-        if (_editSessionId.HasValue)
-        {
-            session.Id = _editSessionId.Value;
-            await _db.UpdateSessionAsync(session);
-            await _db.DeleteSessionExercisesAndSetsAsync(session.Id);
-            if (Exercises.Count > 0)
-                await _db.SaveSessionExercisesWithSetsAsync(session.Id, Exercises.ToList());
-        }
-        else
-        {
-            var id = await _db.SaveSessionAsync(session);
-            if (Exercises.Count > 0)
-                await _db.SaveSessionExercisesWithSetsAsync(id, Exercises.ToList());
-        }
+            if (_editSessionId.HasValue)
+            {
+                session.Id = _editSessionId.Value;
+                await _db.UpdateSessionAsync(session);
+                await _db.DeleteSessionExercisesAndSetsAsync(session.Id);
+                if (Exercises.Count > 0)
+                    await _db.SaveSessionExercisesWithSetsAsync(session.Id, Exercises.ToList());
+            }
+            else
+            {
+                var id = await _db.SaveSessionAsync(session);
+                if (Exercises.Count > 0)
+                    await _db.SaveSessionExercisesWithSetsAsync(id, Exercises.ToList());
+            }
 
-        WeakReferenceMessenger.Default.Unregister<ExerciseSelectionMessage>(this);
-        await Shell.Current.GoToAsync("..");
+            WeakReferenceMessenger.Default.Unregister<ExerciseSelectionMessage>(this);
+            await Shell.Current.GoToAsync("..");
+        }, "Saving...");
     }
 
     [RelayCommand]

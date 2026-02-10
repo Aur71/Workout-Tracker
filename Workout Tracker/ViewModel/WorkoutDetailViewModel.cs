@@ -10,9 +10,12 @@ public partial class WorkoutDetailViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
-    public WorkoutDetailViewModel(DatabaseService db)
+    private readonly LoadingService _loading;
+
+    public WorkoutDetailViewModel(DatabaseService db, LoadingService loading)
     {
         _db = db;
+        _loading = loading;
     }
 
     [ObservableProperty]
@@ -23,9 +26,12 @@ public partial class WorkoutDetailViewModel : ObservableObject
 
     public async Task LoadWorkoutAsync(int id)
     {
-        Workout = await _db.GetWorkoutByIdAsync(id);
-        OnPropertyChanged(nameof(HasNotes));
-        OnPropertyChanged(nameof(HasExercises));
+        await _loading.RunAsync(async () =>
+        {
+            Workout = await _db.GetWorkoutByIdAsync(id);
+            OnPropertyChanged(nameof(HasNotes));
+            OnPropertyChanged(nameof(HasExercises));
+        }, "Loading...");
     }
 
     [RelayCommand]
@@ -47,8 +53,11 @@ public partial class WorkoutDetailViewModel : ObservableObject
 
         if (!confirm) return;
 
-        await _db.DeleteWorkoutAsync(Workout.Id);
-        await Shell.Current.GoToAsync("..");
+        await _loading.RunAsync(async () =>
+        {
+            await _db.DeleteWorkoutAsync(Workout.Id);
+            await Shell.Current.GoToAsync("..");
+        }, "Deleting...");
     }
 
     [RelayCommand]
