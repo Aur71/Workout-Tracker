@@ -12,4 +12,4 @@
 - X Import / export all data bug (sessions are not imported)
 - X Remove log functionality
 - X Add padding to the app icon
-- If an workout is active change the text inside the dashboard card to "Resume Workout"
+- X If an workout is active change the text inside the dashboard card to "Resume Workout"

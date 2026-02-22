@@ -49,6 +49,8 @@ public class DashboardSessionDisplay
     public string DayOfWeekShort => Date.ToString("ddd").ToUpper();
     public string DayNumber => Date.Day.ToString();
 
+    public bool IsActive => !IsCompleted && StartTime.HasValue;
     public bool IsStartable => !IsCompleted && Date.Date == DateTime.Today;
     public bool ShowCompletedBadge => IsCompleted;
+    public string StartButtonText => IsActive ? "Resume Workout" : "Start Workout";
 }
