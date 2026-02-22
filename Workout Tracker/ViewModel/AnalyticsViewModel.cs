@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Workout_Tracker.Drawables;
 using Workout_Tracker.Model;
 using Workout_Tracker.Services;
@@ -23,7 +22,10 @@ public partial class AnalyticsViewModel : ObservableObject
     // ── Time range ──
 
     [ObservableProperty]
-    private string _selectedRange = "4W";
+    private DateTime _startDate = DateTime.Today.AddMonths(-3);
+
+    [ObservableProperty]
+    private DateTime _endDate = DateTime.Today;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -94,12 +96,9 @@ public partial class AnalyticsViewModel : ObservableObject
 
     // ── Commands ──
 
-    [RelayCommand]
-    private async Task SelectRange(string range)
-    {
-        SelectedRange = range;
-        await LoadAsync();
-    }
+    partial void OnStartDateChanged(DateTime value) => _ = LoadAsync();
+
+    partial void OnEndDateChanged(DateTime value) => _ = LoadAsync();
 
     partial void OnSelectedExerciseChanged(ExercisePickerItem? value)
     {
@@ -169,17 +168,7 @@ public partial class AnalyticsViewModel : ObservableObject
 
     private (DateTime from, DateTime to) GetDateRange()
     {
-        var to = DateTime.Today;
-        var from = SelectedRange switch
-        {
-            "4W" => to.AddDays(-28),
-            "3M" => to.AddMonths(-3),
-            "6M" => to.AddMonths(-6),
-            "1Y" => to.AddYears(-1),
-            "All" => new DateTime(2000, 1, 1),
-            _ => to.AddDays(-28)
-        };
-        return (from, to);
+        return (StartDate, EndDate);
     }
 
     // ── Chart Builders ──

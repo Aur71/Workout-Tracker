@@ -2,7 +2,7 @@
 - X Add rest time to the program
 - X Button to reset program completion.
 - X Add duplicate session button
-- Add dynamic time filter for the analyitics page
+- X Add dynamic time filter for the analyitics page
 - Export / import program
 - Change tabs order
 - Change SVGs

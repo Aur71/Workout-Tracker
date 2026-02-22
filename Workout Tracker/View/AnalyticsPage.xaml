@@ -16,81 +16,43 @@
                    FontAttributes="Bold"
                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
 
-            <!-- Time Range Filter Chips -->
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                <HorizontalStackLayout Spacing="8">
+            <!-- Date Range Filter -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Start"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                     <Border StrokeThickness="0"
-                            Padding="14,8"
-                            BackgroundColor="{Binding SelectedRange, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=4W}">
+                            Padding="12,8"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
+                            <RoundRectangle CornerRadius="10" />
                         </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectRangeCommand}" CommandParameter="4W" />
-                        </Border.GestureRecognizers>
-                        <Label Text="4 Weeks"
-                               FontSize="13"
-                               FontAttributes="Bold"
-                               TextColor="{Binding SelectedRange, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=4W}" />
+                        <DatePicker Date="{Binding StartDate}"
+                                    MaximumDate="{Binding EndDate}"
+                                    Format="MMM dd, yyyy"
+                                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                     </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Label Text="End"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                     <Border StrokeThickness="0"
-                            Padding="14,8"
-                            BackgroundColor="{Binding SelectedRange, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=3M}">
+                            Padding="12,8"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
+                            <RoundRectangle CornerRadius="10" />
                         </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectRangeCommand}" CommandParameter="3M" />
-                        </Border.GestureRecognizers>
-                        <Label Text="3 Months"
-                               FontSize="13"
-                               FontAttributes="Bold"
-                               TextColor="{Binding SelectedRange, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=3M}" />
+                        <DatePicker Date="{Binding EndDate}"
+                                    MinimumDate="{Binding StartDate}"
+                                    Format="MMM dd, yyyy"
+                                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                     </Border>
-                    <Border StrokeThickness="0"
-                            Padding="14,8"
-                            BackgroundColor="{Binding SelectedRange, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=6M}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectRangeCommand}" CommandParameter="6M" />
-                        </Border.GestureRecognizers>
-                        <Label Text="6 Months"
-                               FontSize="13"
-                               FontAttributes="Bold"
-                               TextColor="{Binding SelectedRange, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=6M}" />
-                    </Border>
-                    <Border StrokeThickness="0"
-                            Padding="14,8"
-                            BackgroundColor="{Binding SelectedRange, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=1Y}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectRangeCommand}" CommandParameter="1Y" />
-                        </Border.GestureRecognizers>
-                        <Label Text="1 Year"
-                               FontSize="13"
-                               FontAttributes="Bold"
-                               TextColor="{Binding SelectedRange, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=1Y}" />
-                    </Border>
-                    <Border StrokeThickness="0"
-                            Padding="14,8"
-                            BackgroundColor="{Binding SelectedRange, Converter={StaticResource FilterChipBgConverter}, ConverterParameter=All}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectRangeCommand}" CommandParameter="All" />
-                        </Border.GestureRecognizers>
-                        <Label Text="All Time"
-                               FontSize="13"
-                               FontAttributes="Bold"
-                               TextColor="{Binding SelectedRange, Converter={StaticResource FilterChipTextConverter}, ConverterParameter=All}" />
-                    </Border>
-                </HorizontalStackLayout>
-            </ScrollView>
+                </VerticalStackLayout>
+            </Grid>
 
             <!-- Overview Summary Stats -->
             <VerticalStackLayout Spacing="12">
