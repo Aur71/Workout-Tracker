@@ -11,11 +11,14 @@ public partial class ProgramDetailViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
+    private readonly DataTransferService _transfer;
+
     private readonly LoadingService _loading;
 
-    public ProgramDetailViewModel(DatabaseService db, LoadingService loading)
+    public ProgramDetailViewModel(DatabaseService db, DataTransferService transfer, LoadingService loading)
     {
         _db = db;
+        _transfer = transfer;
         _loading = loading;
     }
 
@@ -144,6 +147,30 @@ public partial class ProgramDetailViewModel : ObservableObject
 
             await Shell.Current.GoToAsync($"../{nameof(ProgramDetailPage)}?id={newId}");
         }, "Duplicating...");
+    }
+
+    [RelayCommand]
+    private async Task ExportProgram()
+    {
+        if (Program == null) return;
+
+        try
+        {
+            await _loading.RunAsync(async () =>
+            {
+                var filePath = await _transfer.ExportProgramAsync(Program.Id);
+
+                await Share.Default.RequestAsync(new ShareFileRequest
+                {
+                    Title = $"Share {Program.Name}",
+                    File = new ShareFile(filePath)
+                });
+            }, "Exporting...");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlertAsync("Export Failed", ex.Message, "OK");
+        }
     }
 
     [RelayCommand]

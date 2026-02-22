@@ -11,11 +11,14 @@ public partial class ProgramListViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
 
+    private readonly DataTransferService _transfer;
+
     private readonly LoadingService _loading;
 
-    public ProgramListViewModel(DatabaseService db, LoadingService loading)
+    public ProgramListViewModel(DatabaseService db, DataTransferService transfer, LoadingService loading)
     {
         _db = db;
+        _transfer = transfer;
         _loading = loading;
     }
 
@@ -84,5 +87,51 @@ public partial class ProgramListViewModel : ObservableObject
     private async Task GoToAdd()
     {
         await Shell.Current.GoToAsync(nameof(NewProgramPage));
+    }
+
+    [RelayCommand]
+    private async Task ImportProgram()
+    {
+        try
+        {
+            var fileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+            {
+                { DevicePlatform.Android, new[] { "application/json" } },
+                { DevicePlatform.iOS, new[] { "public.json" } },
+                { DevicePlatform.WinUI, new[] { ".json" } },
+                { DevicePlatform.macOS, new[] { "public.json" } }
+            });
+
+            var result = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Select Program File",
+                FileTypes = fileTypes
+            });
+
+            if (result == null) return;
+
+            int newProgramId;
+
+            await _loading.RunAsync(async () =>
+            {
+                using var stream = await result.OpenReadAsync();
+                newProgramId = await _transfer.ImportProgramAsync(stream);
+            }, "Importing...");
+
+            await Shell.Current.DisplayAlertAsync(
+                "Import Complete",
+                "Program has been imported successfully.",
+                "OK");
+
+            await LoadProgramsAsync();
+        }
+        catch (InvalidOperationException ex)
+        {
+            await Shell.Current.DisplayAlertAsync("Import Failed", ex.Message, "OK");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlertAsync("Import Failed", $"An unexpected error occurred: {ex.Message}", "OK");
+        }
     }
 }

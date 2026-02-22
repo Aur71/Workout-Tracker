@@ -13,11 +13,22 @@
             <VerticalStackLayout Padding="20" Spacing="16">
 
                 <!-- Header -->
-                <Label Text="Programs"
-                       FontSize="28"
-                       FontAttributes="Bold"
-                       Padding="0,20,0,8"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                <Grid ColumnDefinitions="*,Auto" Padding="0,20,0,8">
+                    <Label Text="Programs"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                    <Label Grid.Column="1"
+                           Text="Import"
+                           FontSize="15"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ImportProgramCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
 
                 <!-- Empty State -->
                 <Label Text="No programs yet. Tap + to create one!"
