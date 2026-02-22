@@ -7,6 +7,7 @@ public partial class ActiveWorkoutPage : ContentPage, IQueryAttributable
 {
     private readonly ActiveWorkoutViewModel _vm;
     private int? _sessionId;
+    private bool _skipNextAppearing;
 
     public ActiveWorkoutPage(ActiveWorkoutViewModel vm)
     {
@@ -17,19 +18,41 @@ public partial class ActiveWorkoutPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("sessionId", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+        try
         {
-            _sessionId = id;
-            await _vm.LoadSessionAsync(id);
+            if (query.TryGetValue("sessionId", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+            {
+                _sessionId = id;
+                _skipNextAppearing = true;
+                await _vm.LoadSessionAsync(id);
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (_sessionId.HasValue && _vm.Exercises.Count > 0)
+        if (_skipNextAppearing)
         {
-            await _vm.LoadSessionAsync(_sessionId.Value);
+            _skipNextAppearing = false;
+            return;
         }
+        // Don't reload during an active workout — would discard unsaved input
+    }
+
+    protected override async void OnDisappearing()
+    {
+        base.OnDisappearing();
+        try
+        {
+            // Save progress if workout is active so data isn't lost on back gesture
+            await _vm.SaveProgressAsync();
+        }
+        catch { /* best-effort save */ }
+        _vm.Cleanup();
     }
 }

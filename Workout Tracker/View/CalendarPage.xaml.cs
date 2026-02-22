@@ -17,6 +17,7 @@ public partial class CalendarPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.LoadMonthAsync();
+        try { await _vm.LoadMonthAsync(); }
+        catch (Exception ex) { await DisplayAlert("Error", ex.Message, "OK"); }
     }
 }

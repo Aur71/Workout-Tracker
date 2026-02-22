@@ -44,6 +44,9 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
     [ObservableProperty]
     private string? _notes;
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     public ObservableCollection<MuscleSelection> SelectedMuscles { get; } = [];
 
     public bool HasMuscles => SelectedMuscles.Count > 0;
@@ -109,12 +112,17 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
     [RelayCommand]
     private async Task Save()
     {
+        if (IsBusy) return;
+
         if (string.IsNullOrWhiteSpace(Name))
         {
             await Shell.Current.DisplayAlertAsync("Validation", "Exercise name is required.", "OK");
             return;
         }
 
+        IsBusy = true;
+        try
+        {
         await _loading.RunAsync(async () =>
         {
             var exercise = new Exercise
@@ -146,6 +154,8 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
             WeakReferenceMessenger.Default.Unregister<MuscleSelectionMessage>(this);
             await Shell.Current.GoToAsync("..");
         }, "Saving...");
+        }
+        finally { IsBusy = false; }
     }
 
     [RelayCommand]

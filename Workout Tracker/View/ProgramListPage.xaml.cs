@@ -17,6 +17,7 @@ public partial class ProgramListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.LoadProgramsAsync();
+        try { await _vm.LoadProgramsAsync(); }
+        catch (Exception ex) { await DisplayAlert("Error", ex.Message, "OK"); }
     }
 }

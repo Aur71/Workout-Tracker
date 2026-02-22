@@ -17,6 +17,7 @@ public partial class LogListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.LoadLogsAsync();
+        try { await _vm.LoadLogsAsync(); }
+        catch (Exception ex) { await DisplayAlert("Error", ex.Message, "OK"); }
     }
 }

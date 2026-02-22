@@ -10,6 +10,7 @@ public partial class AnalyticsViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
     private bool _exercisesLoaded;
+    private bool _isLoadingData;
 
     private readonly LoadingService _loading;
 
@@ -26,9 +27,6 @@ public partial class AnalyticsViewModel : ObservableObject
 
     [ObservableProperty]
     private DateTime _endDate = DateTime.Today;
-
-    [ObservableProperty]
-    private bool _isLoading;
 
     // ── Summary ──
 
@@ -110,11 +108,12 @@ public partial class AnalyticsViewModel : ObservableObject
 
     public async Task LoadAsync()
     {
-        await _loading.RunAsync(async () =>
-        {
-        IsLoading = true;
+        if (_isLoadingData) return;
+        _isLoadingData = true;
 
         try
+        {
+        await _loading.RunAsync(async () =>
         {
             var (from, to) = GetDateRange();
 
@@ -158,12 +157,12 @@ public partial class AnalyticsViewModel : ObservableObject
 
             if (SelectedExercise != null)
                 await LoadProgressionChartAsync();
+        }, "Loading...");
         }
         finally
         {
-            IsLoading = false;
+            _isLoadingData = false;
         }
-        }, "Loading...");
     }
 
     private (DateTime from, DateTime to) GetDateRange()

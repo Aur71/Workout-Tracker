@@ -10,9 +10,15 @@ public class ProgramDisplay
     public string? Notes { get; set; }
     public string? Color { get; set; }
 
-    public Color BarColor => Color is not null
-        ? Microsoft.Maui.Graphics.Color.FromArgb(Color)
-        : Microsoft.Maui.Graphics.Color.FromArgb("#00D9A5");
+    public Color BarColor
+    {
+        get
+        {
+            if (Color is null) return Microsoft.Maui.Graphics.Color.FromArgb("#00D9A5");
+            try { return Microsoft.Maui.Graphics.Color.FromArgb(Color); }
+            catch { return Microsoft.Maui.Graphics.Color.FromArgb("#00D9A5"); }
+        }
+    }
 
     public string DateRangeDisplay
     {
@@ -22,7 +28,7 @@ public class ProgramDisplay
             if (EndDate.HasValue)
             {
                 var end = EndDate.Value.Year == StartDate.Year
-                    ? EndDate.Value.ToString("MMM d, yyyy")
+                    ? EndDate.Value.ToString("MMM d")
                     : EndDate.Value.ToString("MMM d, yyyy");
                 return $"{start} - {end}";
             }
@@ -71,7 +77,7 @@ public class ProgramDisplay
     {
         get
         {
-            var isDark = Application.Current!.RequestedTheme == AppTheme.Dark;
+            var isDark = Application.Current?.RequestedTheme == AppTheme.Dark;
             return StatusDisplay switch
             {
                 "Active" => isDark ? Microsoft.Maui.Graphics.Color.FromArgb("#1A3D33") : Microsoft.Maui.Graphics.Color.FromArgb("#E8FFF6"),

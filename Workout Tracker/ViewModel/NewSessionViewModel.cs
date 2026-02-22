@@ -14,6 +14,7 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     private readonly DatabaseService _db;
     private int _programId;
     private int? _editSessionId;
+    private Session? _originalSession;
 
     private readonly LoadingService _loading;
 
@@ -29,6 +30,9 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
 
     [ObservableProperty]
     private string? _notes;
+
+    [ObservableProperty]
+    private bool _isBusy;
 
     public ObservableCollection<SessionExerciseDisplay> Exercises { get; } = [];
 
@@ -57,12 +61,12 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
         if (_editSessionId.HasValue) return;
         _editSessionId = sessionId;
 
-        var session = await _db.GetSessionByIdAsync(sessionId);
-        if (session == null) return;
+        _originalSession = await _db.GetSessionByIdAsync(sessionId);
+        if (_originalSession == null) return;
 
-        _programId = session.ProgramId ?? 0;
-        SessionDate = session.Date;
-        Notes = session.Notes;
+        _programId = _originalSession.ProgramId ?? 0;
+        SessionDate = _originalSession.Date;
+        Notes = _originalSession.Notes;
 
         var exercises = await _db.GetSessionExercisesWithSetsAsync(sessionId);
         Exercises.Clear();
@@ -75,6 +79,7 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     {
         var session = await _db.GetSessionByIdAsync(sessionId);
         if (session == null) return;
+        _originalSession = null; // Not editing — duplicating
 
         _programId = session.ProgramId ?? 0;
         Notes = session.Notes;
@@ -187,13 +192,25 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     [RelayCommand]
     private async Task Save()
     {
+        if (IsBusy) return;
+        IsBusy = true;
+
+        try
+        {
         await _loading.RunAsync(async () =>
         {
             var session = new Session
             {
                 ProgramId = _programId,
                 Date = SessionDate,
-                Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
+                Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
+                // Preserve original metadata when editing
+                Week = _originalSession?.Week,
+                Day = _originalSession?.Day,
+                IsCompleted = _originalSession?.IsCompleted ?? false,
+                StartTime = _originalSession?.StartTime,
+                EndTime = _originalSession?.EndTime,
+                EnergyLevel = _originalSession?.EnergyLevel
             };
 
             if (_editSessionId.HasValue)
@@ -214,6 +231,8 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
             WeakReferenceMessenger.Default.Unregister<ExerciseSelectionMessage>(this);
             await Shell.Current.GoToAsync("..");
         }, "Saving...");
+        }
+        finally { IsBusy = false; }
     }
 
     [RelayCommand]

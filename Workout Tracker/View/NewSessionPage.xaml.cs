@@ -16,20 +16,27 @@ public partial class NewSessionPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("edit", out var editVal) && editVal?.ToString() == "true"
-            && query.TryGetValue("id", out var idVal) && int.TryParse(idVal?.ToString(), out int id))
+        try
         {
-            PageTitle.Text = "Edit Session";
-            await _vm.LoadSessionAsync(id);
+            if (query.TryGetValue("edit", out var editVal) && editVal?.ToString() == "true"
+                && query.TryGetValue("id", out var idVal) && int.TryParse(idVal?.ToString(), out int id))
+            {
+                PageTitle.Text = "Edit Session";
+                await _vm.LoadSessionAsync(id);
+            }
+            else if (query.TryGetValue("duplicate", out var dupVal) && dupVal?.ToString() == "true"
+                && query.TryGetValue("id", out var dupIdVal) && int.TryParse(dupIdVal?.ToString(), out int dupId))
+            {
+                await _vm.DuplicateSessionAsync(dupId);
+            }
+            else if (query.TryGetValue("programId", out var pidVal) && int.TryParse(pidVal?.ToString(), out int pid))
+            {
+                await _vm.InitAsync(pid);
+            }
         }
-        else if (query.TryGetValue("duplicate", out var dupVal) && dupVal?.ToString() == "true"
-            && query.TryGetValue("id", out var dupIdVal) && int.TryParse(dupIdVal?.ToString(), out int dupId))
+        catch (Exception ex)
         {
-            await _vm.DuplicateSessionAsync(dupId);
-        }
-        else if (query.TryGetValue("programId", out var pidVal) && int.TryParse(pidVal?.ToString(), out int pid))
-        {
-            await _vm.InitAsync(pid);
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 }

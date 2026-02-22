@@ -886,7 +886,8 @@ public class DatabaseService
                         SessionId = newSession.Id,
                         ExerciseId = se.ExerciseId,
                         Order = se.Order,
-                        Notes = se.Notes
+                        Notes = se.Notes,
+                        RestSeconds = se.RestSeconds
                     };
                     await db.InsertAsync(newSe);
 

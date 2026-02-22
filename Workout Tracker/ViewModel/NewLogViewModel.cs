@@ -138,6 +138,20 @@ public partial class NewLogViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
+        bool hasData = LogType switch
+        {
+            "body_metric" => !string.IsNullOrWhiteSpace(BodyweightText) || !string.IsNullOrWhiteSpace(BodyFatText) || !string.IsNullOrWhiteSpace(Notes),
+            "recovery" => !string.IsNullOrWhiteSpace(SleepHoursText) || SorenessLevel.HasValue || StressLevel.HasValue,
+            "calorie" => !string.IsNullOrWhiteSpace(TotalCaloriesText) || SelectedActivityLevel != null,
+            _ => false
+        };
+
+        if (!hasData)
+        {
+            await Shell.Current.DisplayAlertAsync("Validation", "Please enter at least one value.", "OK");
+            return;
+        }
+
         await _loading.RunAsync(async () =>
         {
         switch (LogType)

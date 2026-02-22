@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -13,6 +14,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     private readonly DatabaseService _db;
     private Session? _session;
     private IDispatcherTimer? _timer;
+    private DateTime? _workoutStartDateTime;
+    private readonly List<(ActiveSetDisplay set, PropertyChangedEventHandler handler)> _setSubscriptions = [];
 
     private readonly LoadingService _loading;
 
@@ -51,6 +54,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [ObservableProperty]
     private string _elapsedDurationDisplay = string.Empty;
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     public async Task LoadSessionAsync(int sessionId)
     {
         await _loading.RunAsync(async () =>
@@ -71,6 +77,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
         SessionDateDisplay = _session.Date.ToString("ddd, MMM d");
 
+        // Unsubscribe old handlers before clearing
+        UnsubscribeFromSets();
+
         // Load exercises and sets
         var isCompleted = _session.IsCompleted;
         var exercises = await _db.GetActiveWorkoutDataAsync(sessionId);
@@ -83,7 +92,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             if (!isCompleted)
             {
                 foreach (var set in ex.Sets)
-                    set.PropertyChanged += (_, args) =>
+                {
+                    PropertyChangedEventHandler handler = (_, args) =>
                     {
                         if (args.PropertyName == nameof(ActiveSetDisplay.Completed))
                         {
@@ -91,6 +101,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                             UpdateProgress();
                         }
                     };
+                    set.PropertyChanged += handler;
+                    _setSubscriptions.Add((set, handler));
+                }
             }
             Exercises.Add(ex);
         }
@@ -107,7 +120,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             if (_session.StartTime.HasValue && _session.EndTime.HasValue)
             {
                 var duration = _session.EndTime.Value - _session.StartTime.Value;
-                if (duration.TotalSeconds < 0) duration = TimeSpan.Zero;
+                if (duration.TotalSeconds < 0)
+                    duration += TimeSpan.FromHours(24);
                 ElapsedDurationDisplay = duration.TotalHours >= 1
                     ? duration.ToString(@"h\:mm\:ss")
                     : duration.ToString(@"mm\:ss");
@@ -117,9 +131,21 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         else if (_session.StartTime.HasValue)
         {
             IsWorkoutActive = true;
+            // Reconstruct full DateTime from the stored TimeOfDay
+            _workoutStartDateTime = DateTime.Today + _session.StartTime.Value;
+            // If the reconstructed time is in the future, the workout started yesterday
+            if (_workoutStartDateTime > DateTime.Now)
+                _workoutStartDateTime = _workoutStartDateTime.Value.AddDays(-1);
             StartTimer();
         }
         }, "Loading...");
+    }
+
+    private void UnsubscribeFromSets()
+    {
+        foreach (var (set, handler) in _setSubscriptions)
+            set.PropertyChanged -= handler;
+        _setSubscriptions.Clear();
     }
 
     private void UpdateProgress()
@@ -135,6 +161,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         if (_session == null) return;
 
         _session.StartTime = DateTime.Now.TimeOfDay;
+        _workoutStartDateTime = DateTime.Now;
         await _db.UpdateSessionAsync(_session);
 
         IsWorkoutActive = true;
@@ -143,8 +170,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     private void StartTimer()
     {
-        if (_session?.StartTime == null) return;
+        if (_workoutStartDateTime == null) return;
 
+        _timer?.Stop();
         _timer = Application.Current!.Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += (_, _) => UpdateElapsed();
@@ -154,9 +182,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     private void UpdateElapsed()
     {
-        if (_session?.StartTime == null) return;
+        if (_workoutStartDateTime == null) return;
 
-        var elapsed = DateTime.Now.TimeOfDay - _session.StartTime.Value;
+        var elapsed = DateTime.Now - _workoutStartDateTime.Value;
         if (elapsed.TotalSeconds < 0) elapsed = TimeSpan.Zero;
 
         ElapsedTimeDisplay = elapsed.TotalHours >= 1
@@ -179,22 +207,30 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [RelayCommand]
     private async Task FinishWorkout()
     {
-        if (_session == null) return;
+        if (_session == null || IsBusy) return;
+        IsBusy = true;
 
-        await _loading.RunAsync(async () =>
+        try
         {
-            // Save all sets
-            await _db.SaveActiveWorkoutSetsAsync(Exercises.ToList());
+            await _loading.RunAsync(async () =>
+            {
+                // Save all sets
+                await _db.SaveActiveWorkoutSetsAsync(Exercises.ToList());
 
-            // Mark session completed
-            _session.EndTime = DateTime.Now.TimeOfDay;
-            _session.IsCompleted = true;
-            await _db.UpdateSessionAsync(_session);
+                // Mark session completed
+                _session.EndTime = DateTime.Now.TimeOfDay;
+                _session.IsCompleted = true;
+                await _db.UpdateSessionAsync(_session);
 
-            _timer?.Stop();
-            WeakReferenceMessenger.Default.Send(new SessionCompletedMessage(_session.Id));
-            await Shell.Current.GoToAsync("..");
-        }, "Saving...");
+                Cleanup();
+                WeakReferenceMessenger.Default.Send(new SessionCompletedMessage(_session.Id));
+                await Shell.Current.GoToAsync("..");
+            }, "Saving...");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
@@ -204,7 +240,20 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         if (IsWorkoutActive)
             await _db.SaveActiveWorkoutSetsAsync(Exercises.ToList());
 
-        _timer?.Stop();
+        Cleanup();
         await Shell.Current.GoToAsync("..");
+    }
+
+    public async Task SaveProgressAsync()
+    {
+        if (_session != null && IsWorkoutActive)
+            await _db.SaveActiveWorkoutSetsAsync(Exercises.ToList());
+    }
+
+    public void Cleanup()
+    {
+        _timer?.Stop();
+        _timer = null;
+        UnsubscribeFromSets();
     }
 }

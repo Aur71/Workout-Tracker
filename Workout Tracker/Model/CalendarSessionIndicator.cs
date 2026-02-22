@@ -10,10 +10,16 @@ public class CalendarSessionIndicator
     public int ExerciseCount { get; set; }
     public int SetCount { get; set; }
 
-    public Color DotColor =>
-        string.IsNullOrWhiteSpace(ProgramColor)
-            ? Color.FromArgb("#00D9A5")
-            : Color.FromArgb(ProgramColor);
+    public Color DotColor
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(ProgramColor))
+                return Color.FromArgb("#00D9A5");
+            try { return Color.FromArgb(ProgramColor); }
+            catch { return Color.FromArgb("#00D9A5"); }
+        }
+    }
 
     public string ProgramNameDisplay => ProgramName ?? "Unlinked Session";
 

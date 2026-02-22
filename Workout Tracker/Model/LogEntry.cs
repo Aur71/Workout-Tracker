@@ -7,7 +7,7 @@ public class LogEntry
     public string LogType { get; set; } = "";
     public string Summary { get; set; } = "";
 
-    public string DateDisplay => Date.ToString("h:mm tt").ToLower();
+    public string DateDisplay => Date.ToString("MMM d");
 
     public string TypeDisplay => LogType switch
     {

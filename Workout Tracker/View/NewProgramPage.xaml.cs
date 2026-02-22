@@ -22,15 +22,22 @@ public partial class NewProgramPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("edit", out var editValue) && editValue?.ToString() == "true")
+        try
         {
-            PageTitle.Text = "Edit Program";
-
-            if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+            if (query.TryGetValue("edit", out var editValue) && editValue?.ToString() == "true")
             {
-                await _vm.LoadProgramAsync(id);
-                UpdateColorSelection();
+                PageTitle.Text = "Edit Program";
+
+                if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+                {
+                    await _vm.LoadProgramAsync(id);
+                    UpdateColorSelection();
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 

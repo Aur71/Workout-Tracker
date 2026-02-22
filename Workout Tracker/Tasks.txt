@@ -10,4 +10,5 @@
 - X App .NET initial loading screen.
 - X Active session back button looks bad in release mode.
 - X Import / export all data bug (sessions are not imported)
-- Optimize app performance
+- Remove log functionality
+- Add padding to the app icon

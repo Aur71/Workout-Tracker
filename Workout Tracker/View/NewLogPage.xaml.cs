@@ -30,21 +30,28 @@ public partial class NewLogPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("type", out var typeValue))
+        try
         {
-            var type = typeValue?.ToString() ?? "";
+            if (query.TryGetValue("type", out var typeValue))
+            {
+                var type = typeValue?.ToString() ?? "";
 
-            if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
-            {
-                PageTitle.Text = "Edit Log";
-                await _vm.LoadLogAsync(type, id);
-                RebuildChips();
+                if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+                {
+                    PageTitle.Text = "Edit Log";
+                    await _vm.LoadLogAsync(type, id);
+                    RebuildChips();
+                }
+                else
+                {
+                    _vm.SetType(type);
+                    RebuildChips();
+                }
             }
-            else
-            {
-                _vm.SetType(type);
-                RebuildChips();
-            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 

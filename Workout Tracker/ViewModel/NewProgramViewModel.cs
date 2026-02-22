@@ -42,6 +42,9 @@ public partial class NewProgramViewModel : ObservableObject
     [ObservableProperty]
     private string _selectedColor = "#00D9A5";
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     public List<string> ColorOptions { get; } =
     [
         "#00D9A5", // Primary/Teal
@@ -91,12 +94,17 @@ public partial class NewProgramViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
+        if (IsBusy) return;
+
         if (string.IsNullOrWhiteSpace(Name))
         {
             await Shell.Current.DisplayAlertAsync("Validation", "Program name is required.", "OK");
             return;
         }
 
+        IsBusy = true;
+        try
+        {
         await _loading.RunAsync(async () =>
         {
             var program = new Program
@@ -127,6 +135,8 @@ public partial class NewProgramViewModel : ObservableObject
 
             await Shell.Current.GoToAsync("..");
         }, "Saving...");
+        }
+        finally { IsBusy = false; }
     }
 
     [RelayCommand]

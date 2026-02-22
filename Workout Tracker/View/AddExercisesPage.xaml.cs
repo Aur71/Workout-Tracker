@@ -18,6 +18,7 @@ public partial class AddExercisesPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.LoadExercisesAsync();
+        try { await _vm.LoadExercisesAsync(); }
+        catch (Exception ex) { await DisplayAlert("Error", ex.Message, "OK"); }
     }
 }

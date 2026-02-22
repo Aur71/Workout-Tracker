@@ -15,10 +15,16 @@ public class DashboardSessionDisplay
 
     public string StatusDisplay => IsCompleted ? "Completed" : "Scheduled";
 
-    public Color DotColor =>
-        string.IsNullOrWhiteSpace(ProgramColor)
-            ? Color.FromArgb("#00D9A5")
-            : Color.FromArgb(ProgramColor);
+    public Color DotColor
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(ProgramColor))
+                return Color.FromArgb("#00D9A5");
+            try { return Color.FromArgb(ProgramColor); }
+            catch { return Color.FromArgb("#00D9A5"); }
+        }
+    }
 
     public string DateDisplay => Date.ToString("ddd, MMM d");
 
@@ -31,9 +37,9 @@ public class DashboardSessionDisplay
     public string ProgramNameDisplay => ProgramName ?? "Unlinked Session";
 
     public Color StatusBadgeBg => IsCompleted
-        ? (Application.Current!.RequestedTheme == AppTheme.Dark
+        ? (Application.Current?.RequestedTheme == AppTheme.Dark
             ? Color.FromArgb("#1A3D33") : Color.FromArgb("#E8FFF6"))
-        : (Application.Current!.RequestedTheme == AppTheme.Dark
+        : (Application.Current?.RequestedTheme == AppTheme.Dark
             ? Color.FromArgb("#1A2A3D") : Color.FromArgb("#EEF4FF"));
 
     public Color StatusBadgeTextColor => IsCompleted

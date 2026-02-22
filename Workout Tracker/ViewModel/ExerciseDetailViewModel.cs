@@ -21,6 +21,9 @@ public partial class ExerciseDetailViewModel : ObservableObject
     [ObservableProperty]
     private ExerciseDisplay? _exercise;
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     public bool HasDescription => !string.IsNullOrWhiteSpace(Exercise?.Description);
     public bool HasInstructions => !string.IsNullOrWhiteSpace(Exercise?.Instructions);
     public bool HasNotes => !string.IsNullOrWhiteSpace(Exercise?.Notes);
@@ -48,7 +51,7 @@ public partial class ExerciseDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task Delete()
     {
-        if (Exercise == null) return;
+        if (Exercise == null || IsBusy) return;
 
         bool confirm = await Shell.Current.DisplayAlertAsync(
             "Delete Exercise",
@@ -57,11 +60,16 @@ public partial class ExerciseDetailViewModel : ObservableObject
 
         if (!confirm) return;
 
-        await _loading.RunAsync(async () =>
+        IsBusy = true;
+        try
         {
-            await _db.DeleteExerciseAsync(Exercise.Id);
-            await Shell.Current.GoToAsync("..");
-        }, "Deleting...");
+            await _loading.RunAsync(async () =>
+            {
+                await _db.DeleteExerciseAsync(Exercise.Id);
+                await Shell.Current.GoToAsync("..");
+            }, "Deleting...");
+        }
+        finally { IsBusy = false; }
     }
 
     [RelayCommand]

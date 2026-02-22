@@ -16,14 +16,21 @@ public partial class NewExercisePage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("edit", out var editValue) && editValue?.ToString() == "true")
+        try
         {
-            PageTitle.Text = "Edit Exercise";
-
-            if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+            if (query.TryGetValue("edit", out var editValue) && editValue?.ToString() == "true")
             {
-                await _vm.LoadExerciseAsync(id);
+                PageTitle.Text = "Edit Exercise";
+
+                if (query.TryGetValue("id", out var idValue) && int.TryParse(idValue?.ToString(), out int id))
+                {
+                    await _vm.LoadExerciseAsync(id);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 }

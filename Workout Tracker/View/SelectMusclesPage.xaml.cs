@@ -17,6 +17,7 @@ public partial class SelectMusclesPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.LoadMusclesAsync();
+        try { await _vm.LoadMusclesAsync(); }
+        catch (Exception ex) { await DisplayAlert("Error", ex.Message, "OK"); }
     }
 }

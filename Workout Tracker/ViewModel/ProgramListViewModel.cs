@@ -117,12 +117,10 @@ public partial class ProgramListViewModel : ObservableObject
 
             if (result == null) return;
 
-            int newProgramId;
-
             await _loading.RunAsync(async () =>
             {
                 using var stream = await result.OpenReadAsync();
-                newProgramId = await _transfer.ImportProgramAsync(stream);
+                await _transfer.ImportProgramAsync(stream);
             }, "Importing...");
 
             await Shell.Current.DisplayAlertAsync(
