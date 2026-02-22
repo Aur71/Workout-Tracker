@@ -1,13 +1,15 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Workout_Tracker.Messages;
 using Workout_Tracker.Model;
 using Workout_Tracker.Services;
 using Workout_Tracker.View;
 
 namespace Workout_Tracker.ViewModel;
 
-public partial class ProgramDetailViewModel : ObservableObject
+public partial class ProgramDetailViewModel : ObservableObject, IRecipient<SessionCompletedMessage>
 {
     private readonly DatabaseService _db;
 
@@ -20,6 +22,13 @@ public partial class ProgramDetailViewModel : ObservableObject
         _db = db;
         _transfer = transfer;
         _loading = loading;
+        WeakReferenceMessenger.Default.Register(this);
+    }
+
+    public void Receive(SessionCompletedMessage message)
+    {
+        if (Program != null)
+            MainThread.BeginInvokeOnMainThread(async () => await LoadSessionsAsync(Program.Id));
     }
 
     [ObservableProperty]
@@ -214,6 +223,7 @@ public partial class ProgramDetailViewModel : ObservableObject
         await _loading.RunAsync(async () =>
         {
             await _db.DeleteProgramAsync(Program.Id);
+            WeakReferenceMessenger.Default.Unregister<SessionCompletedMessage>(this);
             await Shell.Current.GoToAsync("..");
         }, "Deleting...");
     }
@@ -221,6 +231,7 @@ public partial class ProgramDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task Back()
     {
+        WeakReferenceMessenger.Default.Unregister<SessionCompletedMessage>(this);
         await Shell.Current.GoToAsync("..");
     }
 }

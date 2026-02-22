@@ -45,16 +45,23 @@ public partial class ProgramListViewModel : ObservableObject
             var programs = await _db.GetAllProgramsAsync();
             var today = DateTime.Today;
 
-            var displays = programs.Select(p => new ProgramDisplay
+            var displays = new List<ProgramDisplay>();
+            foreach (var p in programs)
             {
-                Id = p.Id,
-                Name = p.Name,
-                Goal = p.Goal,
-                StartDate = p.StartDate,
-                EndDate = p.EndDate,
-                Notes = p.Notes,
-                Color = p.Color
-            }).ToList();
+                var (total, completed) = await _db.GetSessionCountsForProgramAsync(p.Id);
+                displays.Add(new ProgramDisplay
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Goal = p.Goal,
+                    StartDate = p.StartDate,
+                    EndDate = p.EndDate,
+                    Notes = p.Notes,
+                    Color = p.Color,
+                    SessionCount = total,
+                    CompletedSessionCount = completed
+                });
+            }
 
             ActivePrograms.Clear();
             UpcomingPrograms.Clear();

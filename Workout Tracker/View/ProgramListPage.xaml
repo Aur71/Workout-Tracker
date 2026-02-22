@@ -145,15 +145,15 @@
                                             </Border>
                                         </Grid>
 
-                                        <!-- Stats (static for now) -->
+                                        <!-- Stats -->
                                         <HorizontalStackLayout Grid.Row="3" Spacing="16">
-                                            <Label Text="0 sessions"
+                                            <Label Text="{Binding SessionCountDisplay}"
                                                    FontSize="13"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                             <Label Text="·"
                                                    FontSize="13"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                                            <Label Text="0 completed"
+                                            <Label Text="{Binding CompletedCountDisplay}"
                                                    FontSize="13"
                                                    TextColor="{StaticResource Primary}" />
                                         </HorizontalStackLayout>

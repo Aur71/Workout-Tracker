@@ -42,6 +42,12 @@ public class ProgramDisplay
         }
     }
 
+    public int SessionCount { get; set; }
+    public int CompletedSessionCount { get; set; }
+
+    public string SessionCountDisplay => SessionCount == 1 ? "1 session" : $"{SessionCount} sessions";
+    public string CompletedCountDisplay => CompletedSessionCount == 1 ? "1 completed" : $"{CompletedSessionCount} completed";
+
     public bool HasDuration => EndDate.HasValue;
 
     public bool HasGoal => !string.IsNullOrWhiteSpace(Goal);

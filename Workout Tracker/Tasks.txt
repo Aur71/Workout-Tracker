@@ -8,4 +8,6 @@
 - X Change SVGs
 - X Change APP Name & Icon
 - X App .NET initial loading screen.
+- Active session back button looks bad in release mode.
+- Import / export all data bug (sessions are not imported.
 - Optimize app performance

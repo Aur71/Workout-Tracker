@@ -239,6 +239,17 @@ public class DatabaseService
         });
     }
 
+    public async Task<(int total, int completed)> GetSessionCountsForProgramAsync(int programId)
+    {
+        return await Task.Run(async () =>
+        {
+            var sessions = await AppDatabase.Database.Table<Session>()
+                .Where(s => s.ProgramId == programId)
+                .ToListAsync();
+            return (sessions.Count, sessions.Count(s => s.IsCompleted));
+        });
+    }
+
     public async Task<DateTime?> GetLastSessionDateForProgramAsync(int programId)
     {
         return await Task.Run(async () =>

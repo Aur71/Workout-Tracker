@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Workout_Tracker.Messages;
 using Workout_Tracker.Model;
 using Workout_Tracker.Services;
 
@@ -190,6 +192,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             await _db.UpdateSessionAsync(_session);
 
             _timer?.Stop();
+            WeakReferenceMessenger.Default.Send(new SessionCompletedMessage(_session.Id));
             await Shell.Current.GoToAsync("..");
         }, "Saving...");
     }
