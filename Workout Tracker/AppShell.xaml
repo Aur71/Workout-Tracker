@@ -26,12 +26,6 @@
             Route="Calendar" />
 
         <ShellContent
-            Title="Workouts"
-            Icon="tab_workouts.svg"
-            ContentTemplate="{DataTemplate view:WorkoutListPage}"
-            Route="Workouts" />
-
-        <ShellContent
             Title="Exercises"
             Icon="tab_exercises.svg"
             ContentTemplate="{DataTemplate view:ExerciseListPage}"

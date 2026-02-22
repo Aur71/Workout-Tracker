@@ -334,30 +334,17 @@
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
 
-                        <!-- Add Exercises / From Template buttons -->
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                            <Button Text="+ Add Exercises"
-                                    Command="{Binding GoToAddExercisesCommand}"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="{StaticResource Primary}"
-                                    BorderWidth="1.5"
-                                    TextColor="{StaticResource Primary}"
-                                    FontAttributes="Bold"
-                                    CornerRadius="10"
-                                    HeightRequest="44"
-                                    FontSize="13" />
-                            <Button Grid.Column="1"
-                                    Text="From Template"
-                                    Command="{Binding FromTemplateCommand}"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="{StaticResource Primary}"
-                                    BorderWidth="1.5"
-                                    TextColor="{StaticResource Primary}"
-                                    FontAttributes="Bold"
-                                    CornerRadius="10"
-                                    HeightRequest="44"
-                                    FontSize="13" />
-                        </Grid>
+                        <!-- Add Exercises button -->
+                        <Button Text="+ Add Exercises"
+                                Command="{Binding GoToAddExercisesCommand}"
+                                BackgroundColor="Transparent"
+                                BorderColor="{StaticResource Primary}"
+                                BorderWidth="1.5"
+                                TextColor="{StaticResource Primary}"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                HeightRequest="44"
+                                FontSize="13" />
                     </VerticalStackLayout>
                 </Border>
 

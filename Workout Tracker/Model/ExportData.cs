@@ -16,8 +16,6 @@ public class ExportPayload
     public List<Exercise> Exercises { get; set; } = [];
     public List<ExerciseMuscle> ExerciseMuscles { get; set; } = [];
     public List<Program> Programs { get; set; } = [];
-    public List<Workout> Workouts { get; set; } = [];
-    public List<WorkoutExercise> WorkoutExercises { get; set; } = [];
     public List<Session> Sessions { get; set; } = [];
     public List<SessionExercise> SessionExercises { get; set; } = [];
     public List<Set> Sets { get; set; } = [];

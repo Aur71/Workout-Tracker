@@ -28,9 +28,6 @@ namespace Workout_Tracker
             builder.Services.AddTransient<ExerciseDetailViewModel>();
             builder.Services.AddTransient<NewExerciseViewModel>();
             builder.Services.AddTransient<SelectMusclesViewModel>();
-            builder.Services.AddTransient<WorkoutListViewModel>();
-            builder.Services.AddTransient<WorkoutDetailViewModel>();
-            builder.Services.AddTransient<NewWorkoutViewModel>();
             builder.Services.AddTransient<AddExercisesViewModel>();
             builder.Services.AddTransient<NewProgramViewModel>();
             builder.Services.AddTransient<ProgramListViewModel>();
@@ -51,9 +48,6 @@ namespace Workout_Tracker
             builder.Services.AddTransient<ExerciseDetailPage>();
             builder.Services.AddTransient<NewExercisePage>();
             builder.Services.AddTransient<SelectMusclesPage>();
-            builder.Services.AddTransient<WorkoutListPage>();
-            builder.Services.AddTransient<WorkoutDetailPage>();
-            builder.Services.AddTransient<NewWorkoutPage>();
             builder.Services.AddTransient<AddExercisesPage>();
             builder.Services.AddTransient<NewProgramPage>();
             builder.Services.AddTransient<ProgramListPage>();

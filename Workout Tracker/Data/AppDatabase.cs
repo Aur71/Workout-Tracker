@@ -25,8 +25,6 @@ public class AppDatabase
                 field.CreateTableAsync<Exercise>().Wait();
                 field.CreateTableAsync<Muscle>().Wait();
                 field.CreateTableAsync<ExerciseMuscle>().Wait();
-                field.CreateTableAsync<Workout>().Wait();
-                field.CreateTableAsync<WorkoutExercise>().Wait();
                 field.CreateTableAsync<Session>().Wait();
                 field.CreateTableAsync<SessionExercise>().Wait();
                 field.CreateTableAsync<Set>().Wait();

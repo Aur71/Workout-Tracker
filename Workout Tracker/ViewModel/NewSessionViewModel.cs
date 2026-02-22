@@ -107,64 +107,6 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     }
 
     [RelayCommand]
-    private async Task FromTemplate()
-    {
-        var workouts = await _db.GetAllWorkoutsAsync();
-        if (workouts.Count == 0)
-        {
-            await Shell.Current.DisplayAlertAsync("No Templates", "No workout templates found.", "OK");
-            return;
-        }
-
-        var names = workouts.Select(w => w.Name).ToArray();
-        var result = await Shell.Current.DisplayActionSheetAsync("Select Template", "Cancel", null, names);
-
-        if (result == null || result == "Cancel") return;
-
-        var selected = workouts.FirstOrDefault(w => w.Name == result);
-        if (selected == null) return;
-
-        if (Exercises.Count > 0)
-        {
-            bool replace = await Shell.Current.DisplayAlertAsync(
-                "Replace Exercises",
-                "Replace current exercises with template?",
-                "Replace", "Cancel");
-            if (!replace) return;
-            Exercises.Clear();
-        }
-
-        await _loading.RunAsync(async () =>
-        {
-            int order = 1;
-            foreach (var we in selected.Exercises)
-            {
-                var ex = new SessionExerciseDisplay
-                {
-                    ExerciseId = we.ExerciseId,
-                    ExerciseName = we.ExerciseName,
-                    ExerciseType = we.ExerciseType,
-                    PrimaryMuscle = we.PrimaryMuscle,
-                    IsTimeBased = false, // Will be resolved below
-                    Order = order++
-                };
-
-                // Look up IsTimeBased from the exercise
-                var exerciseDisplay = await _db.GetExerciseByIdAsync(we.ExerciseId);
-                if (exerciseDisplay != null)
-                    ex.IsTimeBased = exerciseDisplay.IsTimeBased;
-
-                // Add 3 default empty sets
-                for (int i = 1; i <= 3; i++)
-                    ex.Sets.Add(new SetDisplay { SetNumber = i });
-
-                Exercises.Add(ex);
-            }
-            OnPropertyChanged(nameof(HasExercises));
-        }, "Loading template...");
-    }
-
-    [RelayCommand]
     private void RemoveExercise(SessionExerciseDisplay exercise)
     {
         Exercises.Remove(exercise);

@@ -28,8 +28,6 @@ public class DataTransferService
                 Exercises = await db.Table<Exercise>().ToListAsync(),
                 ExerciseMuscles = await db.Table<ExerciseMuscle>().ToListAsync(),
                 Programs = await db.Table<Program>().ToListAsync(),
-                Workouts = await db.Table<Workout>().ToListAsync(),
-                WorkoutExercises = await db.Table<WorkoutExercise>().ToListAsync(),
                 Sessions = await db.Table<Session>().ToListAsync(),
                 SessionExercises = await db.Table<SessionExercise>().ToListAsync(),
                 Sets = await db.Table<Set>().ToListAsync(),
@@ -84,8 +82,6 @@ public class DataTransferService
         payload.Exercises ??= [];
         payload.ExerciseMuscles ??= [];
         payload.Programs ??= [];
-        payload.Workouts ??= [];
-        payload.WorkoutExercises ??= [];
         payload.Sessions ??= [];
         payload.SessionExercises ??= [];
         payload.Sets ??= [];
@@ -101,8 +97,6 @@ public class DataTransferService
             conn.DeleteAll<Set>();
             conn.DeleteAll<SessionExercise>();
             conn.DeleteAll<Session>();
-            conn.DeleteAll<WorkoutExercise>();
-            conn.DeleteAll<Workout>();
             conn.DeleteAll<ExerciseMuscle>();
             conn.DeleteAll<Exercise>();
             conn.DeleteAll<Muscle>();
@@ -118,8 +112,6 @@ public class DataTransferService
             conn.InsertAll(payload.Exercises);
             conn.InsertAll(payload.ExerciseMuscles);
             conn.InsertAll(payload.Programs);
-            conn.InsertAll(payload.Workouts);
-            conn.InsertAll(payload.WorkoutExercises);
             conn.InsertAll(payload.Sessions);
             conn.InsertAll(payload.SessionExercises);
             conn.InsertAll(payload.Sets);
