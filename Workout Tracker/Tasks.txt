@@ -1,4 +1,9 @@
-- Export / import program
+- Remove workout templates
+- Add button - move session to last position
+- Add duplicate session button
 - Add rest time to the program
-- Optimize app performance
+- Export / import program
 - Add dynamic time filter for the analyitics page
+- Change SVGs
+- Change APP Name & Icon
+- Optimize app performance
