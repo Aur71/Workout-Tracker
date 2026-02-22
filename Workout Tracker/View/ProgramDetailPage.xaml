@@ -259,7 +259,7 @@
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgramDetailViewModel}}, Path=OpenSessionCommand}"
                                                               CommandParameter="{Binding}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="4">
                                         <Label Text="{Binding DateDisplay}"
                                                FontSize="15"
                                                FontAttributes="Bold"
@@ -279,7 +279,19 @@
                                                    FontAttributes="Bold"
                                                    TextColor="{Binding CompletedBadgeTextColor}" />
                                         </Border>
+                                        <!-- Duplicate button -->
                                         <Label Grid.Column="2"
+                                               Text="&#x2750;"
+                                               FontSize="16"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                               VerticalOptions="Center">
+                                            <Label.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgramDetailViewModel}}, Path=DuplicateSessionCommand}"
+                                                                      CommandParameter="{Binding}" />
+                                            </Label.GestureRecognizers>
+                                        </Label>
+                                        <!-- Delete button -->
+                                        <Label Grid.Column="3"
                                                Text="&#x2715;"
                                                FontSize="16"
                                                TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"

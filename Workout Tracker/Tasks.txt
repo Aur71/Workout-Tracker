@@ -1,7 +1,7 @@
 - X Remove workout templates
 - X Add rest time to the program
-- Button to reset program completion.
-- Add duplicate session button
+- X Button to reset program completion.
+- X Add duplicate session button
 - Add dynamic time filter for the analyitics page
 - Export / import program
 - Change tabs order

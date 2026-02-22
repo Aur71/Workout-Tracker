@@ -71,6 +71,25 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
         OnPropertyChanged(nameof(HasExercises));
     }
 
+    public async Task DuplicateSessionAsync(int sessionId)
+    {
+        var session = await _db.GetSessionByIdAsync(sessionId);
+        if (session == null) return;
+
+        _programId = session.ProgramId ?? 0;
+        Notes = session.Notes;
+
+        // Date = last session in program + 1 day
+        var lastDate = await _db.GetLastSessionDateForProgramAsync(_programId);
+        SessionDate = lastDate.HasValue ? lastDate.Value.AddDays(1) : session.Date.AddDays(1);
+
+        var exercises = await _db.GetSessionExercisesWithSetsAsync(sessionId);
+        Exercises.Clear();
+        foreach (var ex in exercises)
+            Exercises.Add(ex);
+        OnPropertyChanged(nameof(HasExercises));
+    }
+
     public void Receive(ExerciseSelectionMessage message)
     {
         // Convert ExerciseSelection list to SessionExerciseDisplay list

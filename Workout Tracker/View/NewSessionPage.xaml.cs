@@ -22,6 +22,11 @@ public partial class NewSessionPage : ContentPage, IQueryAttributable
             PageTitle.Text = "Edit Session";
             await _vm.LoadSessionAsync(id);
         }
+        else if (query.TryGetValue("duplicate", out var dupVal) && dupVal?.ToString() == "true"
+            && query.TryGetValue("id", out var dupIdVal) && int.TryParse(dupIdVal?.ToString(), out int dupId))
+        {
+            await _vm.DuplicateSessionAsync(dupId);
+        }
         else if (query.TryGetValue("programId", out var pidVal) && int.TryParse(pidVal?.ToString(), out int pid))
         {
             await _vm.InitAsync(pid);

@@ -90,6 +90,12 @@ public partial class ProgramDetailViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task DuplicateSession(SessionDisplay session)
+    {
+        await Shell.Current.GoToAsync($"{nameof(NewSessionPage)}?duplicate=true&id={session.Id}");
+    }
+
+    [RelayCommand]
     private async Task DeleteSession(SessionDisplay session)
     {
         bool confirm = await Shell.Current.DisplayAlertAsync(
