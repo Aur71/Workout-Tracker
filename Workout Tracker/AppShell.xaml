@@ -14,6 +14,12 @@
             Route="Dashboard" />
 
         <ShellContent
+            Title="Programs"
+            Icon="tab_programs.svg"
+            ContentTemplate="{DataTemplate view:ProgramListPage}"
+            Route="Programs" />
+
+        <ShellContent
             Title="Analytics"
             Icon="tab_analytics.svg"
             ContentTemplate="{DataTemplate view:AnalyticsPage}"
@@ -26,22 +32,16 @@
             Route="Calendar" />
 
         <ShellContent
-            Title="Exercises"
-            Icon="tab_exercises.svg"
-            ContentTemplate="{DataTemplate view:ExerciseListPage}"
-            Route="Exercises" />
-
-        <ShellContent
-            Title="Programs"
-            Icon="tab_programs.svg"
-            ContentTemplate="{DataTemplate view:ProgramListPage}"
-            Route="Programs" />
-
-        <ShellContent
             Title="Logs"
             Icon="tab_logs.svg"
             ContentTemplate="{DataTemplate view:LogListPage}"
             Route="Logs" />
+
+        <ShellContent
+            Title="Exercises"
+            Icon="tab_exercises.svg"
+            ContentTemplate="{DataTemplate view:ExerciseListPage}"
+            Route="Exercises" />
 
         <ShellContent
             Title="Settings"

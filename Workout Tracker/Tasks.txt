@@ -3,8 +3,9 @@
 - X Button to reset program completion.
 - X Add duplicate session button
 - X Add dynamic time filter for the analyitics page
-- Export / import program
-- Change tabs order
-- Change SVGs
+- X Export / import program
+- X Change tabs order
+- X Change SVGs
 - Change APP Name & Icon
+- App .NET initial loading screen.
 - Optimize app performance
