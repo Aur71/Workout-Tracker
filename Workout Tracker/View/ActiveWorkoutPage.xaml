@@ -109,6 +109,16 @@
                                                    FontSize="11"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
                                                    VerticalOptions="Center" />
+                                            <Border StrokeThickness="0"
+                                                    Padding="5,1"
+                                                    BackgroundColor="{AppThemeBinding Light=#EEF4FF, Dark=#1A2A3D}">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="4" />
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding RestDisplay}"
+                                                       FontSize="10"
+                                                       TextColor="{AppThemeBinding Light=#4A6CF7, Dark=#7B9BFF}" />
+                                            </Border>
                                         </HorizontalStackLayout>
                                     </VerticalStackLayout>
 

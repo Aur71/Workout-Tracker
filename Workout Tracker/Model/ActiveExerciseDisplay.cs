@@ -13,6 +13,17 @@ public partial class ActiveExerciseDisplay : ObservableObject
     public bool IsTimeBased { get; set; }
     public int Order { get; set; }
     public string? Notes { get; set; }
+    public int RestSeconds { get; set; } = 120;
+
+    public string RestDisplay
+    {
+        get
+        {
+            var mins = RestSeconds / 60;
+            var secs = RestSeconds % 60;
+            return secs > 0 ? $"Rest: {mins}:{secs:D2}" : $"Rest: {mins}:00";
+        }
+    }
 
     [ObservableProperty]
     private bool _isExpanded = true;

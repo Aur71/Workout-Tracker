@@ -15,6 +15,9 @@ public partial class SessionExerciseDisplay : ObservableObject
     public string? Notes { get; set; }
 
     [ObservableProperty]
+    private string _restSecondsText = "120";
+
+    [ObservableProperty]
     private bool _isExpanded = true;
 
     public ObservableCollection<SetDisplay> Sets { get; } = [];

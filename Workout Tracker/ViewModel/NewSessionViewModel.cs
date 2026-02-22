@@ -88,7 +88,8 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
                 ExerciseType = sel.Exercise.ExerciseType,
                 PrimaryMuscle = sel.Exercise.PrimaryMuscle,
                 IsTimeBased = sel.Exercise.IsTimeBased,
-                Order = startOrder++
+                Order = startOrder++,
+                RestSecondsText = "120"
             });
         }
         OnPropertyChanged(nameof(HasExercises));

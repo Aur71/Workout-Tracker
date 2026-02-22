@@ -16,6 +16,8 @@ public class SessionExercise
     [NotNull]
     public int Order { get; set; }
 
+    public int? RestSeconds { get; set; }
+
     [MaxLength(1000)]
     public string? Notes { get; set; }
 }

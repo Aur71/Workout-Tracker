@@ -294,7 +294,8 @@ public class DatabaseService
                     PrimaryMuscle = primaryMuscle,
                     IsTimeBased = ex?.IsTimeBased ?? false,
                     Order = se.Order,
-                    Notes = se.Notes
+                    Notes = se.Notes,
+                    RestSecondsText = (se.RestSeconds ?? 120).ToString()
                 };
 
                 var exerciseSets = sets
@@ -325,12 +326,14 @@ public class DatabaseService
             var db = AppDatabase.Database;
             foreach (var ex in exercises)
             {
+                int.TryParse(ex.RestSecondsText, out var restSec);
                 var sessionExercise = new SessionExercise
                 {
                     SessionId = sessionId,
                     ExerciseId = ex.ExerciseId,
                     Order = ex.Order,
-                    Notes = ex.Notes
+                    Notes = ex.Notes,
+                    RestSeconds = restSec > 0 ? restSec : 120
                 };
                 await db.InsertAsync(sessionExercise);
 
@@ -728,7 +731,8 @@ public class DatabaseService
                     PrimaryMuscle = primaryMuscle,
                     IsTimeBased = ex?.IsTimeBased ?? false,
                     Order = se.Order,
-                    Notes = se.Notes
+                    Notes = se.Notes,
+                    RestSeconds = se.RestSeconds ?? 120
                 };
 
                 var exerciseSets = sets

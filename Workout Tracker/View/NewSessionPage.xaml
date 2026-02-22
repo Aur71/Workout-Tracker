@@ -208,6 +208,28 @@
                                             <VerticalStackLayout Spacing="6"
                                                                  IsVisible="{Binding IsExpanded}">
 
+                                                <!-- Rest Time -->
+                                                <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8"
+                                                      Padding="0,2,0,4">
+                                                    <Label Text="Rest"
+                                                           FontSize="12"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                                           VerticalOptions="Center" />
+                                                    <Border Grid.Column="1" StrokeThickness="1"
+                                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                            Padding="8,0" HeightRequest="36" WidthRequest="70"
+                                                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                                                        <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
+                                                        <Entry Text="{Binding RestSecondsText}" Keyboard="Numeric" Placeholder="120"
+                                                               FontSize="13" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                    </Border>
+                                                    <Label Grid.Column="2" Text="sec"
+                                                           FontSize="12"
+                                                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                                           VerticalOptions="Center" />
+                                                </Grid>
+
                                                 <!-- Rep-based header + rows -->
                                                 <VerticalStackLayout Spacing="4"
                                                                      IsVisible="{Binding IsTimeBased, Converter={StaticResource InvertedBoolConverter}}">
