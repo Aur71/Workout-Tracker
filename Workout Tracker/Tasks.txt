@@ -6,6 +6,6 @@
 - X Export / import program
 - X Change tabs order
 - X Change SVGs
-- Change APP Name & Icon
-- App .NET initial loading screen.
+- X Change APP Name & Icon
+- X App .NET initial loading screen.
 - Optimize app performance
