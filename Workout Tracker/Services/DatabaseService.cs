@@ -169,7 +169,21 @@ public class DatabaseService
     public async Task DeleteProgramAsync(int id)
     {
         await Task.Run(async () =>
-            await AppDatabase.Database.DeleteAsync(new Program { Id = id }));
+        {
+            var db = AppDatabase.Database;
+            var sessions = await db.Table<Session>()
+                .Where(s => s.ProgramId == id).ToListAsync();
+            foreach (var session in sessions)
+            {
+                var sessionExercises = await db.Table<SessionExercise>()
+                    .Where(se => se.SessionId == session.Id).ToListAsync();
+                foreach (var se in sessionExercises)
+                    await db.Table<Set>().DeleteAsync(s => s.SessionExerciseId == se.Id);
+                await db.Table<SessionExercise>().DeleteAsync(se => se.SessionId == session.Id);
+                await db.DeleteAsync(session);
+            }
+            await db.DeleteAsync(new Program { Id = id });
+        });
     }
 
     // ── Session methods ──

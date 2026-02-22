@@ -50,6 +50,9 @@ public class DataTransferService
         if (data == null)
             return (false, "This file is not a valid backup file.");
 
+        if (data.Type is not null and not "full_backup")
+            return (false, "This file is a program export, not a full backup. To import a program, use the Import option on the Programs page.");
+
         if (data.Version <= 0 || data.Version > CurrentVersion)
             return (false, "This backup was created by a newer version of the app. Please update the app first.");
 
@@ -159,11 +162,17 @@ public class DataTransferService
             throw new InvalidOperationException("This file is not a valid program file.");
         }
 
-        if (data == null || data.Data == null || data.Data.Program == null)
+        if (data == null || data.Data == null)
             throw new InvalidOperationException("This file is not a valid program file.");
+
+        if (data.Type is not null and not "program")
+            throw new InvalidOperationException("This file is a full backup, not a program export. To restore a full backup, use the Import option in Settings.");
 
         if (data.Version <= 0 || data.Version > CurrentVersion)
             throw new InvalidOperationException("This program was exported by a newer version of the app. Please update the app first.");
+
+        if (string.IsNullOrWhiteSpace(data.Data.Program?.Name))
+            throw new InvalidOperationException("This file is not a valid program file.");
 
         var payload = data.Data;
         payload.Sessions ??= [];
@@ -349,18 +358,21 @@ public class DataTransferService
             conn.DeleteAll<RecoveryLog>();
             conn.DeleteAll<CalorieLog>();
 
-            // Insert all data (parent tables first, preserving original IDs)
-            conn.InsertAll(payload.Tags);
-            conn.InsertAll(payload.Muscles);
-            conn.InsertAll(payload.Exercises);
-            conn.InsertAll(payload.ExerciseMuscles);
-            conn.InsertAll(payload.Programs);
-            conn.InsertAll(payload.Sessions);
-            conn.InsertAll(payload.SessionExercises);
-            conn.InsertAll(payload.Sets);
-            conn.InsertAll(payload.BodyMetrics);
-            conn.InsertAll(payload.RecoveryLogs);
-            conn.InsertAll(payload.CalorieLogs);
+            // Insert all data (parent tables first, preserving original IDs).
+            // "OR REPLACE" forces sqlite-net to include the PK column in the
+            // INSERT so the exported IDs are kept and foreign-key references
+            // (e.g. Session.ProgramId) remain valid.
+            conn.InsertAll(payload.Tags, "OR REPLACE", false);
+            conn.InsertAll(payload.Muscles, "OR REPLACE", false);
+            conn.InsertAll(payload.Exercises, "OR REPLACE", false);
+            conn.InsertAll(payload.ExerciseMuscles, "OR REPLACE", false);
+            conn.InsertAll(payload.Programs, "OR REPLACE", false);
+            conn.InsertAll(payload.Sessions, "OR REPLACE", false);
+            conn.InsertAll(payload.SessionExercises, "OR REPLACE", false);
+            conn.InsertAll(payload.Sets, "OR REPLACE", false);
+            conn.InsertAll(payload.BodyMetrics, "OR REPLACE", false);
+            conn.InsertAll(payload.RecoveryLogs, "OR REPLACE", false);
+            conn.InsertAll(payload.CalorieLogs, "OR REPLACE", false);
         });
     }
 }

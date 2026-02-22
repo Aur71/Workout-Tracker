@@ -4,6 +4,7 @@ namespace Workout_Tracker.Model;
 
 public class ProgramExportData
 {
+    public string Type { get; set; } = "program";
     public int Version { get; set; } = 1;
     public DateTime ExportDate { get; set; }
     public ProgramExportPayload Data { get; set; } = new();

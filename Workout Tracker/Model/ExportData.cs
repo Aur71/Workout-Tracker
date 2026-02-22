@@ -4,6 +4,7 @@ namespace Workout_Tracker.Model;
 
 public class ExportData
 {
+    public string Type { get; set; } = "full_backup";
     public int Version { get; set; } = 1;
     public DateTime ExportDate { get; set; }
     public ExportPayload Data { get; set; } = new();
