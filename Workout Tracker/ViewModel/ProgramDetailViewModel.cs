@@ -148,6 +148,25 @@ public partial class ProgramDetailViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task ResetCompletion()
+    {
+        if (Program == null) return;
+
+        bool confirm = await Shell.Current.DisplayAlertAsync(
+            "Reset Progress",
+            "This will reset all session progress. Performed reps, weights, and completion status will be cleared. Continue?",
+            "Reset", "Cancel");
+
+        if (!confirm) return;
+
+        await _loading.RunAsync(async () =>
+        {
+            await _db.ResetProgramCompletionAsync(Program.Id);
+            await LoadSessionsAsync(Program.Id);
+        }, "Resetting...");
+    }
+
+    [RelayCommand]
     private async Task Delete()
     {
         if (Program == null) return;

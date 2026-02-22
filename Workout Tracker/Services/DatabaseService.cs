@@ -892,6 +892,49 @@ public class DatabaseService
         });
     }
 
+    // ── Reset Program Completion ──
+
+    public async Task ResetProgramCompletionAsync(int programId)
+    {
+        await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var sessions = await db.Table<Session>()
+                .Where(s => s.ProgramId == programId)
+                .ToListAsync();
+
+            foreach (var session in sessions)
+            {
+                session.IsCompleted = false;
+                session.StartTime = null;
+                session.EndTime = null;
+                session.EnergyLevel = null;
+                await db.UpdateAsync(session);
+
+                var sessionExercises = await db.Table<SessionExercise>()
+                    .Where(se => se.SessionId == session.Id)
+                    .ToListAsync();
+
+                foreach (var se in sessionExercises)
+                {
+                    var sets = await db.Table<Set>()
+                        .Where(s => s.SessionExerciseId == se.Id)
+                        .ToListAsync();
+
+                    foreach (var set in sets)
+                    {
+                        set.Completed = false;
+                        set.Reps = null;
+                        set.Weight = null;
+                        set.DurationSeconds = null;
+                        set.Rpe = null;
+                        await db.UpdateAsync(set);
+                    }
+                }
+            }
+        });
+    }
+
     // ── Analytics methods ──
 
     public async Task<AnalyticsSummary> GetAnalyticsSummaryAsync(DateTime from, DateTime to)

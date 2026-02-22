@@ -307,6 +307,18 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
+                <!-- Reset Progress Button -->
+                <Button Text="Reset Progress"
+                        Command="{Binding ResetCompletionCommand}"
+                        BackgroundColor="Transparent"
+                        BorderColor="{StaticResource Warning}"
+                        BorderWidth="1.5"
+                        TextColor="{StaticResource Warning}"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        HeightRequest="44"
+                        Margin="0,8,0,0" />
+
                 <!-- Delete Button -->
                 <Button Text="Delete Program"
                         Command="{Binding DeleteCommand}"
@@ -316,8 +328,7 @@
                         TextColor="{StaticResource Error}"
                         FontAttributes="Bold"
                         CornerRadius="10"
-                        HeightRequest="44"
-                        Margin="0,8,0,0" />
+                        HeightRequest="44" />
 
             </VerticalStackLayout>
         </ScrollView>
