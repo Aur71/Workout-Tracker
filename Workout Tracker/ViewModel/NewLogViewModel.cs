@@ -222,6 +222,36 @@ public partial class NewLogViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task DeleteLog()
+    {
+        var page = Shell.Current.CurrentPage;
+        bool confirm = await page.DisplayAlert("Delete Log",
+            "Are you sure you want to delete this log entry?", "Delete", "Cancel");
+
+        if (!confirm) return;
+
+        await _loading.RunAsync(async () =>
+        {
+            if (!_editId.HasValue) return;
+
+            switch (LogType)
+            {
+                case "body_metric":
+                    await _db.DeleteBodyMetricAsync(_editId.Value);
+                    break;
+                case "recovery":
+                    await _db.DeleteRecoveryLogAsync(_editId.Value);
+                    break;
+                case "calorie":
+                    await _db.DeleteCalorieLogAsync(_editId.Value);
+                    break;
+            }
+
+            await Shell.Current.GoToAsync("..");
+        }, "Deleting...");
+    }
+
+    [RelayCommand]
     private async Task Cancel()
     {
         await Shell.Current.GoToAsync("..");

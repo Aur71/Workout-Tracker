@@ -256,19 +256,32 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Save Button -->
+        <!-- Bottom Buttons -->
         <Border Grid.Row="1"
                 StrokeThickness="0"
                 Padding="20,12,20,24"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
-            <Button Text="Save Log"
-                    Command="{Binding SaveCommand}"
-                    BackgroundColor="{StaticResource Primary}"
-                    TextColor="{StaticResource Black}"
-                    FontAttributes="Bold"
-                    FontSize="16"
-                    HeightRequest="52"
-                    CornerRadius="12" />
+            <VerticalStackLayout Spacing="10">
+                <Button Text="Save Log"
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource Black}"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="52"
+                        CornerRadius="12" />
+                <Button Text="Delete Log"
+                        Command="{Binding DeleteLogCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource Error}"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="52"
+                        CornerRadius="12"
+                        BorderColor="{StaticResource Error}"
+                        BorderWidth="1"
+                        IsVisible="{Binding IsEditMode}" />
+            </VerticalStackLayout>
         </Border>
 
     </Grid>
