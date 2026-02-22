@@ -16,14 +16,19 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
                 <!-- Back -->
-                <Label Text="&#x2190;"
-                       FontSize="24"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
-                       VerticalOptions="Center">
-                    <Label.GestureRecognizers>
+                <Path Data="M20,12 L4,12 M11,5 L4,12 L11,19"
+                      Stroke="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                      StrokeThickness="2"
+                      StrokeLineCap="Round"
+                      StrokeLineJoin="Round"
+                      WidthRequest="24"
+                      HeightRequest="24"
+                      Aspect="Uniform"
+                      VerticalOptions="Center">
+                    <Path.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding CancelWorkoutCommand}" />
-                    </Label.GestureRecognizers>
-                </Label>
+                    </Path.GestureRecognizers>
+                </Path>
 
                 <!-- Title + date -->
                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
