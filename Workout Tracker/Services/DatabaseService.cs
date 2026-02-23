@@ -1198,6 +1198,37 @@ public class DatabaseService
         });
     }
 
+    public async Task<List<BodyCompositionPoint>> GetBodyCompositionTrendAsync(DateTime from, DateTime to)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+
+            var metrics = await db.Table<BodyMetric>().ToListAsync();
+            var calorieLogs = await db.Table<CalorieLog>().ToListAsync();
+
+            var metricsByDate = metrics
+                .Where(m => m.Date.Date >= from.Date && m.Date.Date <= to.Date)
+                .GroupBy(m => m.Date.Date)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var caloriesByDate = calorieLogs
+                .Where(c => c.Date.Date >= from.Date && c.Date.Date <= to.Date && c.TotalCalories.HasValue)
+                .GroupBy(c => c.Date.Date)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var allDates = metricsByDate.Keys.Union(caloriesByDate.Keys).OrderBy(d => d);
+
+            return allDates.Select(date => new BodyCompositionPoint
+            {
+                Date = date,
+                Bodyweight = metricsByDate.TryGetValue(date, out var m) ? m.Bodyweight : null,
+                BodyFat = metricsByDate.TryGetValue(date, out var m2) ? m2.BodyFat : null,
+                Calories = caloriesByDate.TryGetValue(date, out var c) ? c.TotalCalories : null
+            }).ToList();
+        });
+    }
+
     public async Task<List<ExercisePickerItem>> GetExercisesWithCompletedSetsAsync()
     {
         return await Task.Run(async () =>

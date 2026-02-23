@@ -292,6 +292,45 @@
                 </Border>
             </VerticalStackLayout>
 
+            <!-- Body Composition Progression Section -->
+            <VerticalStackLayout Spacing="12">
+                <Label Text="Body Composition"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                <Label Text="Weight, body fat &amp; calorie progression"
+                       FontSize="13"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                       Margin="0,-8,0,0" />
+
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="12"
+                        IsVisible="{Binding HasBodyCompositionData}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <GraphicsView HeightRequest="260"
+                                  Drawable="{Binding BodyCompositionDrawable}" />
+                </Border>
+
+                <!-- Empty State -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="20"
+                        IsVisible="{Binding HasBodyCompositionData, Converter={StaticResource InvertedBoolConverter}}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Label Text="No body composition data in the selected time range. Log body metrics or calories to see trends."
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           Padding="0,12" />
+                </Border>
+            </VerticalStackLayout>
+
             <!-- Bottom Spacing -->
 
         </VerticalStackLayout>

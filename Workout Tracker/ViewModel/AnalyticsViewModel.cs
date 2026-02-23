@@ -76,6 +76,12 @@ public partial class AnalyticsViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasBodyMetricData;
 
+    [ObservableProperty]
+    private IDrawable? _bodyCompositionDrawable;
+
+    [ObservableProperty]
+    private bool _hasBodyCompositionData;
+
     // ── Theme Colors ──
 
     private static Color PrimaryColor => Color.FromArgb("#00D9A5");
@@ -133,13 +139,15 @@ public partial class AnalyticsViewModel : ObservableObject
             var muscleTask = _db.GetMuscleVolumeAsync(from, to);
             var adherenceTask = _db.GetSessionAdherenceAsync(from, to);
             var bodyMetricTask = _db.GetBodyMetricTrendAsync(from, to);
+            var bodyCompTask = _db.GetBodyCompositionTrendAsync(from, to);
 
-            await Task.WhenAll(summaryTask, muscleTask, adherenceTask, bodyMetricTask);
+            await Task.WhenAll(summaryTask, muscleTask, adherenceTask, bodyMetricTask, bodyCompTask);
 
             var summary = summaryTask.Result;
             var muscleData = muscleTask.Result;
             var adherenceData = adherenceTask.Result;
             var bodyMetricData = bodyMetricTask.Result;
+            var bodyCompData = bodyCompTask.Result;
 
             // Summary
             TotalSessionsDisplay = summary.TotalSessions.ToString();
@@ -154,6 +162,7 @@ public partial class AnalyticsViewModel : ObservableObject
             BuildMuscleVolumeChart(muscleData);
             BuildAdherenceChart(adherenceData);
             BuildBodyMetricChart(bodyMetricData);
+            BuildBodyCompositionChart(bodyCompData);
 
             if (SelectedExercise != null)
                 await LoadProgressionChartAsync();
@@ -281,5 +290,55 @@ public partial class AnalyticsViewModel : ObservableObject
         }
 
         BodyMetricDrawable = new LineChartDrawable(series, TextColor, GridColor, "Weight", hasBf ? "BF %" : null);
+    }
+
+    private void BuildBodyCompositionChart(List<BodyCompositionPoint> data)
+    {
+        HasBodyCompositionData = data.Count > 0;
+
+        if (!HasBodyCompositionData)
+        {
+            BodyCompositionDrawable = null;
+            return;
+        }
+
+        var series = new List<ChartLine>();
+        bool hasWeight = data.Any(d => d.Bodyweight.HasValue);
+        bool hasBf = data.Any(d => d.BodyFat.HasValue);
+        bool hasCal = data.Any(d => d.Calories.HasValue);
+
+        if (hasWeight)
+        {
+            series.Add(new ChartLine("Weight (kg)", PrimaryColor,
+                data.Where(d => d.Bodyweight.HasValue)
+                    .Select(d => new ChartDataPoint(d.Date, d.Bodyweight!.Value)).ToList(), 0));
+        }
+
+        if (hasBf)
+        {
+            series.Add(new ChartLine("Body Fat %", TertiaryColor,
+                data.Where(d => d.BodyFat.HasValue)
+                    .Select(d => new ChartDataPoint(d.Date, d.BodyFat!.Value)).ToList(), 0));
+        }
+
+        if (hasCal)
+        {
+            series.Add(new ChartLine("Calories", SecondaryColor,
+                data.Where(d => d.Calories.HasValue)
+                    .Select(d => new ChartDataPoint(d.Date, d.Calories!.Value)).ToList(), 1));
+        }
+
+        if (series.Count == 0)
+        {
+            HasBodyCompositionData = false;
+            BodyCompositionDrawable = null;
+            return;
+        }
+
+        string leftLabel = hasWeight ? "kg" : "BF %";
+        if (hasWeight && hasBf) leftLabel = "kg / %";
+        string? rightLabel = hasCal ? "Calories" : null;
+
+        BodyCompositionDrawable = new LineChartDrawable(series, TextColor, GridColor, leftLabel, rightLabel);
     }
 }

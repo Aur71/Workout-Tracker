@@ -43,6 +43,14 @@ public class BodyMetricPoint
     public double? BodyFat { get; set; }
 }
 
+public class BodyCompositionPoint
+{
+    public DateTime Date { get; set; }
+    public double? Bodyweight { get; set; }
+    public double? BodyFat { get; set; }
+    public double? Calories { get; set; }
+}
+
 public class ExercisePickerItem
 {
     public int Id { get; set; }
