@@ -775,8 +775,7 @@ public class DatabaseService
                         RepsText = s.Reps?.ToString() ?? "",
                         WeightText = s.Weight?.ToString() ?? "",
                         DurationText = s.DurationSeconds?.ToString() ?? "",
-                        RpeText = s.Rpe?.ToString() ?? "",
-                        Completed = s.Completed
+                        RpeText = s.Rpe?.ToString() ?? ""
                     });
 
                 foreach (var set in exerciseSets)
@@ -808,7 +807,7 @@ public class DatabaseService
                         dbSet.Weight = weight > 0 ? weight : null;
                         dbSet.DurationSeconds = duration > 0 ? duration : null;
                         dbSet.Rpe = rpe > 0 ? rpe : null;
-                        dbSet.Completed = set.Completed;
+                        dbSet.Completed = reps > 0 || duration > 0;
                         await db.UpdateAsync(dbSet);
                     }
                 }

@@ -193,12 +193,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ToggleSetCompleted(ActiveSetDisplay set)
-    {
-        set.Completed = !set.Completed;
-    }
-
-    [RelayCommand]
     private void ToggleExerciseExpand(ActiveExerciseDisplay exercise)
     {
         exercise.IsExpanded = !exercise.IsExpanded;

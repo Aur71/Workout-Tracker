@@ -41,6 +41,17 @@ public partial class ActiveSetDisplay : ObservableObject
     [ObservableProperty]
     private string _rpeText = "";
 
-    [ObservableProperty]
-    private bool _completed;
+    public bool Completed =>
+        (int.TryParse(RepsText, out var r) && r > 0) ||
+        (int.TryParse(DurationText, out var d) && d > 0);
+
+    partial void OnRepsTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(Completed));
+    }
+
+    partial void OnDurationTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(Completed));
+    }
 }

@@ -223,22 +223,11 @@
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
                                                                    FontSize="12" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
-                                                        <!-- Completed checkbox (editable) -->
-                                                        <CheckBox Grid.Column="5"
-                                                                  IsChecked="{Binding Completed}"
-                                                                  Color="{StaticResource Primary}"
-                                                                  Scale="0.85"
-                                                                  IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                  HorizontalOptions="Center"
-                                                                  VerticalOptions="Center"
-                                                                  IsVisible="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}" />
-                                                        <!-- Completed icon (read-only) -->
+                                                        <!-- Completed icon (auto-computed from reps) -->
                                                         <Label Grid.Column="5"
-                                                               Text="{Binding Completed, StringFormat='{0}'}"
                                                                FontSize="16"
                                                                HorizontalTextAlignment="Center"
-                                                               VerticalOptions="Center"
-                                                               IsVisible="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsReadOnly}">
+                                                               VerticalOptions="Center">
                                                             <Label.Triggers>
                                                                 <DataTrigger TargetType="Label" Binding="{Binding Completed}" Value="True">
                                                                     <Setter Property="Text" Value="&#x2713;" />
@@ -301,22 +290,11 @@
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
                                                                    FontSize="12" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
-                                                        <!-- Completed checkbox (editable) -->
-                                                        <CheckBox Grid.Column="4"
-                                                                  IsChecked="{Binding Completed}"
-                                                                  Color="{StaticResource Primary}"
-                                                                  Scale="0.85"
-                                                                  IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                  HorizontalOptions="Center"
-                                                                  VerticalOptions="Center"
-                                                                  IsVisible="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}" />
-                                                        <!-- Completed icon (read-only) -->
+                                                        <!-- Completed icon (auto-computed from duration) -->
                                                         <Label Grid.Column="4"
-                                                               Text="{Binding Completed, StringFormat='{0}'}"
                                                                FontSize="16"
                                                                HorizontalTextAlignment="Center"
-                                                               VerticalOptions="Center"
-                                                               IsVisible="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsReadOnly}">
+                                                               VerticalOptions="Center">
                                                             <Label.Triggers>
                                                                 <DataTrigger TargetType="Label" Binding="{Binding Completed}" Value="True">
                                                                     <Setter Property="Text" Value="&#x2713;" />
