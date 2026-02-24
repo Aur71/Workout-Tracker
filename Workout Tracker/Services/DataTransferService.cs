@@ -1,4 +1,5 @@
 using System.Text.Json;
+using ClosedXML.Excel;
 using Workout_Tracker.Model;
 using Program = Workout_Tracker.Model.Program;
 
@@ -62,7 +63,7 @@ public class DataTransferService
         return (true, null);
     }
 
-    // ── Program Export/Import ──
+    // ── Program Export (XLSX) ──
 
     public async Task<string> ExportProgramAsync(int programId)
     {
@@ -90,12 +91,10 @@ public class DataTransferService
             .Where(s => seIds.Contains(s.SessionExerciseId))
             .ToList();
 
-        // Collect referenced exercises
         var exerciseIds = sessionExercises.Select(se => se.ExerciseId).Distinct().ToHashSet();
         var allExercises = await db.Table<Exercise>().ToListAsync();
         var exercises = allExercises.Where(e => exerciseIds.Contains(e.Id)).ToList();
 
-        // Collect referenced muscles via ExerciseMuscle
         var allExerciseMuscles = await db.Table<ExerciseMuscle>().ToListAsync();
         var exerciseMuscles = allExerciseMuscles
             .Where(em => exerciseIds.Contains(em.ExerciseId))
@@ -104,212 +103,750 @@ public class DataTransferService
         var muscleIds = exerciseMuscles.Select(em => em.MuscleId).Distinct().ToHashSet();
         var allMuscles = await db.Table<Muscle>().ToListAsync();
         var muscles = allMuscles.Where(m => muscleIds.Contains(m.Id)).ToList();
+        var muscleIdToName = muscles.ToDictionary(m => m.Id, m => m.Name);
 
-        // Strip completion data from sessions
-        foreach (var s in sessions)
+        // Sort sessions by Week then Day, then by Date
+        var orderedSessions = sessions
+            .OrderBy(s => s.Week ?? int.MaxValue)
+            .ThenBy(s => s.Day ?? int.MaxValue)
+            .ThenBy(s => s.Date)
+            .ToList();
+
+        // Build lookup tables
+        var exerciseMap = exercises.ToDictionary(e => e.Id);
+        var seBySession = sessionExercises.GroupBy(se => se.SessionId)
+            .ToDictionary(g => g.Key, g => g.OrderBy(se => se.Order).ToList());
+        var setsBySe = sets.GroupBy(s => s.SessionExerciseId)
+            .ToDictionary(g => g.Key, g => g.OrderBy(s => s.SetNumber).ToList());
+
+        // Build muscle strings per exercise
+        var exercisePrimaryMuscles = new Dictionary<int, string>();
+        var exerciseSecondaryMuscles = new Dictionary<int, string>();
+        foreach (var exId in exerciseIds)
         {
-            s.IsCompleted = false;
-            s.StartTime = null;
-            s.EndTime = null;
-            s.EnergyLevel = null;
+            var ems = exerciseMuscles.Where(em => em.ExerciseId == exId).ToList();
+            var primary = ems.Where(em => em.Type == "primary")
+                .Select(em => muscleIdToName.GetValueOrDefault(em.MuscleId, ""))
+                .Where(n => !string.IsNullOrEmpty(n));
+            var secondary = ems.Where(em => em.Type != "primary")
+                .Select(em => muscleIdToName.GetValueOrDefault(em.MuscleId, ""))
+                .Where(n => !string.IsNullOrEmpty(n));
+            exercisePrimaryMuscles[exId] = string.Join(", ", primary);
+            exerciseSecondaryMuscles[exId] = string.Join(", ", secondary);
         }
 
-        // Strip performed data from sets, keep only template
-        foreach (var set in sets)
+        // Parse program color
+        XLColor programColor;
+        try
         {
-            set.Reps = null;
-            set.Weight = null;
-            set.DurationSeconds = null;
-            set.RestSeconds = null;
-            set.Rpe = null;
-            set.Completed = false;
+            programColor = XLColor.FromHtml(program.Color ?? "#4472C4");
+        }
+        catch
+        {
+            programColor = XLColor.FromHtml("#4472C4");
         }
 
-        var exportData = new ProgramExportData
+        using var workbook = new XLWorkbook();
+
+        // ── Sheet 1: Program ──
+        BuildProgramSheet(workbook, program);
+
+        // ── Sheet 2: Exercises ──
+        BuildExercisesSheet(workbook, exercises, exercisePrimaryMuscles, exerciseSecondaryMuscles);
+
+        // ── Sheet 3: Sessions (built after Workout to get row ranges) ──
+
+        // ── Sheet 4: Workout ──
+        var workoutSheet = workbook.Worksheets.Add("Workout");
+        var wkHeaders = new[] { "Exercise", "Rest(s)", "Set", "W", "Plan", "Reps", "Weight", "Duration(s)", "RPE" };
+        int wkRow = 1;
+        var sessionWorkoutRowRanges = new List<(int StartRow, int EndRow)>();
+
+        foreach (var session in orderedSessions)
         {
-            Version = CurrentVersion,
-            ExportDate = DateTime.UtcNow,
-            Data = new ProgramExportPayload
+            // Session header row
+            string headerText = session.Week.HasValue && session.Day.HasValue
+                ? $"Week {session.Week} - Day {session.Day} | {session.Date:yyyy-MM-dd}"
+                : $"Session | {session.Date:yyyy-MM-dd}";
+
+            var headerRange = workoutSheet.Range(wkRow, 1, wkRow, 9);
+            headerRange.Merge();
+            workoutSheet.Cell(wkRow, 1).Value = headerText;
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Font.FontColor = XLColor.White;
+            headerRange.Style.Fill.BackgroundColor = programColor;
+            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            wkRow++;
+
+            // Column headers
+            for (int c = 0; c < wkHeaders.Length; c++)
             {
-                Program = program,
-                Sessions = sessions,
-                SessionExercises = sessionExercises,
-                Sets = sets,
-                Exercises = exercises,
-                Muscles = muscles,
-                ExerciseMuscles = exerciseMuscles
+                workoutSheet.Cell(wkRow, c + 1).Value = wkHeaders[c];
+                workoutSheet.Cell(wkRow, c + 1).Style.Font.Bold = true;
+                workoutSheet.Cell(wkRow, c + 1).Style.Border.BottomBorder = XLBorderStyleValues.Thin;
             }
-        };
+            wkRow++;
 
-        var json = JsonSerializer.Serialize(exportData, JsonOptions);
+            int sessionDataStartRow = wkRow;
+
+            // Exercise/set rows
+            if (seBySession.TryGetValue(session.Id, out var sesExercises))
+            {
+                foreach (var se in sesExercises)
+                {
+                    if (!exerciseMap.TryGetValue(se.ExerciseId, out var exercise))
+                        continue;
+
+                    var exerciseSets = setsBySe.GetValueOrDefault(se.Id, []);
+                    bool firstSet = true;
+
+                    foreach (var set in exerciseSets)
+                    {
+                        if (firstSet)
+                        {
+                            workoutSheet.Cell(wkRow, 1).Value = exercise.Name;
+                            workoutSheet.Cell(wkRow, 1).Style.Font.Bold = true;
+                            if (se.RestSeconds.HasValue)
+                                workoutSheet.Cell(wkRow, 2).Value = se.RestSeconds.Value;
+                            firstSet = false;
+                        }
+
+                        workoutSheet.Cell(wkRow, 3).Value = set.SetNumber;
+                        if (set.IsWarmup)
+                            workoutSheet.Cell(wkRow, 4).Value = "W";
+
+                        workoutSheet.Cell(wkRow, 5).Value = FormatPlan(set);
+
+                        // Tracking columns empty (clean template export)
+                        wkRow++;
+                    }
+
+                    if (exerciseSets.Count == 0)
+                    {
+                        workoutSheet.Cell(wkRow, 1).Value = exercise.Name;
+                        workoutSheet.Cell(wkRow, 1).Style.Font.Bold = true;
+                        if (se.RestSeconds.HasValue)
+                            workoutSheet.Cell(wkRow, 2).Value = se.RestSeconds.Value;
+                        wkRow++;
+                    }
+                }
+            }
+
+            int sessionDataEndRow = Math.Max(wkRow - 1, sessionDataStartRow);
+            sessionWorkoutRowRanges.Add((sessionDataStartRow, sessionDataEndRow));
+
+            wkRow++; // empty row between sessions
+        }
+
+        workoutSheet.Columns().AdjustToContents();
+        workoutSheet.Column(1).Width = Math.Max(workoutSheet.Column(1).Width, 25);
+
+        // ── Sheet 3: Sessions (now that we know workout row ranges) ──
+        BuildSessionsSheet(workbook, orderedSessions, sessionWorkoutRowRanges);
+
+        // Reorder sheets so Sessions comes before Workout
+        workbook.Worksheet("Sessions").Position = 3;
+        workbook.Worksheet("Workout").Position = 4;
+
+        // Save
         var safeName = program.Name.Replace(" ", "_").Replace("/", "-");
-        var fileName = $"program_{safeName}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+        var fileName = $"program_{safeName}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
         var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
-        await File.WriteAllTextAsync(filePath, json);
+        await Task.Run(() => workbook.SaveAs(filePath));
 
         return filePath;
     }
 
+    private static void BuildProgramSheet(XLWorkbook workbook, Program program)
+    {
+        var sheet = workbook.Worksheets.Add("Program");
+        var meta = new (string Key, string Value)[]
+        {
+            ("Name", program.Name),
+            ("Goal", program.Goal ?? ""),
+            ("Start Date", program.StartDate.ToString("yyyy-MM-dd")),
+            ("End Date", program.EndDate?.ToString("yyyy-MM-dd") ?? ""),
+            ("Notes", program.Notes ?? ""),
+            ("Color", program.Color ?? ""),
+            ("Version", CurrentVersion.ToString()),
+            ("Export Date", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))
+        };
+
+        sheet.Cell(1, 1).Value = "Key";
+        sheet.Cell(1, 2).Value = "Value";
+        sheet.Range(1, 1, 1, 2).Style.Font.Bold = true;
+
+        for (int i = 0; i < meta.Length; i++)
+        {
+            sheet.Cell(i + 2, 1).Value = meta[i].Key;
+            sheet.Cell(i + 2, 2).Value = meta[i].Value;
+        }
+
+        sheet.Columns().AdjustToContents();
+    }
+
+    private static void BuildExercisesSheet(
+        XLWorkbook workbook,
+        List<Exercise> exercises,
+        Dictionary<int, string> primaryMuscles,
+        Dictionary<int, string> secondaryMuscles)
+    {
+        var sheet = workbook.Worksheets.Add("Exercises");
+        var headers = new[] { "Id", "Name", "Equipment", "Type", "Time Based", "Description", "Instructions", "Notes", "Primary Muscles", "Secondary Muscles", "Media" };
+
+        for (int c = 0; c < headers.Length; c++)
+        {
+            sheet.Cell(1, c + 1).Value = headers[c];
+            sheet.Cell(1, c + 1).Style.Font.Bold = true;
+        }
+
+        int row = 2;
+        foreach (var ex in exercises.OrderBy(e => e.Name))
+        {
+            sheet.Cell(row, 1).Value = ex.Id;
+            sheet.Cell(row, 2).Value = ex.Name;
+            sheet.Cell(row, 3).Value = ex.Equipment ?? "";
+            sheet.Cell(row, 4).Value = ex.ExerciseType ?? "";
+            sheet.Cell(row, 5).Value = ex.IsTimeBased ? "Yes" : "No";
+            sheet.Cell(row, 6).Value = ex.Description ?? "";
+            sheet.Cell(row, 7).Value = ex.Instructions ?? "";
+            sheet.Cell(row, 8).Value = ex.Notes ?? "";
+            sheet.Cell(row, 9).Value = primaryMuscles.GetValueOrDefault(ex.Id, "");
+            sheet.Cell(row, 10).Value = secondaryMuscles.GetValueOrDefault(ex.Id, "");
+            sheet.Cell(row, 11).Value = ex.ExampleMedia ?? "";
+            row++;
+        }
+
+        sheet.Columns().AdjustToContents();
+    }
+
+    private static void BuildSessionsSheet(
+        XLWorkbook workbook,
+        List<Session> orderedSessions,
+        List<(int StartRow, int EndRow)> workoutRowRanges)
+    {
+        var sheet = workbook.Worksheets.Add("Sessions");
+        var headers = new[] { "Week", "Day", "Date", "Start Time", "End Time", "Energy", "Notes", "Completed" };
+
+        for (int c = 0; c < headers.Length; c++)
+        {
+            sheet.Cell(1, c + 1).Value = headers[c];
+            sheet.Cell(1, c + 1).Style.Font.Bold = true;
+        }
+
+        for (int i = 0; i < orderedSessions.Count; i++)
+        {
+            var s = orderedSessions[i];
+            int row = i + 2;
+
+            if (s.Week.HasValue) sheet.Cell(row, 1).Value = s.Week.Value;
+            if (s.Day.HasValue) sheet.Cell(row, 2).Value = s.Day.Value;
+            sheet.Cell(row, 3).Value = s.Date.ToString("yyyy-MM-dd");
+            // StartTime, EndTime, EnergyLevel stripped (clean template)
+            sheet.Cell(row, 7).Value = s.Notes ?? "";
+
+            // Completed formula: auto-calculate from Workout tracking data
+            if (i < workoutRowRanges.Count)
+            {
+                var (startRow, endRow) = workoutRowRanges[i];
+                sheet.Cell(row, 8).FormulaA1 =
+                    $"IF(COUNTA(Workout!F{startRow}:H{endRow})>0,\"Yes\",\"No\")";
+            }
+            else
+            {
+                sheet.Cell(row, 8).Value = "No";
+            }
+        }
+
+        sheet.Columns().AdjustToContents();
+    }
+
+    private static string FormatPlan(Set set)
+    {
+        if (set.RepMin.HasValue || set.RepMax.HasValue)
+        {
+            if (set.RepMin.HasValue && set.RepMax.HasValue && set.RepMin != set.RepMax)
+                return $"{set.RepMin}-{set.RepMax}";
+            return (set.RepMin ?? set.RepMax)?.ToString() ?? "";
+        }
+
+        if (set.DurationMin.HasValue || set.DurationMax.HasValue)
+        {
+            if (set.DurationMin.HasValue && set.DurationMax.HasValue && set.DurationMin != set.DurationMax)
+                return $"{set.DurationMin}-{set.DurationMax}s";
+            return $"{set.DurationMin ?? set.DurationMax}s";
+        }
+
+        return "";
+    }
+
+    // ── Program Import (XLSX) ──
+
     public async Task<int> ImportProgramAsync(Stream stream)
     {
-        ProgramExportData? data;
+        XLWorkbook workbook;
         try
         {
-            data = await JsonSerializer.DeserializeAsync<ProgramExportData>(stream, JsonOptions);
+            workbook = new XLWorkbook(stream);
         }
-        catch (JsonException)
+        catch
         {
-            throw new InvalidOperationException("This file is not a valid program file.");
+            throw new InvalidOperationException("This file is not a valid XLSX program file.");
         }
 
-        if (data == null || data.Data == null)
-            throw new InvalidOperationException("This file is not a valid program file.");
-
-        if (data.Type is not null and not "program")
-            throw new InvalidOperationException("This file is a full backup, not a program export. To restore a full backup, use the Import option in Settings.");
-
-        if (data.Version <= 0 || data.Version > CurrentVersion)
-            throw new InvalidOperationException("This program was exported by a newer version of the app. Please update the app first.");
-
-        if (string.IsNullOrWhiteSpace(data.Data.Program?.Name))
-            throw new InvalidOperationException("This file is not a valid program file.");
-
-        var payload = data.Data;
-        payload.Sessions ??= [];
-        payload.SessionExercises ??= [];
-        payload.Sets ??= [];
-        payload.Exercises ??= [];
-        payload.Muscles ??= [];
-        payload.ExerciseMuscles ??= [];
-
-        var db = AppDatabase.Database;
-
-        // 1. Match muscles by name (seeded data, should already exist)
-        var existingMuscles = await db.Table<Muscle>().ToListAsync();
-        var muscleNameToId = existingMuscles.ToDictionary(m => m.Name, m => m.Id);
-        var oldMuscleIdMap = new Dictionary<int, int>(); // old -> new
-
-        foreach (var muscle in payload.Muscles)
+        using (workbook)
         {
-            if (muscleNameToId.TryGetValue(muscle.Name, out var existingId))
+            if (!workbook.Worksheets.TryGetWorksheet("Program", out var programSheet))
+                throw new InvalidOperationException("This XLSX file is missing the 'Program' sheet.");
+            if (!workbook.Worksheets.TryGetWorksheet("Workout", out var workoutSheet))
+                throw new InvalidOperationException("This XLSX file is missing the 'Workout' sheet.");
+
+            workbook.Worksheets.TryGetWorksheet("Exercises", out var exercisesSheet);
+            workbook.Worksheets.TryGetWorksheet("Sessions", out var sessionsSheet);
+
+            // 1. Parse Program metadata
+            var programMeta = ParseKeyValueSheet(programSheet);
+
+            if (!programMeta.TryGetValue("Name", out var programName) || string.IsNullOrWhiteSpace(programName))
+                throw new InvalidOperationException("Program name is missing from the XLSX file.");
+
+            if (programMeta.TryGetValue("Version", out var versionStr) && int.TryParse(versionStr, out var version) && version > CurrentVersion)
+                throw new InvalidOperationException("This program was exported by a newer version of the app. Please update the app first.");
+
+            var newProgram = new Program
             {
-                oldMuscleIdMap[muscle.Id] = existingId;
-            }
-            else
+                Name = programName,
+                Goal = NullIfEmpty(programMeta.GetValueOrDefault("Goal")),
+                StartDate = DateTime.TryParse(programMeta.GetValueOrDefault("Start Date"), out var sd) ? sd : DateTime.Today,
+                EndDate = DateTime.TryParse(programMeta.GetValueOrDefault("End Date"), out var ed) ? ed : null,
+                Notes = NullIfEmpty(programMeta.GetValueOrDefault("Notes")),
+                Color = NullIfEmpty(programMeta.GetValueOrDefault("Color"))
+            };
+
+            // 2. Parse Exercises sheet
+            var xlsxExercises = new List<XlsxExerciseData>();
+            if (exercisesSheet != null)
+                xlsxExercises = ParseExercisesSheet(exercisesSheet);
+
+            // 3. Parse Sessions sheet
+            var xlsxSessions = new List<XlsxSessionData>();
+            if (sessionsSheet != null)
+                xlsxSessions = ParseSessionsSheet(sessionsSheet);
+
+            // 4. Parse Workout sheet → session blocks
+            var workoutBlocks = ParseWorkoutSheet(workoutSheet);
+
+            // ── Insert into database ──
+            var db = AppDatabase.Database;
+
+            // Resolve exercises: ID first, name fallback, create new if neither
+            var existingMuscles = await db.Table<Muscle>().ToListAsync();
+            var muscleNameToId = existingMuscles.ToDictionary(m => m.Name, m => m.Id);
+
+            var existingExercises = await db.Table<Exercise>().ToListAsync();
+            var existingExerciseById = existingExercises.ToDictionary(e => e.Id);
+            var existingExerciseByName = existingExercises.ToDictionary(e => e.Name, e => e.Id);
+
+            var exerciseNameToDbId = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var xlsxExerciseByName = xlsxExercises.ToDictionary(e => e.Exercise.Name, e => e, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var xlsxEx in xlsxExercises)
             {
-                var oldId = muscle.Id;
-                muscle.Id = 0;
-                await db.InsertAsync(muscle);
-                oldMuscleIdMap[oldId] = muscle.Id;
+                var name = xlsxEx.Exercise.Name;
+
+                // Try by ID first
+                if (xlsxEx.Exercise.Id > 0 && existingExerciseById.ContainsKey(xlsxEx.Exercise.Id))
+                {
+                    exerciseNameToDbId[name] = xlsxEx.Exercise.Id;
+                    continue;
+                }
+
+                // Try by name
+                if (existingExerciseByName.TryGetValue(name, out var existingId))
+                {
+                    exerciseNameToDbId[name] = existingId;
+                    continue;
+                }
+
+                // Create new exercise
+                var newEx = new Exercise
+                {
+                    Name = xlsxEx.Exercise.Name,
+                    Description = xlsxEx.Exercise.Description,
+                    Instructions = xlsxEx.Exercise.Instructions,
+                    Equipment = xlsxEx.Exercise.Equipment,
+                    ExerciseType = xlsxEx.Exercise.ExerciseType,
+                    ExampleMedia = xlsxEx.Exercise.ExampleMedia,
+                    IsTimeBased = xlsxEx.Exercise.IsTimeBased,
+                    Notes = xlsxEx.Exercise.Notes
+                };
+                await db.InsertAsync(newEx);
+                exerciseNameToDbId[name] = newEx.Id;
+
+                // Create muscle links for new exercise
+                await CreateMuscleLinkAsync(db, newEx.Id, xlsxEx.PrimaryMuscles, "primary", muscleNameToId);
+                await CreateMuscleLinkAsync(db, newEx.Id, xlsxEx.SecondaryMuscles, "secondary", muscleNameToId);
             }
-        }
 
-        // 2. Match exercises by name - reuse existing, create new ones
-        var existingExercises = await db.Table<Exercise>().ToListAsync();
-        var exerciseNameToId = existingExercises.ToDictionary(e => e.Name, e => e.Id);
-        var oldExerciseIdMap = new Dictionary<int, int>(); // old -> new
-        var newlyCreatedExerciseIds = new HashSet<int>(); // track which exercises we created
+            // Insert Program
+            await db.InsertAsync(newProgram);
 
-        foreach (var exercise in payload.Exercises)
-        {
-            if (exerciseNameToId.TryGetValue(exercise.Name, out var existingId))
+            // Insert Sessions and Workout data
+            for (int i = 0; i < workoutBlocks.Count; i++)
             {
-                oldExerciseIdMap[exercise.Id] = existingId;
+                var block = workoutBlocks[i];
+
+                // Build Session from Sessions sheet (matched by order) or from workout header
+                var session = new Session
+                {
+                    ProgramId = newProgram.Id,
+                    Date = DateTime.Today
+                };
+
+                if (i < xlsxSessions.Count)
+                {
+                    var sd2 = xlsxSessions[i];
+                    session.Week = sd2.Week;
+                    session.Day = sd2.Day;
+                    session.Date = sd2.Date;
+                    session.StartTime = sd2.StartTime;
+                    session.EndTime = sd2.EndTime;
+                    session.EnergyLevel = sd2.EnergyLevel;
+                    session.Notes = sd2.Notes;
+                }
+                else
+                {
+                    // Try parsing date from header
+                    var datePart = block.HeaderText.Split('|').LastOrDefault()?.Trim();
+                    if (DateTime.TryParse(datePart, out var headerDate))
+                        session.Date = headerDate;
+
+                    // Try parsing week/day from header
+                    ParseHeaderWeekDay(block.HeaderText, out var week, out var day);
+                    session.Week = week;
+                    session.Day = day;
+                }
+
+                // Determine IsCompleted: true if any set has tracking data
+                session.IsCompleted = block.Exercises
+                    .SelectMany(e => e.Sets)
+                    .Any(s => s.Reps.HasValue || s.Weight.HasValue || s.DurationSeconds.HasValue);
+
+                await db.InsertAsync(session);
+
+                // Insert exercises and sets for this session
+                int order = 0;
+                foreach (var exBlock in block.Exercises)
+                {
+                    // Resolve exercise ID
+                    int exerciseDbId;
+                    if (exerciseNameToDbId.TryGetValue(exBlock.ExerciseName, out var resolvedId))
+                    {
+                        exerciseDbId = resolvedId;
+                    }
+                    else if (existingExerciseByName.TryGetValue(exBlock.ExerciseName, out var nameMatchId))
+                    {
+                        exerciseDbId = nameMatchId;
+                        exerciseNameToDbId[exBlock.ExerciseName] = nameMatchId;
+                    }
+                    else
+                    {
+                        // Exercise not in Exercises sheet — create with minimal data
+                        var newEx = new Exercise { Name = exBlock.ExerciseName };
+                        await db.InsertAsync(newEx);
+                        exerciseDbId = newEx.Id;
+                        exerciseNameToDbId[exBlock.ExerciseName] = newEx.Id;
+                    }
+
+                    var se = new SessionExercise
+                    {
+                        SessionId = session.Id,
+                        ExerciseId = exerciseDbId,
+                        Order = order++,
+                        RestSeconds = exBlock.RestSeconds
+                    };
+                    await db.InsertAsync(se);
+
+                    // Insert sets
+                    foreach (var setData in exBlock.Sets)
+                    {
+                        var set = new Set
+                        {
+                            SessionExerciseId = se.Id,
+                            SetNumber = setData.SetNumber,
+                            IsWarmup = setData.IsWarmup,
+                            RepMin = setData.RepMin,
+                            RepMax = setData.RepMax,
+                            DurationMin = setData.DurationMin,
+                            DurationMax = setData.DurationMax,
+                            Reps = setData.Reps,
+                            Weight = setData.Weight,
+                            DurationSeconds = setData.DurationSeconds,
+                            Rpe = setData.Rpe,
+                            Completed = setData.Reps.HasValue || setData.Weight.HasValue || setData.DurationSeconds.HasValue
+                        };
+                        await db.InsertAsync(set);
+                    }
+                }
             }
-            else
-            {
-                var oldId = exercise.Id;
-                exercise.Id = 0;
-                await db.InsertAsync(exercise);
-                oldExerciseIdMap[oldId] = exercise.Id;
-                newlyCreatedExerciseIds.Add(exercise.Id);
-            }
+
+            return newProgram.Id;
         }
-
-        // 3. Insert ExerciseMuscles only for newly created exercises
-        foreach (var em in payload.ExerciseMuscles)
-        {
-            if (!oldExerciseIdMap.TryGetValue(em.ExerciseId, out var newExerciseId))
-                continue;
-            if (!newlyCreatedExerciseIds.Contains(newExerciseId))
-                continue;
-            if (!oldMuscleIdMap.TryGetValue(em.MuscleId, out var newMuscleId))
-                continue;
-
-            em.Id = 0;
-            em.ExerciseId = newExerciseId;
-            em.MuscleId = newMuscleId;
-            await db.InsertAsync(em);
-        }
-
-        // 4. Insert Program with date offset to today
-        var originalStartDate = payload.Program.StartDate;
-        var dateOffset = DateTime.Today - originalStartDate.Date;
-
-        var newProgram = new Program
-        {
-            Name = payload.Program.Name,
-            Goal = payload.Program.Goal,
-            StartDate = DateTime.Today,
-            EndDate = payload.Program.EndDate.HasValue
-                ? payload.Program.EndDate.Value + dateOffset
-                : null,
-            Notes = payload.Program.Notes,
-            Color = payload.Program.Color
-        };
-        await db.InsertAsync(newProgram);
-
-        // 5. Insert Sessions with remapped ProgramId and offset dates
-        var oldSessionIdMap = new Dictionary<int, int>();
-        foreach (var session in payload.Sessions)
-        {
-            var oldId = session.Id;
-            session.Id = 0;
-            session.ProgramId = newProgram.Id;
-            session.Date = session.Date + dateOffset;
-            session.IsCompleted = false;
-            session.StartTime = null;
-            session.EndTime = null;
-            session.EnergyLevel = null;
-            await db.InsertAsync(session);
-            oldSessionIdMap[oldId] = session.Id;
-        }
-
-        // 6. Insert SessionExercises with remapped IDs
-        var oldSeIdMap = new Dictionary<int, int>();
-        foreach (var se in payload.SessionExercises)
-        {
-            if (!oldSessionIdMap.TryGetValue(se.SessionId, out var newSessionId))
-                continue;
-            if (!oldExerciseIdMap.TryGetValue(se.ExerciseId, out var newExerciseId))
-                continue;
-
-            var oldId = se.Id;
-            se.Id = 0;
-            se.SessionId = newSessionId;
-            se.ExerciseId = newExerciseId;
-            await db.InsertAsync(se);
-            oldSeIdMap[oldId] = se.Id;
-        }
-
-        // 7. Insert Sets with remapped IDs (template data only)
-        foreach (var set in payload.Sets)
-        {
-            if (!oldSeIdMap.TryGetValue(set.SessionExerciseId, out var newSeId))
-                continue;
-
-            set.Id = 0;
-            set.SessionExerciseId = newSeId;
-            set.Reps = null;
-            set.Weight = null;
-            set.DurationSeconds = null;
-            set.Rpe = null;
-            set.Completed = false;
-            await db.InsertAsync(set);
-        }
-
-        return newProgram.Id;
     }
+
+    // ── XLSX Parsing Helpers ──
+
+    private static Dictionary<string, string> ParseKeyValueSheet(IXLWorksheet sheet)
+    {
+        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var lastRow = sheet.LastRowUsed()?.RowNumber() ?? 1;
+        for (int r = 2; r <= lastRow; r++)
+        {
+            var key = sheet.Cell(r, 1).GetString().Trim();
+            var val = sheet.Cell(r, 2).GetString().Trim();
+            if (!string.IsNullOrEmpty(key))
+                dict[key] = val;
+        }
+        return dict;
+    }
+
+    private static List<XlsxExerciseData> ParseExercisesSheet(IXLWorksheet sheet)
+    {
+        var list = new List<XlsxExerciseData>();
+        var lastRow = sheet.LastRowUsed()?.RowNumber() ?? 1;
+
+        for (int r = 2; r <= lastRow; r++)
+        {
+            var name = sheet.Cell(r, 2).GetString().Trim();
+            if (string.IsNullOrEmpty(name)) continue;
+
+            int.TryParse(sheet.Cell(r, 1).GetString().Trim(), out var xlsxId);
+
+            var exercise = new Exercise
+            {
+                Id = xlsxId,
+                Name = name,
+                Equipment = NullIfEmpty(sheet.Cell(r, 3).GetString().Trim()),
+                ExerciseType = NullIfEmpty(sheet.Cell(r, 4).GetString().Trim()),
+                IsTimeBased = sheet.Cell(r, 5).GetString().Trim().Equals("Yes", StringComparison.OrdinalIgnoreCase),
+                Description = NullIfEmpty(sheet.Cell(r, 6).GetString().Trim()),
+                Instructions = NullIfEmpty(sheet.Cell(r, 7).GetString().Trim()),
+                Notes = NullIfEmpty(sheet.Cell(r, 8).GetString().Trim()),
+                ExampleMedia = NullIfEmpty(sheet.Cell(r, 11).GetString().Trim())
+            };
+
+            list.Add(new XlsxExerciseData
+            {
+                Exercise = exercise,
+                PrimaryMuscles = sheet.Cell(r, 9).GetString().Trim(),
+                SecondaryMuscles = sheet.Cell(r, 10).GetString().Trim()
+            });
+        }
+
+        return list;
+    }
+
+    private static List<XlsxSessionData> ParseSessionsSheet(IXLWorksheet sheet)
+    {
+        var list = new List<XlsxSessionData>();
+        var lastRow = sheet.LastRowUsed()?.RowNumber() ?? 1;
+
+        for (int r = 2; r <= lastRow; r++)
+        {
+            var weekStr = sheet.Cell(r, 1).GetString().Trim();
+            var dayStr = sheet.Cell(r, 2).GetString().Trim();
+            var dateStr = sheet.Cell(r, 3).GetString().Trim();
+
+            if (string.IsNullOrEmpty(dateStr) && string.IsNullOrEmpty(weekStr)) continue;
+
+            list.Add(new XlsxSessionData
+            {
+                Week = int.TryParse(weekStr, out var w) ? w : null,
+                Day = int.TryParse(dayStr, out var d) ? d : null,
+                Date = DateTime.TryParse(dateStr, out var dt) ? dt : DateTime.Today,
+                StartTime = TimeSpan.TryParse(sheet.Cell(r, 4).GetString().Trim(), out var st) ? st : null,
+                EndTime = TimeSpan.TryParse(sheet.Cell(r, 5).GetString().Trim(), out var et) ? et : null,
+                EnergyLevel = int.TryParse(sheet.Cell(r, 6).GetString().Trim(), out var el) ? el : null,
+                Notes = NullIfEmpty(sheet.Cell(r, 7).GetString().Trim()),
+                Completed = sheet.Cell(r, 8).GetString().Trim().Equals("Yes", StringComparison.OrdinalIgnoreCase)
+            });
+        }
+
+        return list;
+    }
+
+    private static List<WorkoutBlock> ParseWorkoutSheet(IXLWorksheet sheet)
+    {
+        var blocks = new List<WorkoutBlock>();
+        var lastRow = sheet.LastRowUsed()?.RowNumber() ?? 0;
+
+        WorkoutBlock? currentBlock = null;
+        WorkoutExerciseBlock? currentExercise = null;
+
+        for (int r = 1; r <= lastRow; r++)
+        {
+            var cellA = sheet.Cell(r, 1);
+            var cellAValue = cellA.GetString().Trim();
+
+            // Session header: merged row with content
+            if (cellA.IsMerged() && !string.IsNullOrEmpty(cellAValue))
+            {
+                currentBlock = new WorkoutBlock { HeaderText = cellAValue };
+                blocks.Add(currentBlock);
+                currentExercise = null;
+                continue;
+            }
+
+            // Column header row — skip
+            if (cellAValue.Equals("Exercise", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            // Check for fully empty row
+            if (IsRowEmpty(sheet, r, 9))
+            {
+                currentExercise = null;
+                continue;
+            }
+
+            if (currentBlock == null) continue;
+
+            // New exercise starts when column A has a value
+            if (!string.IsNullOrEmpty(cellAValue))
+            {
+                var restStr = sheet.Cell(r, 2).GetString().Trim();
+                currentExercise = new WorkoutExerciseBlock
+                {
+                    ExerciseName = cellAValue,
+                    RestSeconds = int.TryParse(restStr, out var rest) ? rest : null
+                };
+                currentBlock.Exercises.Add(currentExercise);
+            }
+
+            if (currentExercise == null) continue;
+
+            // Parse set
+            var setStr = sheet.Cell(r, 3).GetString().Trim();
+            if (!int.TryParse(setStr, out var setNum)) continue;
+
+            var warmup = sheet.Cell(r, 4).GetString().Trim().Equals("W", StringComparison.OrdinalIgnoreCase);
+            var planStr = sheet.Cell(r, 5).GetString().Trim();
+            ParsePlan(planStr, out var repMin, out var repMax, out var durMin, out var durMax);
+
+            var repsStr = sheet.Cell(r, 6).GetString().Trim();
+            var weightStr = sheet.Cell(r, 7).GetString().Trim();
+            var durationStr = sheet.Cell(r, 8).GetString().Trim();
+            var rpeStr = sheet.Cell(r, 9).GetString().Trim();
+
+            currentExercise.Sets.Add(new WorkoutSetData
+            {
+                SetNumber = setNum,
+                IsWarmup = warmup,
+                RepMin = repMin,
+                RepMax = repMax,
+                DurationMin = durMin,
+                DurationMax = durMax,
+                Reps = int.TryParse(repsStr, out var reps) ? reps : null,
+                Weight = double.TryParse(weightStr, out var wt) ? wt : null,
+                DurationSeconds = int.TryParse(durationStr, out var dur) ? dur : null,
+                Rpe = double.TryParse(rpeStr, out var rpe) ? rpe : null
+            });
+        }
+
+        return blocks;
+    }
+
+    private static void ParsePlan(string plan, out int? repMin, out int? repMax, out int? durMin, out int? durMax)
+    {
+        repMin = repMax = durMin = durMax = null;
+        if (string.IsNullOrEmpty(plan)) return;
+
+        bool isDuration = plan.EndsWith("s", StringComparison.OrdinalIgnoreCase);
+        var cleanPlan = isDuration ? plan.TrimEnd('s', 'S') : plan;
+
+        var parts = cleanPlan.Split('-');
+        if (parts.Length == 2 && int.TryParse(parts[0].Trim(), out var min) && int.TryParse(parts[1].Trim(), out var max))
+        {
+            if (isDuration) { durMin = min; durMax = max; }
+            else { repMin = min; repMax = max; }
+        }
+        else if (int.TryParse(cleanPlan.Trim(), out var single))
+        {
+            if (isDuration) { durMin = single; durMax = single; }
+            else { repMin = single; repMax = single; }
+        }
+    }
+
+    private static void ParseHeaderWeekDay(string header, out int? week, out int? day)
+    {
+        week = day = null;
+        // Pattern: "Week {W} - Day {D} | ..."
+        var pipeIdx = header.IndexOf('|');
+        var prefix = pipeIdx >= 0 ? header[..pipeIdx] : header;
+
+        var parts = prefix.Split('-');
+        foreach (var part in parts)
+        {
+            var trimmed = part.Trim();
+            if (trimmed.StartsWith("Week", StringComparison.OrdinalIgnoreCase))
+            {
+                var numStr = trimmed["Week".Length..].Trim();
+                if (int.TryParse(numStr, out var w)) week = w;
+            }
+            else if (trimmed.StartsWith("Day", StringComparison.OrdinalIgnoreCase))
+            {
+                var numStr = trimmed["Day".Length..].Trim();
+                if (int.TryParse(numStr, out var d)) day = d;
+            }
+        }
+    }
+
+    private static bool IsRowEmpty(IXLWorksheet sheet, int row, int colCount)
+    {
+        for (int c = 1; c <= colCount; c++)
+        {
+            if (!string.IsNullOrEmpty(sheet.Cell(row, c).GetString().Trim()))
+                return false;
+        }
+        return true;
+    }
+
+    private static async Task CreateMuscleLinkAsync(
+        SQLite.SQLiteAsyncConnection db,
+        int exerciseId,
+        string muscleNames,
+        string type,
+        Dictionary<string, int> muscleNameToId)
+    {
+        if (string.IsNullOrWhiteSpace(muscleNames)) return;
+
+        foreach (var name in muscleNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            int muscleId;
+            if (muscleNameToId.TryGetValue(name, out var existingId))
+            {
+                muscleId = existingId;
+            }
+            else
+            {
+                var newMuscle = new Muscle { Name = name };
+                await db.InsertAsync(newMuscle);
+                muscleId = newMuscle.Id;
+                muscleNameToId[name] = muscleId;
+            }
+
+            await db.InsertAsync(new ExerciseMuscle
+            {
+                ExerciseId = exerciseId,
+                MuscleId = muscleId,
+                Type = type
+            });
+        }
+    }
+
+    private static string? NullIfEmpty(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value;
+
+    // ── Full Backup Import (JSON) ──
 
     public async Task ImportAsync(Stream stream)
     {
@@ -374,5 +911,53 @@ public class DataTransferService
             conn.InsertAll(payload.RecoveryLogs, "OR REPLACE", false);
             conn.InsertAll(payload.CalorieLogs, "OR REPLACE", false);
         });
+    }
+
+    // ── XLSX Import Helper Types ──
+
+    private class XlsxExerciseData
+    {
+        public Exercise Exercise { get; set; } = new();
+        public string PrimaryMuscles { get; set; } = "";
+        public string SecondaryMuscles { get; set; } = "";
+    }
+
+    private class XlsxSessionData
+    {
+        public int? Week { get; set; }
+        public int? Day { get; set; }
+        public DateTime Date { get; set; }
+        public TimeSpan? StartTime { get; set; }
+        public TimeSpan? EndTime { get; set; }
+        public int? EnergyLevel { get; set; }
+        public string? Notes { get; set; }
+        public bool Completed { get; set; }
+    }
+
+    private class WorkoutBlock
+    {
+        public string HeaderText { get; set; } = "";
+        public List<WorkoutExerciseBlock> Exercises { get; set; } = [];
+    }
+
+    private class WorkoutExerciseBlock
+    {
+        public string ExerciseName { get; set; } = "";
+        public int? RestSeconds { get; set; }
+        public List<WorkoutSetData> Sets { get; set; } = [];
+    }
+
+    private class WorkoutSetData
+    {
+        public int SetNumber { get; set; }
+        public bool IsWarmup { get; set; }
+        public int? RepMin { get; set; }
+        public int? RepMax { get; set; }
+        public int? DurationMin { get; set; }
+        public int? DurationMax { get; set; }
+        public int? Reps { get; set; }
+        public double? Weight { get; set; }
+        public int? DurationSeconds { get; set; }
+        public double? Rpe { get; set; }
     }
 }

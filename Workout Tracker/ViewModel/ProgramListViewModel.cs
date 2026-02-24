@@ -103,10 +103,10 @@ public partial class ProgramListViewModel : ObservableObject
         {
             var fileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
-                { DevicePlatform.Android, new[] { "application/json" } },
-                { DevicePlatform.iOS, new[] { "public.json" } },
-                { DevicePlatform.WinUI, new[] { ".json" } },
-                { DevicePlatform.macOS, new[] { "public.json" } }
+                { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel.sheet.macroEnabled.12", "application/vnd.ms-excel.sheet.macroenabled.12", "application/vnd.ms-excel", "application/octet-stream" } },
+                { DevicePlatform.iOS, new[] { "org.openxmlformats.spreadsheetml.sheet", "com.microsoft.excel.xlsm" } },
+                { DevicePlatform.WinUI, new[] { ".xlsx", ".xlsm" } },
+                { DevicePlatform.macOS, new[] { "org.openxmlformats.spreadsheetml.sheet", "com.microsoft.excel.xlsm" } }
             });
 
             var result = await FilePicker.Default.PickAsync(new PickOptions
