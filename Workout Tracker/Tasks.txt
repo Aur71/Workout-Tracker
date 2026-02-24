@@ -13,3 +13,32 @@
 - X Remove log functionality
 - X Add padding to the app icon
 - X If an workout is active change the text inside the dashboard card to "Resume Workout"
+
+
+
+Deployment steps left:
+
+What You Still Need To Do (manual steps)
+
+Android (Google Play)
+
+1. Generate a keystore — run this in your project directory:
+keytool -genkeypair -v -keystore ironlog.keystore -alias ironlog -keyalg RSA -keysize 2048 -validity 10000
+2. Set signing passwords via environment variables or dotnet user-secrets:
+- AndroidSigningKeyPass
+- AndroidSigningStorePass
+3. Create a Google Play Developer account ($25 one-time fee)
+4. Build the release AAB: dotnet publish -f net10.0-android -c Release
+
+iOS (App Store)
+
+1. Enroll in the Apple Developer Program ($99/year)
+2. Create an App ID with bundle identifier com.ironlog.app in Apple Developer portal
+3. Create a Distribution Certificate and Provisioning Profile named "IronLog App Store"
+4. Update CodesignProvision in .csproj if you name the profile differently
+5. Build on a Mac: dotnet publish -f net10.0-ios -c Release
+
+Both Platforms
+
+- Prepare store listing assets: screenshots, description, feature graphic (Google Play), and privacy policy URL
+- The bundle ID com.ironlog.app can be changed if you prefer a different domain — just update it in .csproj before your first store submission (it's permanent after that)

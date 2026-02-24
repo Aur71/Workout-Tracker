@@ -19,13 +19,13 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>WM</ApplicationTitle>
+		<ApplicationTitle>IronLog</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.workouttracker</ApplicationId>
+		<ApplicationId>com.ironlog.app</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
@@ -64,5 +64,24 @@
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
 	</ItemGroup>
+
+	<!-- Android Release Configuration -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
+		<AndroidLinkTool>r8</AndroidLinkTool>
+		<AndroidKeyStore>true</AndroidKeyStore>
+		<AndroidSigningKeyStore>ironlog.keystore</AndroidSigningKeyStore>
+		<AndroidSigningKeyAlias>ironlog</AndroidSigningKeyAlias>
+		<!-- Set these via environment variables or user secrets for security:
+		     AndroidSigningKeyPass and AndroidSigningStorePass -->
+	</PropertyGroup>
+
+	<!-- iOS Release Configuration -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+		<CodesignKey>Apple Distribution</CodesignKey>
+		<CodesignProvision>IronLog App Store</CodesignProvision>
+		<ArchiveOnBuild>true</ArchiveOnBuild>
+		<TcpPort>58181</TcpPort>
+	</PropertyGroup>
 
 </Project>
