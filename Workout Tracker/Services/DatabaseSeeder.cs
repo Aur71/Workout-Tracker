@@ -79,7 +79,8 @@ public static class DatabaseSeeder
                 Description = "Neck flexion exercise lying face up",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight or Neck Harness",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=FPO1wKDQUs8"
             },
             new()
             {
@@ -87,7 +88,8 @@ public static class DatabaseSeeder
                 Description = "Neck extension exercise lying face down",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight or Neck Harness",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=393tGWUXCXg"
             },
             new()
             {
@@ -95,7 +97,8 @@ public static class DatabaseSeeder
                 Description = "Lateral neck flexion exercise",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight or Neck Harness",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=FBUiuhB10ic"
             },
 
             // ==================== CHEST ====================
@@ -105,7 +108,8 @@ public static class DatabaseSeeder
                 Description = "Barbell press lying on a flat bench",
                 ExerciseType = "compound",
                 Equipment = "Barbell, Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=SCVCLChPQFY"
             },
             new()
             {
@@ -113,7 +117,8 @@ public static class DatabaseSeeder
                 Description = "Barbell press on an inclined bench targeting upper chest",
                 ExerciseType = "compound",
                 Equipment = "Barbell, Incline Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=lJ2o89kcnxY"
             },
             new()
             {
@@ -121,7 +126,8 @@ public static class DatabaseSeeder
                 Description = "Chest isolation with dumbbells in an arc motion",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells, Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=JFm8KbhjibM"
             },
             new()
             {
@@ -129,7 +135,8 @@ public static class DatabaseSeeder
                 Description = "Bodyweight chest press from the floor",
                 ExerciseType = "compound",
                 Equipment = "Bodyweight",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=WDIpL0pjun0"
             },
             new()
             {
@@ -137,7 +144,8 @@ public static class DatabaseSeeder
                 Description = "Cable fly movement for chest isolation",
                 ExerciseType = "isolation",
                 Equipment = "Cable Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=EsXgqAxVKbA"
             },
             new()
             {
@@ -145,7 +153,8 @@ public static class DatabaseSeeder
                 Description = "Bodyweight pressing movement on parallel bars",
                 ExerciseType = "compound",
                 Equipment = "Dip Bars",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=2hnLB6O860c"
             },
 
             // ==================== BACK ====================
@@ -156,7 +165,8 @@ public static class DatabaseSeeder
                 Description = "Bodyweight vertical pull with overhand grip",
                 ExerciseType = "compound",
                 Equipment = "Pull-Up Bar",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=eGo4IYlbE5g"
             },
             new()
             {
@@ -164,7 +174,8 @@ public static class DatabaseSeeder
                 Description = "Bodyweight vertical pull with underhand grip",
                 ExerciseType = "compound",
                 Equipment = "Pull-Up Bar",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=8mryJ3w2S78"
             },
             new()
             {
@@ -172,7 +183,8 @@ public static class DatabaseSeeder
                 Description = "Cable pulldown targeting the lats",
                 ExerciseType = "compound",
                 Equipment = "Cable Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=JGeRYIZdojU"
             },
             new()
             {
@@ -180,7 +192,8 @@ public static class DatabaseSeeder
                 Description = "Bent over rowing movement with barbell",
                 ExerciseType = "compound",
                 Equipment = "Barbell",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=bm0_q9bR_HA"
             },
             new()
             {
@@ -188,7 +201,8 @@ public static class DatabaseSeeder
                 Description = "Single arm rowing movement with dumbbell",
                 ExerciseType = "compound",
                 Equipment = "Dumbbell, Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=DMo3HJoawrU"
             },
             new()
             {
@@ -196,7 +210,8 @@ public static class DatabaseSeeder
                 Description = "Horizontal pulling on cable machine",
                 ExerciseType = "compound",
                 Equipment = "Cable Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=UCXxvVItLoM"
             },
             new()
             {
@@ -204,7 +219,8 @@ public static class DatabaseSeeder
                 Description = "Horizontal pull using gymnastic rings at an angle",
                 ExerciseType = "compound",
                 Equipment = "Gymnastic Rings",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=B90sF7dbP04"
             },
             // Traps
             new()
@@ -213,7 +229,8 @@ public static class DatabaseSeeder
                 Description = "Shoulder shrug for trapezius",
                 ExerciseType = "isolation",
                 Equipment = "Barbell or Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=_t3lrPI6Ns4"
             },
             new()
             {
@@ -221,7 +238,8 @@ public static class DatabaseSeeder
                 Description = "Y-raise targeting the lower trapezius",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells or Cable",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=b9Hkd4DlRes"
             },
             // Lower Back
             new()
@@ -230,7 +248,8 @@ public static class DatabaseSeeder
                 Description = "Full body pull lifting barbell from the floor",
                 ExerciseType = "compound",
                 Equipment = "Barbell",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=AweC3UaM14o"
             },
             new()
             {
@@ -238,7 +257,8 @@ public static class DatabaseSeeder
                 Description = "Hyperextension movement for lower back on Roman chair or GHD",
                 ExerciseType = "isolation",
                 Equipment = "Roman Chair or GHD",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=7NHiEO5h4c8"
             },
 
             // ==================== SHOULDERS ====================
@@ -249,7 +269,8 @@ public static class DatabaseSeeder
                 Description = "Standing barbell press overhead",
                 ExerciseType = "compound",
                 Equipment = "Barbell",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=ZXpdJOLNoWw"
             },
             new()
             {
@@ -257,7 +278,8 @@ public static class DatabaseSeeder
                 Description = "Seated or standing dumbbell press overhead",
                 ExerciseType = "compound",
                 Equipment = "Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=HzIiNhHhhtA"
             },
             new()
             {
@@ -265,7 +287,8 @@ public static class DatabaseSeeder
                 Description = "Dumbbell raise to the front for front delts",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=t8asfRMKd-M"
             },
             // Side Delts
             new()
@@ -274,7 +297,8 @@ public static class DatabaseSeeder
                 Description = "Dumbbell raise to the side for side delts",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=XPPfnSEATJA"
             },
             new()
             {
@@ -282,7 +306,8 @@ public static class DatabaseSeeder
                 Description = "Lateral raise performed on an incline bench",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells, Incline Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=sLhYbdTZodU"
             },
             // Rear Delts
             new()
@@ -291,7 +316,8 @@ public static class DatabaseSeeder
                 Description = "Bent over fly for rear delts",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=8wN98DY8FD4"
             },
             new()
             {
@@ -299,7 +325,8 @@ public static class DatabaseSeeder
                 Description = "Cable pull to face targeting rear delts and upper back",
                 ExerciseType = "isolation",
                 Equipment = "Cable Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=-MODnZdnmAQ"
             },
             new()
             {
@@ -307,7 +334,8 @@ public static class DatabaseSeeder
                 Description = "Face pull using resistance band",
                 ExerciseType = "isolation",
                 Equipment = "Resistance Band",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=hbo-nSIEmXo"
             },
             new()
             {
@@ -315,7 +343,8 @@ public static class DatabaseSeeder
                 Description = "Face pull using gymnastic rings",
                 ExerciseType = "isolation",
                 Equipment = "Gymnastic Rings",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=yuhwEvC-XAU"
             },
             // Rotator Cuff
             new()
@@ -324,7 +353,8 @@ public static class DatabaseSeeder
                 Description = "External rotation with resistance band for rotator cuff",
                 ExerciseType = "isolation",
                 Equipment = "Resistance Band",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=dLSytuFOCX8"
             },
             new()
             {
@@ -332,7 +362,8 @@ public static class DatabaseSeeder
                 Description = "Internal rotation with resistance band for rotator cuff",
                 ExerciseType = "isolation",
                 Equipment = "Resistance Band",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=X6EDIjqgPS4"
             },
 
             // ==================== ARMS - BICEPS ====================
@@ -342,7 +373,8 @@ public static class DatabaseSeeder
                 Description = "Standing curl with barbell",
                 ExerciseType = "isolation",
                 Equipment = "Barbell",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=v_rZqV01aiY"
             },
             new()
             {
@@ -350,7 +382,8 @@ public static class DatabaseSeeder
                 Description = "Standing or seated curl with dumbbells",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=W3GrFfEWBJM"
             },
             new()
             {
@@ -358,7 +391,8 @@ public static class DatabaseSeeder
                 Description = "Neutral grip dumbbell curl",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=CFBZ4jN1CMI"
             },
             new()
             {
@@ -366,7 +400,8 @@ public static class DatabaseSeeder
                 Description = "Curl on preacher bench for bicep isolation",
                 ExerciseType = "isolation",
                 Equipment = "Barbell or Dumbbells, Preacher Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=Ja6ZlIDONac"
             },
 
             // ==================== ARMS - TRICEPS ====================
@@ -376,7 +411,8 @@ public static class DatabaseSeeder
                 Description = "Cable pushdown for triceps",
                 ExerciseType = "isolation",
                 Equipment = "Cable Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=6Fzep104f0s"
             },
             new()
             {
@@ -384,7 +420,8 @@ public static class DatabaseSeeder
                 Description = "Lying tricep extension with barbell or dumbbells",
                 ExerciseType = "isolation",
                 Equipment = "Barbell or Dumbbells, Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=l3rHYPtMUo8"
             },
             new()
             {
@@ -392,7 +429,8 @@ public static class DatabaseSeeder
                 Description = "Tricep extension overhead with dumbbell or cable",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbell or Cable",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=1u18yJELsh0"
             },
             new()
             {
@@ -400,17 +438,65 @@ public static class DatabaseSeeder
                 Description = "Bench press with narrow grip for triceps",
                 ExerciseType = "compound",
                 Equipment = "Barbell, Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=FiQUzPtS90E"
+            },
+
+            new()
+            {
+                Name = "Single Arm Cross Body Tricep Extension",
+                Description = "Cable tricep extension pulling across the body for long head emphasis",
+                ExerciseType = "isolation",
+                Equipment = "Cable Machine",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=b_ITzRs_Jbo"
             },
 
             // ==================== ARMS - FOREARMS ====================
+            new()
+            {
+                Name = "Wrist Rolls",
+                Description = "Rolling a wrist roller to wind up a weight for forearm strength",
+                ExerciseType = "isolation",
+                Equipment = "Wrist Roller",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=C4urEGe0zsQ"
+            },
+            new()
+            {
+                Name = "Reverse Wrist Rolls",
+                Description = "Reverse rolling a wrist roller to unwind a weight for forearm extension strength",
+                ExerciseType = "isolation",
+                Equipment = "Wrist Roller",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=Wl1DxBK8yRo"
+            },
+            new()
+            {
+                Name = "Hand Supination",
+                Description = "Rotating the forearm to turn the palm upward against resistance",
+                ExerciseType = "isolation",
+                Equipment = "Dumbbell or Hammer",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=r7caPXvhINc"
+            },
+            new()
+            {
+                Name = "Hand Pronation",
+                Description = "Rotating the forearm to turn the palm downward against resistance",
+                ExerciseType = "isolation",
+                Equipment = "Dumbbell or Hammer",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=r7caPXvhINc"
+            },
             new()
             {
                 Name = "Wrist Curl",
                 Description = "Forearm flexion with barbell or dumbbells",
                 ExerciseType = "isolation",
                 Equipment = "Barbell or Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=3VLTzIrnb5g"
             },
             new()
             {
@@ -418,7 +504,8 @@ public static class DatabaseSeeder
                 Description = "Forearm extension with barbell or dumbbells",
                 ExerciseType = "isolation",
                 Equipment = "Barbell or Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=osYPwlBiCRM"
             },
             new()
             {
@@ -426,7 +513,8 @@ public static class DatabaseSeeder
                 Description = "Grip exercise pinching weight plates together",
                 ExerciseType = "isolation",
                 Equipment = "Weight Plates",
-                IsTimeBased = true
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=jFTV3DQf3HE"
             },
             new()
             {
@@ -434,7 +522,8 @@ public static class DatabaseSeeder
                 Description = "Hanging from bar for grip and shoulder health",
                 ExerciseType = "isolation",
                 Equipment = "Pull-Up Bar",
-                IsTimeBased = true
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=0Bx_Ap7-EwU"
             },
             new()
             {
@@ -442,7 +531,8 @@ public static class DatabaseSeeder
                 Description = "Wrist movement toward thumb side with weight",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbell or Hammer",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=_B61Ym6kKYM"
             },
             new()
             {
@@ -450,7 +540,8 @@ public static class DatabaseSeeder
                 Description = "Wrist movement toward pinky side with weight",
                 ExerciseType = "isolation",
                 Equipment = "Dumbbell or Hammer",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=_B61Ym6kKYM"
             },
 
             // ==================== CORE ====================
@@ -461,7 +552,8 @@ public static class DatabaseSeeder
                 Description = "Isometric core hold in push-up position",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight",
-                IsTimeBased = true
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=pvIjsG5Svck"
             },
             new()
             {
@@ -469,7 +561,8 @@ public static class DatabaseSeeder
                 Description = "Basic abdominal crunch",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=Xyd_fa5zoEU"
             },
             new()
             {
@@ -477,7 +570,8 @@ public static class DatabaseSeeder
                 Description = "Leg raise while hanging from bar",
                 ExerciseType = "isolation",
                 Equipment = "Pull-Up Bar",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=7FwGZ8qY5OU"
             },
             new()
             {
@@ -485,7 +579,8 @@ public static class DatabaseSeeder
                 Description = "Rolling extension with ab wheel",
                 ExerciseType = "isolation",
                 Equipment = "Ab Wheel",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=3b8K6BCvBBA"
             },
             new()
             {
@@ -493,7 +588,8 @@ public static class DatabaseSeeder
                 Description = "Advanced core exercise lying on bench with body extended",
                 ExerciseType = "isolation",
                 Equipment = "Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=U5pviWt7sMo"
             },
             // Obliques
             new()
@@ -502,7 +598,8 @@ public static class DatabaseSeeder
                 Description = "Rotational core exercise",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight or Weight Plate",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=DJQGX2J4IVw"
             },
             new()
             {
@@ -510,7 +607,8 @@ public static class DatabaseSeeder
                 Description = "Rotational movement with cable",
                 ExerciseType = "compound",
                 Equipment = "Cable Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=iWxTGXIViro"
             },
             new()
             {
@@ -518,7 +616,8 @@ public static class DatabaseSeeder
                 Description = "Pallof press hold for core anti-rotation stability",
                 ExerciseType = "isolation",
                 Equipment = "Cable Machine or Band",
-                IsTimeBased = true
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=b4bidbr5K78"
             },
             new()
             {
@@ -526,7 +625,8 @@ public static class DatabaseSeeder
                 Description = "Lateral back extension targeting obliques and lower back",
                 ExerciseType = "isolation",
                 Equipment = "Roman Chair or GHD",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=IqtzHGenpNU"
             },
 
             // ==================== LOWER BODY ====================
@@ -537,7 +637,8 @@ public static class DatabaseSeeder
                 Description = "Glute bridge with back on bench",
                 ExerciseType = "compound",
                 Equipment = "Barbell, Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=5S8SApGU_Lk"
             },
             // Quadriceps
             new()
@@ -546,7 +647,8 @@ public static class DatabaseSeeder
                 Description = "Barbell back squat",
                 ExerciseType = "compound",
                 Equipment = "Barbell, Squat Rack",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=my0tLDaWyDU"
             },
             new()
             {
@@ -554,7 +656,8 @@ public static class DatabaseSeeder
                 Description = "Barbell squat with bar in front rack position",
                 ExerciseType = "compound",
                 Equipment = "Barbell, Squat Rack",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=7pyxT5hqmQY"
             },
             new()
             {
@@ -562,7 +665,8 @@ public static class DatabaseSeeder
                 Description = "Air squat with no added weight",
                 ExerciseType = "compound",
                 Equipment = "Bodyweight",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=0EpP3pYUYTk"
             },
             new()
             {
@@ -570,7 +674,8 @@ public static class DatabaseSeeder
                 Description = "Machine press for quadriceps and glutes",
                 ExerciseType = "compound",
                 Equipment = "Leg Press Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=q4W4_VJbKW0"
             },
             new()
             {
@@ -578,7 +683,8 @@ public static class DatabaseSeeder
                 Description = "Machine extension for quadriceps",
                 ExerciseType = "isolation",
                 Equipment = "Leg Extension Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=4ZDm5EbiFI8"
             },
             new()
             {
@@ -586,7 +692,8 @@ public static class DatabaseSeeder
                 Description = "Stepping lunge with bodyweight or weights",
                 ExerciseType = "compound",
                 Equipment = "Bodyweight or Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=wrwwXE_x-pQ"
             },
             new()
             {
@@ -594,7 +701,8 @@ public static class DatabaseSeeder
                 Description = "Single leg squat with rear foot elevated",
                 ExerciseType = "compound",
                 Equipment = "Dumbbells, Bench",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=Fmjj7wFJWRE"
             },
             // Hamstrings
             new()
@@ -603,7 +711,8 @@ public static class DatabaseSeeder
                 Description = "Hip hinge movement targeting hamstrings",
                 ExerciseType = "compound",
                 Equipment = "Barbell",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=7j-2w4-P14I"
             },
             new()
             {
@@ -611,7 +720,8 @@ public static class DatabaseSeeder
                 Description = "Machine curl for hamstrings",
                 ExerciseType = "isolation",
                 Equipment = "Leg Curl Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=Orxowest56U"
             },
             new()
             {
@@ -619,7 +729,8 @@ public static class DatabaseSeeder
                 Description = "Eccentric hamstring curl with bodyweight",
                 ExerciseType = "isolation",
                 Equipment = "Nordic Curl Station or Partner",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=_e9vFU9-tkc"
             },
             // Hip Flexors
             new()
@@ -628,7 +739,8 @@ public static class DatabaseSeeder
                 Description = "Raising the knee against gravity for hip flexor strength",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight or Ankle Weights",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=djxTlEIJdqc"
             },
             // Adductors
             new()
@@ -637,7 +749,8 @@ public static class DatabaseSeeder
                 Description = "Machine adduction for inner thighs",
                 ExerciseType = "isolation",
                 Equipment = "Adductor Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=e9AqTFMmP18"
             },
             new()
             {
@@ -645,7 +758,8 @@ public static class DatabaseSeeder
                 Description = "Side-to-side squat for adductors and mobility",
                 ExerciseType = "compound",
                 Equipment = "Bodyweight or Dumbbells",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=iPZNB5GsOnM"
             },
             // Abductors
             new()
@@ -654,7 +768,8 @@ public static class DatabaseSeeder
                 Description = "Machine abduction for outer hips",
                 ExerciseType = "isolation",
                 Equipment = "Abductor Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=G_8LItOiZ0Q"
             },
             // Calves
             new()
@@ -663,7 +778,8 @@ public static class DatabaseSeeder
                 Description = "Standing or seated calf raise",
                 ExerciseType = "isolation",
                 Equipment = "Machine or Bodyweight",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=c5Kv6-fnTj8"
             },
             new()
             {
@@ -671,7 +787,8 @@ public static class DatabaseSeeder
                 Description = "Tibialis raise for shin muscles",
                 ExerciseType = "isolation",
                 Equipment = "Bodyweight or Tibialis Machine",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=o5OosBCxfU8"
             },
 
             // ==================== CARDIO ====================
@@ -681,7 +798,8 @@ public static class DatabaseSeeder
                 Description = "Outdoor or treadmill running",
                 ExerciseType = "cardio",
                 Equipment = "Treadmill or Outdoors",
-                IsTimeBased = true
+                IsTimeBased = true,
+
             },
             new()
             {
@@ -689,7 +807,7 @@ public static class DatabaseSeeder
                 Description = "Stationary bike or outdoor cycling",
                 ExerciseType = "cardio",
                 Equipment = "Bike",
-                IsTimeBased = true
+                IsTimeBased = true,
             },
             new()
             {
@@ -697,7 +815,7 @@ public static class DatabaseSeeder
                 Description = "Rowing machine cardio",
                 ExerciseType = "cardio",
                 Equipment = "Rowing Machine",
-                IsTimeBased = true
+                IsTimeBased = true,
             },
             new()
             {
@@ -705,7 +823,7 @@ public static class DatabaseSeeder
                 Description = "Skipping rope cardio",
                 ExerciseType = "cardio",
                 Equipment = "Jump Rope",
-                IsTimeBased = true
+                IsTimeBased = true,
             },
 
             // ==================== MOBILITY ====================
@@ -715,7 +833,8 @@ public static class DatabaseSeeder
                 Description = "Self-myofascial release with foam roller",
                 ExerciseType = "mobility",
                 Equipment = "Foam Roller",
-                IsTimeBased = true
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=DzSU2FiFKTM"
             },
             new()
             {
@@ -723,7 +842,8 @@ public static class DatabaseSeeder
                 Description = "Stretching the hip flexor muscles",
                 ExerciseType = "mobility",
                 Equipment = "Bodyweight",
-                IsTimeBased = true
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/shorts/VKnwWEDdT8w"
             },
             new()
             {
@@ -731,7 +851,8 @@ public static class DatabaseSeeder
                 Description = "Shoulder mobility with band or stick",
                 ExerciseType = "mobility",
                 Equipment = "Band or Stick",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=SL8VAYpmpCQ"
             },
             new()
             {
@@ -739,7 +860,8 @@ public static class DatabaseSeeder
                 Description = "Hip opener stretch targeting glutes and hip rotators",
                 ExerciseType = "mobility",
                 Equipment = "Bodyweight",
-                IsTimeBased = true
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/shorts/pjmR5Kacu1w"
             },
             new()
             {
@@ -747,7 +869,8 @@ public static class DatabaseSeeder
                 Description = "Dynamic leg swings for hip mobility warmup",
                 ExerciseType = "mobility",
                 Equipment = "Bodyweight",
-                IsTimeBased = false
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=difYoBtZi2s"
             },
             new()
             {
@@ -755,7 +878,7 @@ public static class DatabaseSeeder
                 Description = "Isometric hold in external hip rotation",
                 ExerciseType = "mobility",
                 Equipment = "Bodyweight",
-                IsTimeBased = true
+                IsTimeBased = true,
             },
             new()
             {
@@ -763,7 +886,7 @@ public static class DatabaseSeeder
                 Description = "Isometric hold in internal hip rotation",
                 ExerciseType = "mobility",
                 Equipment = "Bodyweight",
-                IsTimeBased = true
+                IsTimeBased = true,
             }
         };
 
@@ -931,7 +1054,13 @@ public static class DatabaseSeeder
         AddMapping("Close Grip Bench Press", "Upper Chest", "secondary");
         AddMapping("Close Grip Bench Press", "Front Delts", "secondary");
 
+        AddMapping("Single Arm Cross Body Tricep Extension", "Triceps", "primary");
+
         // ==================== ARMS - FOREARMS ====================
+        AddMapping("Wrist Rolls", "Forearms", "primary");
+        AddMapping("Reverse Wrist Rolls", "Forearms", "primary");
+        AddMapping("Hand Supination", "Forearms", "primary");
+        AddMapping("Hand Pronation", "Forearms", "primary");
         AddMapping("Wrist Curl", "Forearms", "primary");
         AddMapping("Reverse Wrist Curl", "Forearms", "primary");
         AddMapping("Plate Pinch", "Forearms", "primary");
