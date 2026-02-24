@@ -57,6 +57,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [ObservableProperty]
     private bool _isBusy;
 
+    [ObservableProperty]
+    private bool _isVideoOverlayVisible;
+
+    [ObservableProperty]
+    private string? _videoOverlayUrl;
+
     public async Task LoadSessionAsync(int sessionId)
     {
         await _loading.RunAsync(async () =>
@@ -190,6 +196,20 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         ElapsedTimeDisplay = elapsed.TotalHours >= 1
             ? elapsed.ToString(@"h\:mm\:ss")
             : elapsed.ToString(@"mm\:ss");
+    }
+
+    [RelayCommand]
+    private void ShowVideo(ActiveExerciseDisplay exercise)
+    {
+        VideoOverlayUrl = exercise.VideoEmbedUrl;
+        IsVideoOverlayVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseVideo()
+    {
+        IsVideoOverlayVisible = false;
+        VideoOverlayUrl = "about:blank";
     }
 
     [RelayCommand]

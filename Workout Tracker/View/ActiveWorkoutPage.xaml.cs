@@ -47,6 +47,7 @@ public partial class ActiveWorkoutPage : ContentPage, IQueryAttributable
     protected override async void OnDisappearing()
     {
         base.OnDisappearing();
+        _vm.CloseVideoCommand.Execute(null);
         try
         {
             // Save progress if workout is active so data isn't lost on back gesture

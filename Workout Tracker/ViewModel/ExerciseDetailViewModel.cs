@@ -28,6 +28,7 @@ public partial class ExerciseDetailViewModel : ObservableObject
     public bool HasInstructions => !string.IsNullOrWhiteSpace(Exercise?.Instructions);
     public bool HasNotes => !string.IsNullOrWhiteSpace(Exercise?.Notes);
     public bool HasMuscles => Exercise?.Muscles.Count > 0;
+    public bool HasVideo => Exercise?.HasVideo ?? false;
 
     public async Task LoadExerciseAsync(int id)
     {
@@ -38,6 +39,7 @@ public partial class ExerciseDetailViewModel : ObservableObject
             OnPropertyChanged(nameof(HasInstructions));
             OnPropertyChanged(nameof(HasNotes));
             OnPropertyChanged(nameof(HasMuscles));
+            OnPropertyChanged(nameof(HasVideo));
         }, "Loading...");
     }
 

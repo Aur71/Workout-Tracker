@@ -8,6 +8,8 @@
              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
              Shell.NavBarIsVisible="False">
 
+    <Grid>
+
     <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- Top Bar -->
@@ -93,7 +95,7 @@
                             <VerticalStackLayout Spacing="10">
 
                                 <!-- Exercise Header -->
-                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10">
                                     <VerticalStackLayout Spacing="2">
                                         <Label Text="{Binding ExerciseName}"
                                                FontSize="15"
@@ -135,8 +137,21 @@
                                            TextColor="{StaticResource Primary}"
                                            VerticalOptions="Center" />
 
-                                    <!-- Expand/Collapse -->
+                                    <!-- Video play button -->
                                     <Label Grid.Column="2"
+                                           Text="&#x25B6;"
+                                           FontSize="16"
+                                           TextColor="{StaticResource Primary}"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding HasVideo}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ActiveWorkoutViewModel}}, Path=ShowVideoCommand}"
+                                                                  CommandParameter="{Binding}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+
+                                    <!-- Expand/Collapse -->
+                                    <Label Grid.Column="3"
                                            Text="{Binding IsExpanded, StringFormat='{0}'}"
                                            FontSize="14"
                                            TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
@@ -363,6 +378,45 @@
                         IsVisible="{Binding IsWorkoutActive}" />
             </Grid>
         </Border>
+
+    </Grid>
+
+    <!-- Video Overlay -->
+    <Grid IsVisible="{Binding IsVideoOverlayVisible}"
+          BackgroundColor="#CC000000"
+          InputTransparent="False">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding CloseVideoCommand}" />
+        </Grid.GestureRecognizers>
+
+        <VerticalStackLayout VerticalOptions="Center"
+                             Padding="20,0"
+                             Spacing="12">
+            <!-- Close button -->
+            <Label Text="&#x2715; Close"
+                   FontSize="15"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="End"
+                   Padding="0,0,4,0">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseVideoCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <!-- Video player -->
+            <Border StrokeThickness="0"
+                    Padding="0"
+                    BackgroundColor="Black">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <WebView x:Name="VideoOverlay"
+                         Source="{Binding VideoOverlayUrl}"
+                         HeightRequest="260" />
+            </Border>
+        </VerticalStackLayout>
+    </Grid>
 
     </Grid>
 

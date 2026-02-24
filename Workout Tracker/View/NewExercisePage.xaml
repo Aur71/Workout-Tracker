@@ -211,6 +211,65 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- YouTube Video Card -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource BlackBrush}"
+                                Offset="0,2"
+                                Radius="8"
+                                Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="YouTube Video"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+
+                        <!-- URL Entry with clear button -->
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    Padding="12,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Entry Placeholder="Paste YouTube URL..."
+                                       Text="{Binding ExampleMedia}"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                            </Border>
+                            <Label Grid.Column="1"
+                                   Text="&#x2715;"
+                                   FontSize="18"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                   VerticalOptions="Center"
+                                   IsVisible="{Binding HasVideo}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding RemoveVideoCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+
+                        <!-- Video preview -->
+                        <Border StrokeThickness="0"
+                                Padding="0"
+                                IsVisible="{Binding HasVideo}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <WebView x:Name="VideoPreview"
+                                     Source="{Binding VideoEmbedUrl}"
+                                     HeightRequest="200" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Target Muscles Section -->
                 <Border StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"

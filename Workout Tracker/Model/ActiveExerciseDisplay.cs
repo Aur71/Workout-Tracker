@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Workout_Tracker.Helpers;
 
 namespace Workout_Tracker.Model;
 
@@ -13,6 +14,7 @@ public partial class ActiveExerciseDisplay : ObservableObject
     public bool IsTimeBased { get; set; }
     public int Order { get; set; }
     public string? Notes { get; set; }
+    public string? ExampleMedia { get; set; }
     public int RestSeconds { get; set; } = 120;
 
     public string RestDisplay
@@ -78,6 +80,9 @@ public partial class ActiveExerciseDisplay : ObservableObject
         "mobility" => Color.FromArgb("#F59E0B"),
         _ => Colors.Gray
     };
+
+    public bool HasVideo => YouTubeHelper.IsValidYouTubeUrl(ExampleMedia);
+    public string? VideoEmbedUrl => YouTubeHelper.GetEmbedUrl(ExampleMedia);
 
     public void RefreshCompletedCount()
     {

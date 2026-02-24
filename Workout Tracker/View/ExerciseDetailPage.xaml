@@ -61,6 +61,30 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
 
+                <!-- Video Preview Card -->
+                <Border StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
+                        Padding="16"
+                        IsVisible="{Binding HasVideo}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Example Video"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                        <Border StrokeThickness="0" Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <WebView x:Name="VideoPreview"
+                                     Source="{Binding Exercise.VideoEmbedUrl}"
+                                     HeightRequest="220" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Target Muscles Card -->
                 <Border StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"

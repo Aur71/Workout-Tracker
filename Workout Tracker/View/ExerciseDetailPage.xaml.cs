@@ -33,6 +33,12 @@ public partial class ExerciseDetailPage : ContentPage, IQueryAttributable
         }
     }
 
+    protected override async void OnDisappearing()
+    {
+        base.OnDisappearing();
+        try { await VideoPreview.EvaluateJavaScriptAsync("document.querySelectorAll('video,audio').forEach(m=>m.pause());document.querySelectorAll('iframe').forEach(f=>{f.src=''})"); } catch { }
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();

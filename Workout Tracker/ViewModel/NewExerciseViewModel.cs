@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Workout_Tracker.Messages;
 using Workout_Tracker.Model;
 using Workout_Tracker.Services;
+using Workout_Tracker.Helpers;
 using Workout_Tracker.View;
 
 namespace Workout_Tracker.ViewModel;
@@ -45,7 +46,19 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
     private string? _notes;
 
     [ObservableProperty]
+    private string? _exampleMedia;
+
+    [ObservableProperty]
     private bool _isBusy;
+
+    public bool HasVideo => YouTubeHelper.IsValidYouTubeUrl(ExampleMedia);
+    public string? VideoEmbedUrl => YouTubeHelper.GetEmbedUrl(ExampleMedia);
+
+    partial void OnExampleMediaChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasVideo));
+        OnPropertyChanged(nameof(VideoEmbedUrl));
+    }
 
     public ObservableCollection<MuscleSelection> SelectedMuscles { get; } = [];
 
@@ -66,6 +79,7 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
         Description = display.Description;
         Instructions = display.Instructions;
         Notes = display.Notes;
+        ExampleMedia = display.ExampleMedia;
 
         // Load muscles as MuscleSelection objects
         var allMuscles = await _db.GetAllMusclesAsync();
@@ -93,6 +107,12 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
             SelectedMuscles.Add(m);
 
         OnPropertyChanged(nameof(HasMuscles));
+    }
+
+    [RelayCommand]
+    private void RemoveVideo()
+    {
+        ExampleMedia = null;
     }
 
     [RelayCommand]
@@ -133,7 +153,8 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
                 IsTimeBased = IsTimeBased,
                 Description = Description,
                 Instructions = Instructions,
-                Notes = Notes
+                Notes = Notes,
+                ExampleMedia = ExampleMedia
             };
 
             if (_editExerciseId.HasValue)

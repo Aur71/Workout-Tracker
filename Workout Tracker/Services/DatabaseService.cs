@@ -65,6 +65,7 @@ public class DatabaseService
                     Description = e.Description,
                     Instructions = e.Instructions,
                     Notes = e.Notes,
+                    ExampleMedia = e.ExampleMedia,
                     PrimaryMuscle = eMuscles.FirstOrDefault(m => m.Role == "primary")?.Name,
                     Muscles = eMuscles
                 };
@@ -101,6 +102,7 @@ public class DatabaseService
                 Description = exercise.Description,
                 Instructions = exercise.Instructions,
                 Notes = exercise.Notes,
+                ExampleMedia = exercise.ExampleMedia,
                 PrimaryMuscle = eMuscles.FirstOrDefault(m => m.Role == "primary")?.Name,
                 Muscles = eMuscles
             };
@@ -757,6 +759,7 @@ public class DatabaseService
                     IsTimeBased = ex?.IsTimeBased ?? false,
                     Order = se.Order,
                     Notes = se.Notes,
+                    ExampleMedia = ex?.ExampleMedia,
                     RestSeconds = se.RestSeconds ?? 120
                 };
 

@@ -1,3 +1,5 @@
+using Workout_Tracker.Helpers;
+
 namespace Workout_Tracker.Model;
 
 public class ExerciseDisplay
@@ -45,4 +47,8 @@ public class ExerciseDisplay
     };
 
     public string EquipmentDisplay => Equipment ?? "No Equipment";
+
+    public string? ExampleMedia { get; set; }
+    public bool HasVideo => YouTubeHelper.IsValidYouTubeUrl(ExampleMedia);
+    public string? VideoEmbedUrl => YouTubeHelper.GetEmbedUrl(ExampleMedia);
 }
