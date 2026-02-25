@@ -278,6 +278,7 @@
                                         <Label Text="{Binding DateDisplay}"
                                                FontSize="15"
                                                FontAttributes="Bold"
+                                               VerticalOptions="Center"
                                                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                                         <!-- Completed badge -->
                                         <Border Grid.Column="1"
