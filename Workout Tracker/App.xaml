@@ -30,6 +30,10 @@
                                               TrueValue="2"
                                               FalseValue="1" />
 
+            <converters:BoolToDoubleConverter x:Key="BoolToOpacityConverter"
+                                              TrueValue="1"
+                                              FalseValue="0.3" />
+
             <!-- Role converters for Primary button -->
             <converters:RoleToColorConverter x:Key="RoleToPrimaryBgConverter"
                                              TargetRole="primary"

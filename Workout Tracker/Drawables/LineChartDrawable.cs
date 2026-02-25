@@ -37,7 +37,8 @@ public class LineChartDrawable : IDrawable
         float leftMargin = 48f;
         float rightMargin = hasDualAxis ? 48f : 16f;
         float topMargin = 12f;
-        float bottomMargin = 66f; // space for X labels + legend
+        int legendRowCount = GetLegendRowCount(width);
+        float bottomMargin = 50f + legendRowCount * 16f; // space for X labels + legend rows
 
         float chartLeft = leftMargin;
         float chartRight = width - rightMargin;
@@ -147,18 +148,27 @@ public class LineChartDrawable : IDrawable
             }
         }
 
-        // Draw legend
-        float legendY = height - 8;
-        float legendX = chartLeft;
+        // Draw legend (multi-row, each row centered)
         canvas.FontSize = 10;
-        foreach (var series in Series)
+        var legendRows = BuildLegendRows(width);
+        float legendBaseY = height - (legendRows.Count * 16f) + 8f;
+        foreach (var row in legendRows)
         {
-            canvas.FillColor = series.Color;
-            canvas.FillCircle(legendX + 5, legendY, 4);
-            canvas.FontColor = TextColor;
-            canvas.DrawString(series.Name, legendX + 14, legendY - 7, 100, 14,
-                HorizontalAlignment.Left, VerticalAlignment.Center);
-            legendX += 14 + series.Name.Length * 5.5f + 10;
+            float rowWidth = 0;
+            foreach (var s in row)
+                rowWidth += 14 + s.Name.Length * 5.5f + 10;
+            rowWidth -= 10;
+            float legendX = (width - rowWidth) / 2;
+            foreach (var series in row)
+            {
+                canvas.FillColor = series.Color;
+                canvas.FillCircle(legendX + 5, legendBaseY, 4);
+                canvas.FontColor = TextColor;
+                canvas.DrawString(series.Name, legendX + 14, legendBaseY - 7, 100, 14,
+                    HorizontalAlignment.Left, VerticalAlignment.Center);
+                legendX += 14 + series.Name.Length * 5.5f + 10;
+            }
+            legendBaseY += 16f;
         }
     }
 
@@ -195,5 +205,35 @@ public class LineChartDrawable : IDrawable
         if (Math.Abs(val) >= 10)
             return val.ToString("0.#");
         return val.ToString("0.##");
+    }
+
+    private List<List<ChartLine>> BuildLegendRows(float availableWidth)
+    {
+        var rows = new List<List<ChartLine>>();
+        var currentRow = new List<ChartLine>();
+        float currentWidth = 0;
+
+        foreach (var series in Series)
+        {
+            float itemWidth = 14 + series.Name.Length * 5.5f + 10;
+            if (currentRow.Count > 0 && currentWidth + itemWidth - 10 > availableWidth)
+            {
+                rows.Add(currentRow);
+                currentRow = new List<ChartLine>();
+                currentWidth = 0;
+            }
+            currentRow.Add(series);
+            currentWidth += itemWidth;
+        }
+
+        if (currentRow.Count > 0)
+            rows.Add(currentRow);
+
+        return rows;
+    }
+
+    private int GetLegendRowCount(float availableWidth)
+    {
+        return BuildLegendRows(availableWidth).Count;
     }
 }

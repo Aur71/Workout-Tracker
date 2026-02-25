@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Workout_Tracker.ViewModel"
+             xmlns:model="clr-namespace:Workout_Tracker.Model"
+             x:Class="Workout_Tracker.View.EditProgramSchedulePage"
+             x:DataType="vm:EditProgramScheduleViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header -->
+        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="0">
+            <Label Text="Back"
+                   FontSize="15"
+                   TextColor="{StaticResource Primary}"
+                   VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BackCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label Grid.Column="1"
+                   Text="Edit Schedule"
+                   FontSize="17"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+            <Label Grid.Column="2"
+                   Text="Save"
+                   FontSize="15"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Primary}"
+                   Opacity="{Binding HasUnsavedChanges, Converter={StaticResource BoolToOpacityConverter}}"
+                   VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SaveCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1" Padding="20,16,20,20">
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sessions}"
+                                 Spacing="8">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="model:ScheduleSessionDisplay">
+                        <Border StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                Padding="14,12"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="4">
+                                <!-- Row 1: DatePicker + Completed badge -->
+                                <DatePicker Date="{Binding EditDate}"
+                                            Format="ddd, MMM d yyyy"
+                                            FontSize="15"
+                                            TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                            VerticalOptions="Center" />
+                                <Border Grid.Column="1"
+                                        StrokeThickness="0"
+                                        Padding="8,3"
+                                        BackgroundColor="{Binding CompletedBadgeBg}"
+                                        VerticalOptions="Center"
+                                        IsVisible="{Binding ShowCompletedBadge}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="6" />
+                                    </Border.StrokeShape>
+                                    <Label Text="Completed"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="{Binding CompletedBadgeTextColor}" />
+                                </Border>
+                                <!-- Row 2: Exercise count · Set count -->
+                                <HorizontalStackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="8">
+                                    <Label Text="{Binding ExerciseCountDisplay}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                    <Label Text="·"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
+                                    <Label Text="{Binding SetCountDisplay}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                </HorizontalStackLayout>
+                                <!-- Row 3: Tags -->
+                                <Label Grid.Row="2" Grid.ColumnSpan="2"
+                                       Text="{Binding TagsDisplay}"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light=#4A6CF7, Dark=#7B93F7}"
+                                       IsVisible="{Binding HasTags}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

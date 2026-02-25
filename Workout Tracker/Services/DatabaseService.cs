@@ -242,6 +242,23 @@ public class DatabaseService
             await AppDatabase.Database.UpdateAsync(session));
     }
 
+    public async Task UpdateSessionDatesAsync(List<(int sessionId, DateTime newDate)> updates)
+    {
+        await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            foreach (var (sessionId, newDate) in updates)
+            {
+                var session = await db.FindAsync<Session>(sessionId);
+                if (session != null)
+                {
+                    session.Date = newDate;
+                    await db.UpdateAsync(session);
+                }
+            }
+        });
+    }
+
     public async Task DeleteSessionAsync(int sessionId)
     {
         await Task.Run(async () =>

@@ -93,6 +93,13 @@ public partial class ProgramDetailViewModel : ObservableObject, IRecipient<Sessi
     }
 
     [RelayCommand]
+    private async Task EditSchedule()
+    {
+        if (Program == null) return;
+        await Shell.Current.GoToAsync($"{nameof(EditProgramSchedulePage)}?programId={Program.Id}");
+    }
+
+    [RelayCommand]
     private async Task OpenSession(SessionDisplay session)
     {
         if (session.IsCompleted)
