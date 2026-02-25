@@ -140,6 +140,32 @@ public static class DatabaseSeeder
             },
             new()
             {
+                Name = "Decline Push-Up",
+                Description = "Push-up with feet elevated on a bench, emphasizing upper chest and front delts",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight, Bench",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=SKPab2YC8BE"
+            },
+            new()
+            {
+                Name = "Bulgarian Push-Up",
+                Description = "Push-up with feet elevated on a bench and hands on the floor, allowing a deeper range of motion for greater chest stretch",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight, Bench",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=X5HojVeu2w4"
+            },
+            new()
+            {
+                Name = "Decline Bulgarian Push-Up",
+                Description = "Bulgarian push-up performed with feet elevated higher than hands, combining the deep stretch of Bulgarian push-ups with the upper chest emphasis of decline push-ups",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight, Two Benches",
+                IsTimeBased = false
+            },
+            new()
+            {
                 Name = "Cable Crossover",
                 Description = "Cable fly movement for chest isolation",
                 ExerciseType = "isolation",
@@ -943,6 +969,21 @@ public static class DatabaseSeeder
         AddMapping("Push-Up", "Lower Chest", "primary");
         AddMapping("Push-Up", "Triceps", "secondary");
         AddMapping("Push-Up", "Front Delts", "secondary");
+
+        AddMapping("Decline Push-Up", "Upper Chest", "primary");
+        AddMapping("Decline Push-Up", "Lower Chest", "secondary");
+        AddMapping("Decline Push-Up", "Triceps", "secondary");
+        AddMapping("Decline Push-Up", "Front Delts", "primary");
+
+        AddMapping("Bulgarian Push-Up", "Upper Chest", "primary");
+        AddMapping("Bulgarian Push-Up", "Lower Chest", "primary");
+        AddMapping("Bulgarian Push-Up", "Triceps", "secondary");
+        AddMapping("Bulgarian Push-Up", "Front Delts", "secondary");
+
+        AddMapping("Decline Bulgarian Push-Up", "Upper Chest", "primary");
+        AddMapping("Decline Bulgarian Push-Up", "Lower Chest", "secondary");
+        AddMapping("Decline Bulgarian Push-Up", "Triceps", "secondary");
+        AddMapping("Decline Bulgarian Push-Up", "Front Delts", "primary");
 
         AddMapping("Cable Crossover", "Upper Chest", "primary");
         AddMapping("Cable Crossover", "Lower Chest", "primary");
