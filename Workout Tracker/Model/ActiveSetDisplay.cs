@@ -13,6 +13,7 @@ public partial class ActiveSetDisplay : ObservableObject
     public int? PlannedRepMax { get; set; }
     public int? PlannedDurationMin { get; set; }
     public int? PlannedDurationMax { get; set; }
+    public double? PlannedWeight { get; set; }
 
     public string PlannedRepDisplay =>
         PlannedRepMin.HasValue && PlannedRepMax.HasValue
@@ -25,6 +26,9 @@ public partial class ActiveSetDisplay : ObservableObject
             : PlannedDurationMin.HasValue ? $"{PlannedDurationMin}s"
             : PlannedDurationMax.HasValue ? $"{PlannedDurationMax}s"
             : "-";
+
+    public string PlannedWeightDisplay =>
+        PlannedWeight.HasValue ? $"{PlannedWeight.Value}kg" : "-";
 
     public string DisplayLabel => IsWarmup ? "W" : SetNumber.ToString();
 

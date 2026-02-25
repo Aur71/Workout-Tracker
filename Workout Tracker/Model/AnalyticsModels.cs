@@ -16,6 +16,7 @@ public class ExerciseProgressionPoint
     public int TotalSets { get; set; }
     public int TotalReps { get; set; }
     public string? ProgramGoal { get; set; }
+    public double PlannedWeight { get; set; }
 }
 
 public class SessionAdherenceData

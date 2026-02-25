@@ -19,6 +19,10 @@ public class SessionDisplay
 
     public string NotesPreview => Notes?.Length > 60 ? Notes[..60] + "..." : Notes ?? "";
 
+    public List<string> Tags { get; set; } = [];
+    public bool HasTags => Tags.Count > 0;
+    public string TagsDisplay => string.Join(" \u00B7 ", Tags);
+
     public string StatusDisplay => IsCompleted ? "Completed" : "";
 
     public bool ShowCompletedBadge => IsCompleted;

@@ -69,35 +69,38 @@ public partial class NewExerciseViewModel : ObservableObject, IRecipient<MuscleS
         if (_editExerciseId.HasValue) return;
         _editExerciseId = id;
 
-        var display = await _db.GetExerciseByIdAsync(id);
-        if (display == null) return;
-
-        Name = display.Name;
-        ExerciseType = display.TypeDisplay;
-        Equipment = display.Equipment;
-        IsTimeBased = display.IsTimeBased;
-        Description = display.Description;
-        Instructions = display.Instructions;
-        Notes = display.Notes;
-        ExampleMedia = display.ExampleMedia;
-
-        // Load muscles as MuscleSelection objects
-        var allMuscles = await _db.GetAllMusclesAsync();
-        SelectedMuscles.Clear();
-        foreach (var md in display.Muscles)
+        await _loading.RunAsync(async () =>
         {
-            var muscle = allMuscles.FirstOrDefault(m => m.Name == md.Name);
-            if (muscle != null)
+            var display = await _db.GetExerciseByIdAsync(id);
+            if (display == null) return;
+
+            Name = display.Name;
+            ExerciseType = display.TypeDisplay;
+            Equipment = display.Equipment;
+            IsTimeBased = display.IsTimeBased;
+            Description = display.Description;
+            Instructions = display.Instructions;
+            Notes = display.Notes;
+            ExampleMedia = display.ExampleMedia;
+
+            // Load muscles as MuscleSelection objects
+            var allMuscles = await _db.GetAllMusclesAsync();
+            SelectedMuscles.Clear();
+            foreach (var md in display.Muscles)
             {
-                SelectedMuscles.Add(new MuscleSelection
+                var muscle = allMuscles.FirstOrDefault(m => m.Name == md.Name);
+                if (muscle != null)
                 {
-                    Muscle = muscle,
-                    IsSelected = true,
-                    Role = md.Role
-                });
+                    SelectedMuscles.Add(new MuscleSelection
+                    {
+                        Muscle = muscle,
+                        IsSelected = true,
+                        Role = md.Role
+                    });
+                }
             }
-        }
-        OnPropertyChanged(nameof(HasMuscles));
+            OnPropertyChanged(nameof(HasMuscles));
+        }, "Loading...");
     }
 
     public void Receive(MuscleSelectionMessage message)

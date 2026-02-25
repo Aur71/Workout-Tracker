@@ -31,6 +31,7 @@ public class AppDatabase
                 field.CreateTableAsync<BodyMetric>().Wait();
                 field.CreateTableAsync<RecoveryLog>().Wait();
                 field.CreateTableAsync<CalorieLog>().Wait();
+                field.CreateTableAsync<SessionTag>().Wait();
 
                 // Seed default data
                 if (!_isSeeded)

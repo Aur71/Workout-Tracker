@@ -23,4 +23,5 @@ public class ExportPayload
     public List<BodyMetric> BodyMetrics { get; set; } = [];
     public List<RecoveryLog> RecoveryLogs { get; set; } = [];
     public List<CalorieLog> CalorieLogs { get; set; } = [];
+    public List<SessionTag> SessionTags { get; set; } = [];
 }

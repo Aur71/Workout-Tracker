@@ -34,7 +34,8 @@ public class DataTransferService
                 Sets = await db.Table<Set>().ToListAsync(),
                 BodyMetrics = await db.Table<BodyMetric>().ToListAsync(),
                 RecoveryLogs = await db.Table<RecoveryLog>().ToListAsync(),
-                CalorieLogs = await db.Table<CalorieLog>().ToListAsync()
+                CalorieLogs = await db.Table<CalorieLog>().ToListAsync(),
+                SessionTags = await db.Table<SessionTag>().ToListAsync()
             }
         };
 
@@ -105,6 +106,13 @@ public class DataTransferService
         var muscles = allMuscles.Where(m => muscleIds.Contains(m.Id)).ToList();
         var muscleIdToName = muscles.ToDictionary(m => m.Id, m => m.Name);
 
+        // Fetch session tags
+        var allSessionTags = await db.Table<SessionTag>().ToListAsync();
+        var tagsBySession = allSessionTags
+            .Where(t => sessionIds.Contains(t.SessionId))
+            .GroupBy(t => t.SessionId)
+            .ToDictionary(g => g.Key, g => string.Join(", ", g.Select(t => t.TagName)));
+
         // Sort sessions by Week then Day, then by Date
         var orderedSessions = sessions
             .OrderBy(s => s.Week ?? int.MaxValue)
@@ -158,7 +166,7 @@ public class DataTransferService
 
         // ── Sheet 4: Workout ──
         var workoutSheet = workbook.Worksheets.Add("Workout");
-        var wkHeaders = new[] { "Exercise", "Rest(s)", "Set", "W", "Plan", "Reps", "Weight", "Duration(s)", "RPE" };
+        var wkHeaders = new[] { "Exercise", "Rest(s)", "Set", "W", "Plan", "PlannedWt", "Reps", "Weight", "Duration(s)", "RPE" };
         int wkRow = 1;
         var sessionWorkoutRowRanges = new List<(int StartRow, int EndRow)>();
 
@@ -169,7 +177,7 @@ public class DataTransferService
                 ? $"Week {session.Week} - Day {session.Day} | {session.Date:yyyy-MM-dd}"
                 : $"Session | {session.Date:yyyy-MM-dd}";
 
-            var headerRange = workoutSheet.Range(wkRow, 1, wkRow, 9);
+            var headerRange = workoutSheet.Range(wkRow, 1, wkRow, 10);
             headerRange.Merge();
             workoutSheet.Cell(wkRow, 1).Value = headerText;
             headerRange.Style.Font.Bold = true;
@@ -216,8 +224,10 @@ public class DataTransferService
                             workoutSheet.Cell(wkRow, 4).Value = "W";
 
                         workoutSheet.Cell(wkRow, 5).Value = FormatPlan(set);
+                        if (set.PlannedWeight.HasValue)
+                            workoutSheet.Cell(wkRow, 6).Value = set.PlannedWeight.Value;
 
-                        // Tracking columns empty (clean template export)
+                        // Tracking columns (7-10) empty (clean template export)
                         wkRow++;
                     }
 
@@ -242,7 +252,7 @@ public class DataTransferService
         workoutSheet.Column(1).Width = Math.Max(workoutSheet.Column(1).Width, 25);
 
         // ── Sheet 3: Sessions (now that we know workout row ranges) ──
-        BuildSessionsSheet(workbook, orderedSessions, sessionWorkoutRowRanges);
+        BuildSessionsSheet(workbook, orderedSessions, sessionWorkoutRowRanges, tagsBySession);
 
         // Reorder sheets so Sessions comes before Workout
         workbook.Worksheet("Sessions").Position = 3;
@@ -323,10 +333,11 @@ public class DataTransferService
     private static void BuildSessionsSheet(
         XLWorkbook workbook,
         List<Session> orderedSessions,
-        List<(int StartRow, int EndRow)> workoutRowRanges)
+        List<(int StartRow, int EndRow)> workoutRowRanges,
+        Dictionary<int, string> tagsBySession)
     {
         var sheet = workbook.Worksheets.Add("Sessions");
-        var headers = new[] { "Week", "Day", "Date", "Start Time", "End Time", "Energy", "Notes", "Completed" };
+        var headers = new[] { "Week", "Day", "Date", "Start Time", "End Time", "Energy", "Notes", "Completed", "Tags" };
 
         for (int c = 0; c < headers.Length; c++)
         {
@@ -350,12 +361,16 @@ public class DataTransferService
             {
                 var (startRow, endRow) = workoutRowRanges[i];
                 sheet.Cell(row, 8).FormulaA1 =
-                    $"IF(COUNTA(Workout!F{startRow}:H{endRow})>0,\"Yes\",\"No\")";
+                    $"IF(COUNTA(Workout!G{startRow}:I{endRow})>0,\"Yes\",\"No\")";
             }
             else
             {
                 sheet.Cell(row, 8).Value = "No";
             }
+
+            // Tags
+            if (tagsBySession.TryGetValue(s.Id, out var tags))
+                sheet.Cell(row, 9).Value = tags;
         }
 
         sheet.Columns().AdjustToContents();
@@ -579,6 +594,7 @@ public class DataTransferService
                             RepMax = setData.RepMax,
                             DurationMin = setData.DurationMin,
                             DurationMax = setData.DurationMax,
+                            PlannedWeight = setData.PlannedWeight,
                             Reps = setData.Reps,
                             Weight = setData.Weight,
                             DurationSeconds = setData.DurationSeconds,
@@ -586,6 +602,19 @@ public class DataTransferService
                             Completed = setData.Reps.HasValue || setData.Weight.HasValue || setData.DurationSeconds.HasValue
                         };
                         await db.InsertAsync(set);
+                    }
+                }
+
+                // Insert session tags
+                if (i < xlsxSessions.Count && !string.IsNullOrWhiteSpace(xlsxSessions[i].Tags))
+                {
+                    foreach (var tagName in xlsxSessions[i].Tags!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                    {
+                        await db.InsertAsync(new SessionTag
+                        {
+                            SessionId = session.Id,
+                            TagName = tagName
+                        });
                     }
                 }
             }
@@ -668,7 +697,8 @@ public class DataTransferService
                 EndTime = TimeSpan.TryParse(sheet.Cell(r, 5).GetString().Trim(), out var et) ? et : null,
                 EnergyLevel = int.TryParse(sheet.Cell(r, 6).GetString().Trim(), out var el) ? el : null,
                 Notes = NullIfEmpty(sheet.Cell(r, 7).GetString().Trim()),
-                Completed = sheet.Cell(r, 8).GetString().Trim().Equals("Yes", StringComparison.OrdinalIgnoreCase)
+                Completed = sheet.Cell(r, 8).GetString().Trim().Equals("Yes", StringComparison.OrdinalIgnoreCase),
+                Tags = NullIfEmpty(sheet.Cell(r, 9).GetString().Trim())
             });
         }
 
@@ -682,6 +712,7 @@ public class DataTransferService
 
         WorkoutBlock? currentBlock = null;
         WorkoutExerciseBlock? currentExercise = null;
+        bool hasPlannedWtColumn = false;
 
         for (int r = 1; r <= lastRow; r++)
         {
@@ -697,12 +728,18 @@ public class DataTransferService
                 continue;
             }
 
-            // Column header row — skip
+            // Column header row — detect layout version and skip
             if (cellAValue.Equals("Exercise", StringComparison.OrdinalIgnoreCase))
+            {
+                var col6Header = sheet.Cell(r, 6).GetString().Trim();
+                hasPlannedWtColumn = col6Header.Equals("PlannedWt", StringComparison.OrdinalIgnoreCase);
                 continue;
+            }
+
+            int totalCols = hasPlannedWtColumn ? 10 : 9;
 
             // Check for fully empty row
-            if (IsRowEmpty(sheet, r, 9))
+            if (IsRowEmpty(sheet, r, totalCols))
             {
                 currentExercise = null;
                 continue;
@@ -732,10 +769,24 @@ public class DataTransferService
             var planStr = sheet.Cell(r, 5).GetString().Trim();
             ParsePlan(planStr, out var repMin, out var repMax, out var durMin, out var durMax);
 
-            var repsStr = sheet.Cell(r, 6).GetString().Trim();
-            var weightStr = sheet.Cell(r, 7).GetString().Trim();
-            var durationStr = sheet.Cell(r, 8).GetString().Trim();
-            var rpeStr = sheet.Cell(r, 9).GetString().Trim();
+            double? plannedWeight = null;
+            int repsCol, weightCol, durationCol, rpeCol;
+
+            if (hasPlannedWtColumn)
+            {
+                var pwStr = sheet.Cell(r, 6).GetString().Trim();
+                plannedWeight = double.TryParse(pwStr, out var pw) ? pw : null;
+                repsCol = 7; weightCol = 8; durationCol = 9; rpeCol = 10;
+            }
+            else
+            {
+                repsCol = 6; weightCol = 7; durationCol = 8; rpeCol = 9;
+            }
+
+            var repsStr = sheet.Cell(r, repsCol).GetString().Trim();
+            var weightStr = sheet.Cell(r, weightCol).GetString().Trim();
+            var durationStr = sheet.Cell(r, durationCol).GetString().Trim();
+            var rpeStr = sheet.Cell(r, rpeCol).GetString().Trim();
 
             currentExercise.Sets.Add(new WorkoutSetData
             {
@@ -745,6 +796,7 @@ public class DataTransferService
                 RepMax = repMax,
                 DurationMin = durMin,
                 DurationMax = durMax,
+                PlannedWeight = plannedWeight,
                 Reps = int.TryParse(repsStr, out var reps) ? reps : null,
                 Weight = double.TryParse(weightStr, out var wt) ? wt : null,
                 DurationSeconds = int.TryParse(durationStr, out var dur) ? dur : null,
@@ -877,12 +929,14 @@ public class DataTransferService
         payload.BodyMetrics ??= [];
         payload.RecoveryLogs ??= [];
         payload.CalorieLogs ??= [];
+        payload.SessionTags ??= [];
 
         var db = AppDatabase.Database;
 
         await db.RunInTransactionAsync(conn =>
         {
             // Delete all data (child tables first)
+            conn.DeleteAll<SessionTag>();
             conn.DeleteAll<Set>();
             conn.DeleteAll<SessionExercise>();
             conn.DeleteAll<Session>();
@@ -907,6 +961,7 @@ public class DataTransferService
             conn.InsertAll(payload.Sessions, "OR REPLACE", false);
             conn.InsertAll(payload.SessionExercises, "OR REPLACE", false);
             conn.InsertAll(payload.Sets, "OR REPLACE", false);
+            conn.InsertAll(payload.SessionTags, "OR REPLACE", false);
             conn.InsertAll(payload.BodyMetrics, "OR REPLACE", false);
             conn.InsertAll(payload.RecoveryLogs, "OR REPLACE", false);
             conn.InsertAll(payload.CalorieLogs, "OR REPLACE", false);
@@ -932,6 +987,7 @@ public class DataTransferService
         public int? EnergyLevel { get; set; }
         public string? Notes { get; set; }
         public bool Completed { get; set; }
+        public string? Tags { get; set; }
     }
 
     private class WorkoutBlock
@@ -955,6 +1011,7 @@ public class DataTransferService
         public int? RepMax { get; set; }
         public int? DurationMin { get; set; }
         public int? DurationMax { get; set; }
+        public double? PlannedWeight { get; set; }
         public int? Reps { get; set; }
         public double? Weight { get; set; }
         public int? DurationSeconds { get; set; }

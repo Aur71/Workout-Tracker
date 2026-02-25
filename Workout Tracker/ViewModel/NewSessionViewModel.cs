@@ -34,6 +34,11 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     [ObservableProperty]
     private bool _isBusy;
 
+    [ObservableProperty]
+    private string _newTagText = "";
+
+    public ObservableCollection<string> Tags { get; } = [];
+
     public ObservableCollection<SessionExerciseDisplay> Exercises { get; } = [];
 
     public bool HasExercises => Exercises.Count > 0;
@@ -42,18 +47,21 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
     {
         _programId = programId;
 
-        // Smart default date
-        var lastDate = await _db.GetLastSessionDateForProgramAsync(programId);
-        if (lastDate.HasValue)
+        await _loading.RunAsync(async () =>
         {
-            SessionDate = lastDate.Value.AddDays(1);
-        }
-        else
-        {
-            var program = await _db.GetProgramByIdAsync(programId);
-            if (program != null)
-                SessionDate = program.StartDate;
-        }
+            // Smart default date
+            var lastDate = await _db.GetLastSessionDateForProgramAsync(programId);
+            if (lastDate.HasValue)
+            {
+                SessionDate = lastDate.Value.AddDays(1);
+            }
+            else
+            {
+                var program = await _db.GetProgramByIdAsync(programId);
+                if (program != null)
+                    SessionDate = program.StartDate;
+            }
+        }, "Loading...");
     }
 
     public async Task LoadSessionAsync(int sessionId)
@@ -61,38 +69,54 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
         if (_editSessionId.HasValue) return;
         _editSessionId = sessionId;
 
-        _originalSession = await _db.GetSessionByIdAsync(sessionId);
-        if (_originalSession == null) return;
+        await _loading.RunAsync(async () =>
+        {
+            _originalSession = await _db.GetSessionByIdAsync(sessionId);
+            if (_originalSession == null) return;
 
-        _programId = _originalSession.ProgramId ?? 0;
-        SessionDate = _originalSession.Date;
-        Notes = _originalSession.Notes;
+            _programId = _originalSession.ProgramId ?? 0;
+            SessionDate = _originalSession.Date;
+            Notes = _originalSession.Notes;
 
-        var exercises = await _db.GetSessionExercisesWithSetsAsync(sessionId);
-        Exercises.Clear();
-        foreach (var ex in exercises)
-            Exercises.Add(ex);
-        OnPropertyChanged(nameof(HasExercises));
+            var exercises = await _db.GetSessionExercisesWithSetsAsync(sessionId);
+            Exercises.Clear();
+            foreach (var ex in exercises)
+                Exercises.Add(ex);
+            OnPropertyChanged(nameof(HasExercises));
+
+            var tags = await _db.GetTagsForSessionAsync(sessionId);
+            Tags.Clear();
+            foreach (var tag in tags)
+                Tags.Add(tag);
+        }, "Loading...");
     }
 
     public async Task DuplicateSessionAsync(int sessionId)
     {
-        var session = await _db.GetSessionByIdAsync(sessionId);
-        if (session == null) return;
-        _originalSession = null; // Not editing — duplicating
+        await _loading.RunAsync(async () =>
+        {
+            var session = await _db.GetSessionByIdAsync(sessionId);
+            if (session == null) return;
+            _originalSession = null; // Not editing — duplicating
 
-        _programId = session.ProgramId ?? 0;
-        Notes = session.Notes;
+            _programId = session.ProgramId ?? 0;
+            Notes = session.Notes;
 
-        // Date = last session in program + 1 day
-        var lastDate = await _db.GetLastSessionDateForProgramAsync(_programId);
-        SessionDate = lastDate.HasValue ? lastDate.Value.AddDays(1) : session.Date.AddDays(1);
+            // Date = last session in program + 1 day
+            var lastDate = await _db.GetLastSessionDateForProgramAsync(_programId);
+            SessionDate = lastDate.HasValue ? lastDate.Value.AddDays(1) : session.Date.AddDays(1);
 
-        var exercises = await _db.GetSessionExercisesWithSetsAsync(sessionId);
-        Exercises.Clear();
-        foreach (var ex in exercises)
-            Exercises.Add(ex);
-        OnPropertyChanged(nameof(HasExercises));
+            var exercises = await _db.GetSessionExercisesWithSetsAsync(sessionId);
+            Exercises.Clear();
+            foreach (var ex in exercises)
+                Exercises.Add(ex);
+            OnPropertyChanged(nameof(HasExercises));
+
+            var tags = await _db.GetTagsForSessionAsync(sessionId);
+            Tags.Clear();
+            foreach (var tag in tags)
+                Tags.Add(tag);
+        }, "Loading...");
     }
 
     public void Receive(ExerciseSelectionMessage message)
@@ -117,6 +141,23 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
             });
         }
         OnPropertyChanged(nameof(HasExercises));
+    }
+
+    [RelayCommand]
+    private void AddTag()
+    {
+        var tag = NewTagText?.Trim();
+        if (!string.IsNullOrWhiteSpace(tag) && !Tags.Contains(tag))
+        {
+            Tags.Add(tag);
+            NewTagText = "";
+        }
+    }
+
+    [RelayCommand]
+    private void RemoveTag(string tag)
+    {
+        Tags.Remove(tag);
     }
 
     [RelayCommand]
@@ -220,12 +261,14 @@ public partial class NewSessionViewModel : ObservableObject, IRecipient<Exercise
                 await _db.DeleteSessionExercisesAndSetsAsync(session.Id);
                 if (Exercises.Count > 0)
                     await _db.SaveSessionExercisesWithSetsAsync(session.Id, Exercises.ToList());
+                await _db.SaveTagsForSessionAsync(session.Id, Tags.ToList());
             }
             else
             {
                 var id = await _db.SaveSessionAsync(session);
                 if (Exercises.Count > 0)
                     await _db.SaveSessionExercisesWithSetsAsync(id, Exercises.ToList());
+                await _db.SaveTagsForSessionAsync(id, Tags.ToList());
             }
 
             WeakReferenceMessenger.Default.Unregister<ExerciseSelectionMessage>(this);

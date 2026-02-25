@@ -51,7 +51,7 @@
                                             Opacity="0.08" />
                                 </Border.Shadow>
 
-                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="14">
                                     <!-- Card Header -->
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                                         <Border StrokeThickness="0"
@@ -92,8 +92,15 @@
                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                     </HorizontalStackLayout>
 
+                                    <!-- Tags -->
+                                    <Label Grid.Row="2"
+                                           Text="{Binding TagsDisplay}"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light=#4A6CF7, Dark=#7B93F7}"
+                                           IsVisible="{Binding HasTags}" />
+
                                     <!-- Start / Completed Button -->
-                                    <Button Grid.Row="2"
+                                    <Button Grid.Row="3"
                                             Text="{Binding StartButtonText}"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=StartWorkoutCommand}"
                                             CommandParameter="{Binding}"
@@ -104,7 +111,7 @@
                                             HeightRequest="48"
                                             CornerRadius="12"
                                             IsVisible="{Binding IsStartable}" />
-                                    <Border Grid.Row="2"
+                                    <Border Grid.Row="3"
                                             StrokeThickness="0"
                                             Padding="0,12"
                                             BackgroundColor="{AppThemeBinding Light=#E8FFF6, Dark=#1A3D33}"
@@ -272,6 +279,10 @@
                                                    FontSize="13"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                         </HorizontalStackLayout>
+                                        <Label Text="{Binding TagsDisplay}"
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light=#4A6CF7, Dark=#7B93F7}"
+                                               IsVisible="{Binding HasTags}" />
                                     </VerticalStackLayout>
                                 </Grid>
                             </Border>

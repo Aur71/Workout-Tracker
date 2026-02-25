@@ -68,21 +68,24 @@ public partial class NewProgramViewModel : ObservableObject
         if (_editProgramId.HasValue) return;
         _editProgramId = id;
 
-        var program = await _db.GetProgramByIdAsync(id);
-        if (program == null) return;
-
-        Name = program.Name;
-        Goal = program.Goal;
-        StartDate = program.StartDate;
-        _originalStartDate = program.StartDate;
-        Notes = program.Notes;
-        SelectedColor = program.Color ?? "#00D9A5";
-
-        if (program.EndDate.HasValue)
+        await _loading.RunAsync(async () =>
         {
-            HasEndDate = true;
-            EndDateValue = program.EndDate.Value;
-        }
+            var program = await _db.GetProgramByIdAsync(id);
+            if (program == null) return;
+
+            Name = program.Name;
+            Goal = program.Goal;
+            StartDate = program.StartDate;
+            _originalStartDate = program.StartDate;
+            Notes = program.Notes;
+            SelectedColor = program.Color ?? "#00D9A5";
+
+            if (program.EndDate.HasValue)
+            {
+                HasEndDate = true;
+                EndDateValue = program.EndDate.Value;
+            }
+        }, "Loading...");
     }
 
     [RelayCommand]

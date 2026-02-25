@@ -274,7 +274,7 @@
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgramDetailViewModel}}, Path=OpenSessionCommand}"
                                                               CommandParameter="{Binding}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="4">
                                         <Label Text="{Binding DateDisplay}"
                                                FontSize="15"
                                                FontAttributes="Bold"
@@ -297,7 +297,11 @@
                                         <!-- Duplicate button -->
                                         <Label Grid.Column="2"
                                                Text="&#x2750;"
-                                               FontSize="16"
+                                               FontSize="22"
+                                               Padding="6"
+                                               WidthRequest="40"
+                                               HeightRequest="40"
+                                               HorizontalTextAlignment="Center"
                                                TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                                VerticalOptions="Center">
                                             <Label.GestureRecognizers>
@@ -308,7 +312,11 @@
                                         <!-- Delete button -->
                                         <Label Grid.Column="3"
                                                Text="&#x2715;"
-                                               FontSize="16"
+                                               FontSize="22"
+                                               Padding="6"
+                                               WidthRequest="40"
+                                               HeightRequest="40"
+                                               HorizontalTextAlignment="Center"
                                                TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                                                VerticalOptions="Center">
                                             <Label.GestureRecognizers>
@@ -327,6 +335,11 @@
                                                    FontSize="12"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                         </HorizontalStackLayout>
+                                        <Label Grid.Row="2" Grid.ColumnSpan="4"
+                                               Text="{Binding TagsDisplay}"
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light=#4A6CF7, Dark=#7B93F7}"
+                                               IsVisible="{Binding HasTags}" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

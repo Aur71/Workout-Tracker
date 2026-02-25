@@ -5,6 +5,42 @@ namespace Workout_Tracker.Services;
 
 public class DatabaseService
 {
+    // ── Session Tag methods ──
+
+    public async Task<List<string>> GetTagsForSessionAsync(int sessionId)
+    {
+        return await Task.Run(async () =>
+        {
+            var tags = await AppDatabase.Database.Table<SessionTag>()
+                .Where(t => t.SessionId == sessionId)
+                .ToListAsync();
+            return tags.Select(t => t.TagName).ToList();
+        });
+    }
+
+    public async Task SaveTagsForSessionAsync(int sessionId, List<string> tags)
+    {
+        await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            await db.Table<SessionTag>().DeleteAsync(t => t.SessionId == sessionId);
+            foreach (var tag in tags.Where(t => !string.IsNullOrWhiteSpace(t)))
+            {
+                await db.InsertAsync(new SessionTag
+                {
+                    SessionId = sessionId,
+                    TagName = tag.Trim()
+                });
+            }
+        });
+    }
+
+    public async Task DeleteTagsForSessionAsync(int sessionId)
+    {
+        await Task.Run(async () =>
+            await AppDatabase.Database.Table<SessionTag>().DeleteAsync(t => t.SessionId == sessionId));
+    }
+
     public async Task<List<Muscle>> GetAllMusclesAsync()
     {
         return await Task.Run(async () =>
@@ -182,6 +218,7 @@ public class DatabaseService
                 foreach (var se in sessionExercises)
                     await db.Table<Set>().DeleteAsync(s => s.SessionExerciseId == se.Id);
                 await db.Table<SessionExercise>().DeleteAsync(se => se.SessionId == session.Id);
+                await db.Table<SessionTag>().DeleteAsync(t => t.SessionId == session.Id);
                 await db.DeleteAsync(session);
             }
             await db.DeleteAsync(new Program { Id = id });
@@ -217,6 +254,8 @@ public class DatabaseService
                 await db.Table<Set>().DeleteAsync(s => s.SessionExerciseId == se.Id);
             // Delete session exercises
             await db.Table<SessionExercise>().DeleteAsync(se => se.SessionId == sessionId);
+            // Delete session tags
+            await db.Table<SessionTag>().DeleteAsync(t => t.SessionId == sessionId);
             // Delete session
             await db.DeleteAsync(new Session { Id = sessionId });
         });
@@ -235,6 +274,13 @@ public class DatabaseService
             var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
             var sets = await db.Table<Set>().ToListAsync();
 
+            var sessionIds = sessions.Select(s => s.Id).ToHashSet();
+            var allTags = await db.Table<SessionTag>().ToListAsync();
+            var tagsBySession = allTags
+                .Where(t => sessionIds.Contains(t.SessionId))
+                .GroupBy(t => t.SessionId)
+                .ToDictionary(g => g.Key, g => g.Select(t => t.TagName).ToList());
+
             return sessions.Select(s =>
             {
                 var seIds = sessionExercises
@@ -249,7 +295,8 @@ public class DatabaseService
                     Notes = s.Notes,
                     ExerciseCount = seIds.Count,
                     SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId)),
-                    IsCompleted = s.IsCompleted
+                    IsCompleted = s.IsCompleted,
+                    Tags = tagsBySession.GetValueOrDefault(s.Id, [])
                 };
             }).ToList();
         });
@@ -335,6 +382,7 @@ public class DatabaseService
                         RepMaxText = s.RepMax?.ToString() ?? "",
                         DurationMinText = s.DurationMin?.ToString() ?? "",
                         DurationMaxText = s.DurationMax?.ToString() ?? "",
+                        WeightText = s.PlannedWeight?.ToString() ?? "",
                         IsWarmup = s.IsWarmup
                     });
 
@@ -370,6 +418,7 @@ public class DatabaseService
                     int.TryParse(set.RepMaxText, out var repMax);
                     int.TryParse(set.DurationMinText, out var durMin);
                     int.TryParse(set.DurationMaxText, out var durMax);
+                    double.TryParse(set.WeightText, out var plannedWt);
 
                     var dbSet = new Set
                     {
@@ -380,6 +429,7 @@ public class DatabaseService
                         RepMax = repMax > 0 ? repMax : null,
                         DurationMin = durMin > 0 ? durMin : null,
                         DurationMax = durMax > 0 ? durMax : null,
+                        PlannedWeight = plannedWt > 0 ? plannedWt : null,
                         Completed = false
                     };
                     await db.InsertAsync(dbSet);
@@ -608,6 +658,13 @@ public class DatabaseService
             var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
             var sets = await db.Table<Set>().ToListAsync();
 
+            var sessionIds = sessions.Select(s => s.Id).ToHashSet();
+            var allTags = await db.Table<SessionTag>().ToListAsync();
+            var tagsBySession = allTags
+                .Where(t => sessionIds.Contains(t.SessionId))
+                .GroupBy(t => t.SessionId)
+                .ToDictionary(g => g.Key, g => g.Select(t => t.TagName).ToList());
+
             return sessions.Select(s =>
             {
                 var seIds = sessionExercises
@@ -629,7 +686,8 @@ public class DatabaseService
                     SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId)),
                     IsCompleted = s.IsCompleted,
                     StartTime = s.StartTime,
-                    EndTime = s.EndTime
+                    EndTime = s.EndTime,
+                    Tags = tagsBySession.GetValueOrDefault(s.Id, [])
                 };
             }).ToList();
         });
@@ -657,6 +715,13 @@ public class DatabaseService
             var sessionExercises = await db.Table<SessionExercise>().ToListAsync();
             var sets = await db.Table<Set>().ToListAsync();
 
+            var sessionIds = sessions.Select(s => s.Id).ToHashSet();
+            var allTags = await db.Table<SessionTag>().ToListAsync();
+            var tagsBySession = allTags
+                .Where(t => sessionIds.Contains(t.SessionId))
+                .GroupBy(t => t.SessionId)
+                .ToDictionary(g => g.Key, g => g.Select(t => t.TagName).ToList());
+
             return sessions.Select(s =>
             {
                 var seIds = sessionExercises
@@ -678,7 +743,8 @@ public class DatabaseService
                     SetCount = sets.Count(st => seIds.Contains(st.SessionExerciseId)),
                     IsCompleted = s.IsCompleted,
                     StartTime = s.StartTime,
-                    EndTime = s.EndTime
+                    EndTime = s.EndTime,
+                    Tags = tagsBySession.GetValueOrDefault(s.Id, [])
                 };
             }).ToList();
         });
@@ -775,8 +841,9 @@ public class DatabaseService
                         PlannedRepMax = s.RepMax,
                         PlannedDurationMin = s.DurationMin,
                         PlannedDurationMax = s.DurationMax,
+                        PlannedWeight = s.PlannedWeight,
                         RepsText = s.Reps?.ToString() ?? "",
-                        WeightText = s.Weight?.ToString() ?? "",
+                        WeightText = s.Weight?.ToString() ?? (s.PlannedWeight?.ToString() ?? ""),
                         DurationText = s.DurationSeconds?.ToString() ?? "",
                         RpeText = s.Rpe?.ToString() ?? ""
                     });
@@ -909,10 +976,24 @@ public class DatabaseService
                             RepMax = set.RepMax,
                             DurationMin = set.DurationMin,
                             DurationMax = set.DurationMax,
+                            PlannedWeight = set.PlannedWeight,
                             Completed = false
                         };
                         await db.InsertAsync(newSet);
                     }
+                }
+
+                // Copy session tags
+                var tags = await db.Table<SessionTag>()
+                    .Where(t => t.SessionId == session.Id)
+                    .ToListAsync();
+                foreach (var tag in tags)
+                {
+                    await db.InsertAsync(new SessionTag
+                    {
+                        SessionId = newSession.Id,
+                        TagName = tag.TagName
+                    });
                 }
             }
 
@@ -1109,6 +1190,16 @@ public class DatabaseService
                 })
                 .OrderBy(g => g.Key);
 
+            // Also gather planned weights for these session exercises
+            var allSetsForPlanned = sets
+                .Where(s => relevantSeIds.Contains(s.SessionExerciseId) && s.PlannedWeight.HasValue)
+                .ToList();
+            var plannedBySession = allSetsForPlanned
+                .GroupBy(s => seToSession[s.SessionExerciseId])
+                .ToDictionary(
+                    g => completedSessions[g.Key].Date.Date,
+                    g => g.Max(s => s.PlannedWeight!.Value));
+
             return grouped.Select(g =>
             {
                 var sessionSets = g.ToList();
@@ -1140,7 +1231,8 @@ public class DatabaseService
                     TotalVolume = totalVolume,
                     TotalSets = sessionSets.Count,
                     TotalReps = sessionSets.Where(s => s.Reps.HasValue).Sum(s => s.Reps!.Value),
-                    ProgramGoal = goal
+                    ProgramGoal = goal,
+                    PlannedWeight = plannedBySession.GetValueOrDefault(g.Key, 0)
                 };
             }).ToList();
         });

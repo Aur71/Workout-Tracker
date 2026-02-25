@@ -53,4 +53,8 @@ public class DashboardSessionDisplay
     public bool IsStartable => !IsCompleted && Date.Date == DateTime.Today;
     public bool ShowCompletedBadge => IsCompleted;
     public string StartButtonText => IsActive ? "Resume Workout" : "Start Workout";
+
+    public List<string> Tags { get; set; } = [];
+    public bool HasTags => Tags.Count > 0;
+    public string TagsDisplay => string.Join(" \u00B7 ", Tags);
 }

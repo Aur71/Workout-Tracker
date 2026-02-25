@@ -79,40 +79,43 @@ public partial class NewLogViewModel : ObservableObject
         _editId = id;
         LogType = type;
 
-        switch (type)
+        await _loading.RunAsync(async () =>
         {
-            case "body_metric":
-                var metric = await _db.GetBodyMetricByIdAsync(id);
-                if (metric != null)
-                {
-                    Date = metric.Date;
-                    BodyweightText = metric.Bodyweight?.ToString() ?? "";
-                    BodyFatText = metric.BodyFat?.ToString() ?? "";
-                    Notes = metric.Notes ?? "";
-                }
-                break;
+            switch (type)
+            {
+                case "body_metric":
+                    var metric = await _db.GetBodyMetricByIdAsync(id);
+                    if (metric != null)
+                    {
+                        Date = metric.Date;
+                        BodyweightText = metric.Bodyweight?.ToString() ?? "";
+                        BodyFatText = metric.BodyFat?.ToString() ?? "";
+                        Notes = metric.Notes ?? "";
+                    }
+                    break;
 
-            case "recovery":
-                var recovery = await _db.GetRecoveryLogByIdAsync(id);
-                if (recovery != null)
-                {
-                    Date = recovery.Date;
-                    SleepHoursText = recovery.SleepHours?.ToString() ?? "";
-                    SorenessLevel = recovery.SorenessLevel;
-                    StressLevel = recovery.StressLevel;
-                }
-                break;
+                case "recovery":
+                    var recovery = await _db.GetRecoveryLogByIdAsync(id);
+                    if (recovery != null)
+                    {
+                        Date = recovery.Date;
+                        SleepHoursText = recovery.SleepHours?.ToString() ?? "";
+                        SorenessLevel = recovery.SorenessLevel;
+                        StressLevel = recovery.StressLevel;
+                    }
+                    break;
 
-            case "calorie":
-                var calorie = await _db.GetCalorieLogByIdAsync(id);
-                if (calorie != null)
-                {
-                    Date = calorie.Date;
-                    TotalCaloriesText = calorie.TotalCalories?.ToString() ?? "";
-                    SelectedActivityLevel = calorie.ActivityLevel;
-                }
-                break;
-        }
+                case "calorie":
+                    var calorie = await _db.GetCalorieLogByIdAsync(id);
+                    if (calorie != null)
+                    {
+                        Date = calorie.Date;
+                        TotalCaloriesText = calorie.TotalCalories?.ToString() ?? "";
+                        SelectedActivityLevel = calorie.ActivityLevel;
+                    }
+                    break;
+            }
+        }, "Loading...");
 
         OnPropertyChanged(nameof(IsEditMode));
     }

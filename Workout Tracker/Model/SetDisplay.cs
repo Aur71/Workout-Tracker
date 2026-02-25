@@ -20,6 +20,9 @@ public partial class SetDisplay : ObservableObject
     private string _durationMaxText = "";
 
     [ObservableProperty]
+    private string _weightText = "";
+
+    [ObservableProperty]
     private bool _isWarmup;
 
     public string DisplayLabel => IsWarmup ? "W" : SetNumber.ToString();

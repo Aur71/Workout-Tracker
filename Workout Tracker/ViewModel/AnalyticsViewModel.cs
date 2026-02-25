@@ -87,6 +87,7 @@ public partial class AnalyticsViewModel : ObservableObject
     private static Color PrimaryColor => Color.FromArgb("#00D9A5");
     private static Color SecondaryColor => Color.FromArgb("#FF6B5B");
     private static Color TertiaryColor => Color.FromArgb("#4A6CF7");
+    private static Color AmberColor => Color.FromArgb("#F59E0B");
 
     private static Color TextColor =>
         Application.Current?.RequestedTheme == AppTheme.Dark
@@ -221,9 +222,14 @@ public partial class AnalyticsViewModel : ObservableObject
         var volumeLine = new ChartLine("Volume (kg)", TertiaryColor,
             data.Select(d => new ChartDataPoint(d.Date, d.TotalVolume)).ToList(), 1);
 
+        var plannedWeightLine = new ChartLine("Planned Weight (kg)", AmberColor,
+            data.Where(d => d.PlannedWeight > 0)
+                .Select(d => new ChartDataPoint(d.Date, d.PlannedWeight)).ToList(), 0);
+
         var series = new List<ChartLine>();
         if (e1rmLine.Points.Count > 0) series.Add(e1rmLine);
         series.Add(bestWeightLine);
+        if (plannedWeightLine.Points.Count > 0) series.Add(plannedWeightLine);
         series.Add(volumeLine);
 
         ProgressionDrawable = new LineChartDrawable(
