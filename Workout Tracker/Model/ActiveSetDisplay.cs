@@ -14,6 +14,7 @@ public partial class ActiveSetDisplay : ObservableObject
     public int? PlannedDurationMin { get; set; }
     public int? PlannedDurationMax { get; set; }
     public double? PlannedWeight { get; set; }
+    public double? PlannedRpe { get; set; }
 
     public string PlannedRepDisplay =>
         PlannedRepMin.HasValue && PlannedRepMax.HasValue
@@ -29,6 +30,9 @@ public partial class ActiveSetDisplay : ObservableObject
 
     public string PlannedWeightDisplay =>
         PlannedWeight.HasValue ? $"{PlannedWeight.Value}kg" : "-";
+
+    public string PlannedRpeDisplay =>
+        PlannedRpe.HasValue ? $"{PlannedRpe.Value}" : "-";
 
     public string DisplayLabel => IsWarmup ? "W" : SetNumber.ToString();
 
@@ -57,5 +61,11 @@ public partial class ActiveSetDisplay : ObservableObject
     partial void OnDurationTextChanged(string value)
     {
         OnPropertyChanged(nameof(Completed));
+    }
+
+    partial void OnRpeTextChanged(string value)
+    {
+        if (double.TryParse(value, out var rpe) && rpe > 10)
+            RpeText = "10";
     }
 }

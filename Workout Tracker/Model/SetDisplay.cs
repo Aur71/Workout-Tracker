@@ -23,10 +23,19 @@ public partial class SetDisplay : ObservableObject
     private string _weightText = "";
 
     [ObservableProperty]
+    private string _rpeText = "";
+
+    [ObservableProperty]
     private bool _isWarmup;
 
     public string DisplayLabel => IsWarmup ? "W" : SetNumber.ToString();
 
     partial void OnSetNumberChanged(int value) => OnPropertyChanged(nameof(DisplayLabel));
     partial void OnIsWarmupChanged(bool value) => OnPropertyChanged(nameof(DisplayLabel));
+
+    partial void OnRpeTextChanged(string value)
+    {
+        if (double.TryParse(value, out var rpe) && rpe > 10)
+            RpeText = "10";
+    }
 }

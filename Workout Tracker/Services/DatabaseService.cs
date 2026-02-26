@@ -400,6 +400,7 @@ public class DatabaseService
                         DurationMinText = s.DurationMin?.ToString() ?? "",
                         DurationMaxText = s.DurationMax?.ToString() ?? "",
                         WeightText = s.PlannedWeight?.ToString() ?? "",
+                        RpeText = s.PlannedRpe?.ToString() ?? "",
                         IsWarmup = s.IsWarmup
                     });
 
@@ -436,6 +437,8 @@ public class DatabaseService
                     int.TryParse(set.DurationMinText, out var durMin);
                     int.TryParse(set.DurationMaxText, out var durMax);
                     double.TryParse(set.WeightText, out var plannedWt);
+                    double.TryParse(set.RpeText, out var plannedRpe);
+                    if (plannedRpe > 10) plannedRpe = 10;
 
                     var dbSet = new Set
                     {
@@ -447,6 +450,7 @@ public class DatabaseService
                         DurationMin = durMin > 0 ? durMin : null,
                         DurationMax = durMax > 0 ? durMax : null,
                         PlannedWeight = plannedWt > 0 ? plannedWt : null,
+                        PlannedRpe = plannedRpe > 0 ? plannedRpe : null,
                         Completed = false
                     };
                     await db.InsertAsync(dbSet);
@@ -859,10 +863,11 @@ public class DatabaseService
                         PlannedDurationMin = s.DurationMin,
                         PlannedDurationMax = s.DurationMax,
                         PlannedWeight = s.PlannedWeight,
+                        PlannedRpe = s.PlannedRpe,
                         RepsText = s.Reps?.ToString() ?? "",
                         WeightText = s.Weight?.ToString() ?? (s.PlannedWeight?.ToString() ?? ""),
                         DurationText = s.DurationSeconds?.ToString() ?? "",
-                        RpeText = s.Rpe?.ToString() ?? ""
+                        RpeText = s.Rpe?.ToString() ?? (s.PlannedRpe?.ToString() ?? "")
                     });
 
                 foreach (var set in exerciseSets)
@@ -886,6 +891,7 @@ public class DatabaseService
                     double.TryParse(set.WeightText, out var weight);
                     int.TryParse(set.DurationText, out var duration);
                     double.TryParse(set.RpeText, out var rpe);
+                    if (rpe > 10) rpe = 10;
 
                     var dbSet = await db.Table<Set>().FirstOrDefaultAsync(s => s.Id == set.SetId);
                     if (dbSet != null)
@@ -994,6 +1000,7 @@ public class DatabaseService
                             DurationMin = set.DurationMin,
                             DurationMax = set.DurationMax,
                             PlannedWeight = set.PlannedWeight,
+                            PlannedRpe = set.PlannedRpe,
                             Completed = false
                         };
                         await db.InsertAsync(newSet);

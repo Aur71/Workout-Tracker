@@ -40,4 +40,6 @@ public class Set
     public int? DurationMax { get; set; }
 
     public double? PlannedWeight { get; set; }
+
+    public double? PlannedRpe { get; set; }
 }
