@@ -41,6 +41,7 @@ namespace Workout_Tracker
             builder.Services.AddTransient<EditProgramScheduleViewModel>();
             builder.Services.AddTransient<AnalyticsViewModel>();
             builder.Services.AddTransient<SettingsViewModel>();
+            builder.Services.AddTransient<ProgressiveOverloadViewModel>();
 
             // Pages
             builder.Services.AddTransient<DashboardPage>();
@@ -60,6 +61,7 @@ namespace Workout_Tracker
             builder.Services.AddTransient<NewLogPage>();
             builder.Services.AddTransient<AnalyticsPage>();
             builder.Services.AddTransient<SettingsPage>();
+            builder.Services.AddTransient<ProgressiveOverloadPage>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

@@ -1412,4 +1412,285 @@ public class DatabaseService
             }
         });
     }
+
+    // ── Progressive Overload ──
+
+    public async Task<List<(Session session, List<(SessionExercise se, List<Set> sets)> exercises, List<string> tags)>>
+        GetBaseSessionDataAsync(int programId)
+    {
+        return await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var sessions = await db.Table<Session>()
+                .Where(s => s.ProgramId == programId)
+                .OrderBy(s => s.Date)
+                .ToListAsync();
+
+            var result = new List<(Session, List<(SessionExercise, List<Set>)>, List<string>)>();
+
+            foreach (var session in sessions)
+            {
+                var sessionExercises = await db.Table<SessionExercise>()
+                    .Where(se => se.SessionId == session.Id)
+                    .OrderBy(se => se.Order)
+                    .ToListAsync();
+
+                var exercisesWithSets = new List<(SessionExercise, List<Set>)>();
+                foreach (var se in sessionExercises)
+                {
+                    var sets = await db.Table<Set>()
+                        .Where(s => s.SessionExerciseId == se.Id)
+                        .OrderBy(s => s.SetNumber)
+                        .ToListAsync();
+                    exercisesWithSets.Add((se, sets));
+                }
+
+                var tags = await db.Table<SessionTag>()
+                    .Where(t => t.SessionId == session.Id)
+                    .ToListAsync();
+                var tagNames = tags.Select(t => t.TagName).ToList();
+
+                result.Add((session, exercisesWithSets, tagNames));
+            }
+
+            return result;
+        });
+    }
+
+    public async Task GenerateProgressiveOverloadAsync(
+        int programId,
+        int cycleCount,
+        Dictionary<int, OverloadMethod> sessionMethods,
+        Dictionary<(int sessionIndex, int exerciseId), double> weightIncrements,
+        Dictionary<(int sessionIndex, int exerciseId), (int setsToAdd, int everyNCycles)> volumeConfigs,
+        Dictionary<int, double> rpeIncrements,
+        Dictionary<int, int> stepCyclesMap,
+        Dictionary<int, int> doubleCyclesMap)
+    {
+        await Task.Run(async () =>
+        {
+            var db = AppDatabase.Database;
+            var baseSessions = await db.Table<Session>()
+                .Where(s => s.ProgramId == programId)
+                .OrderBy(s => s.Date)
+                .ToListAsync();
+
+            if (baseSessions.Count == 0) return;
+
+            var firstDate = baseSessions.First().Date;
+            var lastDate = baseSessions.Last().Date;
+            var cycleSpanDays = (lastDate - firstDate).Days + 1;
+            if (cycleSpanDays < 7) cycleSpanDays = 7;
+
+            var baseMaxWeek = baseSessions.Max(s => s.Week ?? 0);
+            var baseWeekCount = baseMaxWeek > 0 ? baseMaxWeek : 1;
+
+            for (int cycle = 1; cycle <= cycleCount; cycle++)
+            {
+                var dateOffset = TimeSpan.FromDays(cycleSpanDays * cycle);
+
+                for (int si = 0; si < baseSessions.Count; si++)
+                {
+                    var baseSession = baseSessions[si];
+                    var sessionExercises = await db.Table<SessionExercise>()
+                        .Where(se => se.SessionId == baseSession.Id)
+                        .OrderBy(se => se.Order)
+                        .ToListAsync();
+
+                    var newSession = new Session
+                    {
+                        ProgramId = programId,
+                        Date = baseSession.Date + dateOffset,
+                        Notes = baseSession.Notes,
+                        Week = (baseSession.Week ?? 1) + (baseWeekCount * cycle),
+                        Day = baseSession.Day,
+                        IsCompleted = false
+                    };
+                    await db.InsertAsync(newSession);
+
+                    foreach (var se in sessionExercises)
+                    {
+                        var newSe = new SessionExercise
+                        {
+                            SessionId = newSession.Id,
+                            ExerciseId = se.ExerciseId,
+                            Order = se.Order,
+                            Notes = se.Notes,
+                            RestSeconds = se.RestSeconds
+                        };
+                        await db.InsertAsync(newSe);
+
+                        var baseSets = await db.Table<Set>()
+                            .Where(s => s.SessionExerciseId == se.Id)
+                            .OrderBy(s => s.SetNumber)
+                            .ToListAsync();
+
+                        var key = (si, se.ExerciseId);
+                        var increment = weightIncrements.GetValueOrDefault(key, 0);
+                        var (setsToAdd, everyNCycles) = volumeConfigs.GetValueOrDefault(key, (1, 1));
+                        var sessionMethod = sessionMethods.GetValueOrDefault(si, OverloadMethod.Linear);
+                        var rpeInc = rpeIncrements.GetValueOrDefault(si, 0.5);
+                        var stepCyc = stepCyclesMap.GetValueOrDefault(si, 2);
+                        var doubleCyc = doubleCyclesMap.GetValueOrDefault(si, 3);
+
+                        var newSets = ApplyOverloadMethod(
+                            baseSets, cycle, sessionMethod, increment,
+                            setsToAdd, everyNCycles,
+                            rpeInc, stepCyc, doubleCyc);
+
+                        foreach (var newSet in newSets)
+                        {
+                            newSet.SessionExerciseId = newSe.Id;
+                            newSet.Completed = false;
+                            newSet.Reps = null;
+                            newSet.Weight = null;
+                            newSet.DurationSeconds = null;
+                            newSet.Rpe = null;
+                            await db.InsertAsync(newSet);
+                        }
+                    }
+
+                    var tags = await db.Table<SessionTag>()
+                        .Where(t => t.SessionId == baseSession.Id)
+                        .ToListAsync();
+                    foreach (var tag in tags)
+                    {
+                        await db.InsertAsync(new SessionTag
+                        {
+                            SessionId = newSession.Id,
+                            TagName = tag.TagName
+                        });
+                    }
+                }
+            }
+
+            var program = await db.FindAsync<Program>(programId);
+            if (program?.EndDate != null)
+            {
+                var lastSession = await db.Table<Session>()
+                    .Where(s => s.ProgramId == programId)
+                    .OrderByDescending(s => s.Date)
+                    .FirstOrDefaultAsync();
+                if (lastSession != null)
+                {
+                    program.EndDate = lastSession.Date;
+                    await db.UpdateAsync(program);
+                }
+            }
+        });
+    }
+
+    private static List<Set> ApplyOverloadMethod(
+        List<Set> baseSets,
+        int cycleIndex,
+        OverloadMethod method,
+        double weightIncrement,
+        int setsToAdd,
+        int everyNCycles,
+        double rpeIncrementPerCycle,
+        int stepCycles,
+        int doubleProgressionCycles)
+    {
+        var result = new List<Set>();
+
+        switch (method)
+        {
+            case OverloadMethod.Linear:
+                foreach (var s in baseSets)
+                {
+                    var n = CloneSetPlanned(s);
+                    if (!s.IsWarmup && s.PlannedWeight.HasValue)
+                        n.PlannedWeight = s.PlannedWeight + (weightIncrement * cycleIndex);
+                    result.Add(n);
+                }
+                break;
+
+            case OverloadMethod.Double:
+                foreach (var s in baseSets)
+                {
+                    var n = CloneSetPlanned(s);
+                    if (!s.IsWarmup)
+                    {
+                        int cyclesBeforeJump = Math.Max(1, doubleProgressionCycles);
+                        int weightPhase = (cycleIndex - 1) / cyclesBeforeJump;
+                        int positionInPhase = (cycleIndex - 1) % cyclesBeforeJump;
+
+                        if (s.PlannedWeight.HasValue)
+                            n.PlannedWeight = s.PlannedWeight.Value + (weightIncrement * weightPhase);
+
+                        if (s.RepMin.HasValue && s.RepMax.HasValue && cyclesBeforeJump > 1)
+                        {
+                            int repRange = s.RepMax.Value - s.RepMin.Value;
+                            double repStep = (double)repRange / (cyclesBeforeJump - 1);
+                            n.RepMin = s.RepMin.Value + (int)Math.Round(repStep * positionInPhase);
+                            if (n.RepMin > s.RepMax.Value)
+                                n.RepMin = s.RepMax.Value;
+                        }
+                    }
+                    result.Add(n);
+                }
+                break;
+
+            case OverloadMethod.Volume:
+                int setNumber = 1;
+                Set? lastWorkingSet = null;
+                foreach (var s in baseSets)
+                {
+                    var n = CloneSetPlanned(s);
+                    n.SetNumber = setNumber++;
+                    result.Add(n);
+                    if (!s.IsWarmup) lastWorkingSet = s;
+                }
+                if (lastWorkingSet != null)
+                {
+                    int volumeSteps = cycleIndex / Math.Max(1, everyNCycles);
+                    int extraSets = setsToAdd * volumeSteps;
+                    for (int i = 0; i < extraSets; i++)
+                    {
+                        var extra = CloneSetPlanned(lastWorkingSet);
+                        extra.SetNumber = setNumber++;
+                        result.Add(extra);
+                    }
+                }
+                break;
+
+            case OverloadMethod.Rpe:
+                foreach (var s in baseSets)
+                {
+                    var n = CloneSetPlanned(s);
+                    if (!s.IsWarmup && s.PlannedRpe.HasValue)
+                        n.PlannedRpe = Math.Min(10, s.PlannedRpe.Value + (rpeIncrementPerCycle * cycleIndex));
+                    result.Add(n);
+                }
+                break;
+
+            case OverloadMethod.StepLoading:
+                foreach (var s in baseSets)
+                {
+                    var n = CloneSetPlanned(s);
+                    if (!s.IsWarmup && s.PlannedWeight.HasValue)
+                    {
+                        int step = (cycleIndex - 1) / Math.Max(1, stepCycles);
+                        n.PlannedWeight = s.PlannedWeight + (weightIncrement * step);
+                    }
+                    result.Add(n);
+                }
+                break;
+        }
+
+        return result;
+    }
+
+    private static Set CloneSetPlanned(Set source) => new()
+    {
+        SetNumber = source.SetNumber,
+        IsWarmup = source.IsWarmup,
+        RepMin = source.RepMin,
+        RepMax = source.RepMax,
+        DurationMin = source.DurationMin,
+        DurationMax = source.DurationMax,
+        PlannedWeight = source.PlannedWeight,
+        PlannedRpe = source.PlannedRpe,
+        Completed = false
+    };
 }

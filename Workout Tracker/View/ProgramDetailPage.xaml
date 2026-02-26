@@ -233,7 +233,7 @@
 
                 <!-- Sessions Section -->
                 <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
                         <Label Text="Sessions"
                                FontSize="18"
                                FontAttributes="Bold"
@@ -259,6 +259,25 @@
                                    VerticalOptions="Center" />
                         </Border>
                         <Border Grid.Column="2"
+                                StrokeThickness="1.5"
+                                Stroke="{StaticResource Primary}"
+                                Padding="12,6"
+                                BackgroundColor="Transparent"
+                                VerticalOptions="Center"
+                                IsVisible="{Binding HasSessions}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ProgressiveOverloadCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Overload"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}"
+                                   VerticalOptions="Center" />
+                        </Border>
+                        <Border Grid.Column="3"
                                 StrokeThickness="0"
                                 Padding="12,6"
                                 BackgroundColor="{StaticResource Primary}"

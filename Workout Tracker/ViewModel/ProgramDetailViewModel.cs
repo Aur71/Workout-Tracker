@@ -190,6 +190,13 @@ public partial class ProgramDetailViewModel : ObservableObject, IRecipient<Sessi
     }
 
     [RelayCommand]
+    private async Task ProgressiveOverload()
+    {
+        if (Program == null) return;
+        await Shell.Current.GoToAsync($"{nameof(ProgressiveOverloadPage)}?programId={Program.Id}");
+    }
+
+    [RelayCommand]
     private async Task Edit()
     {
         if (Program == null) return;
