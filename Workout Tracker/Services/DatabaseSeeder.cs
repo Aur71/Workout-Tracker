@@ -182,6 +182,78 @@ public static class DatabaseSeeder
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=2hnLB6O860c"
             },
+            new()
+            {
+                Name = "Ring Dips",
+                Description = "Dips performed on gymnastic rings requiring extra stabilization",
+                ExerciseType = "compound",
+                Equipment = "Gymnastic Rings",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=EznLCDBAPIU"
+            },
+            new()
+            {
+                Name = "Straight Bar Dips",
+                Description = "Dips performed on a single straight bar in front of the body",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=gTyaLS1Xwh4"
+            },
+            new()
+            {
+                Name = "Diamond Push-Up",
+                Description = "Push-up with hands together in a diamond shape, emphasizing triceps",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=rB_wyNexpds"
+            },
+            new()
+            {
+                Name = "Archer Push-Up",
+                Description = "Wide push-up shifting weight to one arm at a time",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=r8WZFlcWdDI"
+            },
+            new()
+            {
+                Name = "Pike Push-Up",
+                Description = "Push-up in a pike position targeting shoulders and upper chest",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=XckEEwa1BPI"
+            },
+            new()
+            {
+                Name = "Pseudo Planche Push-Up",
+                Description = "Push-up with hands turned back and placed near hips, simulating planche position",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=odcPqBOlJhI"
+            },
+            new()
+            {
+                Name = "Ring Push-Up",
+                Description = "Push-up on gymnastic rings for extra instability and chest activation",
+                ExerciseType = "compound",
+                Equipment = "Gymnastic Rings",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=_ATX_OLs1qY"
+            },
+            new()
+            {
+                Name = "Handstand Push-Up",
+                Description = "Inverted vertical press in a handstand position against a wall or freestanding",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=yuth8Ie4r24"
+            },
 
             // ==================== BACK ====================
             // Lats
@@ -248,6 +320,69 @@ public static class DatabaseSeeder
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=B90sF7dbP04"
             },
+            new()
+            {
+                Name = "One Arm Pulldown",
+                Description = "Single arm cable pulldown for unilateral lat development",
+                ExerciseType = "compound",
+                Equipment = "Cable Machine",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=TiRRuYyOC3k"
+            },
+            new()
+            {
+                Name = "Archer Pull-Up",
+                Description = "Wide pull-up shifting weight to one arm while the other assists",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=Z7GdTkOEe5Y"
+            },
+            new()
+            {
+                Name = "Typewriter Pull-Up",
+                Description = "Pull-up moving laterally from side to side at the top",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=WVWoac39AUw"
+            },
+            new()
+            {
+                Name = "Muscle-Up",
+                Description = "Explosive pull-up transitioning into a dip above the bar or rings",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar or Gymnastic Rings",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=gryO72_xB8w"
+            },
+            new()
+            {
+                Name = "Front Lever",
+                Description = "Static hold with body horizontal face-up while hanging from a bar",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=xhMLRrGp1VY"
+            },
+            new()
+            {
+                Name = "Back Lever",
+                Description = "Static hold with body horizontal face-down while hanging from a bar or rings",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar or Gymnastic Rings",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=pIdisU92Slc"
+            },
+            new()
+            {
+                Name = "Skin the Cat",
+                Description = "Full rotation through hang bringing feet behind and over the bar",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar or Gymnastic Rings",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=9lRTjZNDfrY"
+            },
             // Traps
             new()
             {
@@ -285,6 +420,15 @@ public static class DatabaseSeeder
                 Equipment = "Roman Chair or GHD",
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=7NHiEO5h4c8"
+            },
+            new()
+            {
+                Name = "Reverse Hyper",
+                Description = "Reverse hyperextension swinging legs behind on a reverse hyper machine or bench",
+                ExerciseType = "isolation",
+                Equipment = "Reverse Hyper Machine or Bench",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=WCha157af1E"
             },
 
             // ==================== SHOULDERS ====================
@@ -391,6 +535,15 @@ public static class DatabaseSeeder
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=X6EDIjqgPS4"
             },
+            new()
+            {
+                Name = "Handstand",
+                Description = "Inverted bodyweight hold on hands against a wall or freestanding",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=FHDgUVQCCz4"
+            },
 
             // ==================== ARMS - BICEPS ====================
             new()
@@ -428,6 +581,15 @@ public static class DatabaseSeeder
                 Equipment = "Barbell or Dumbbells, Preacher Bench",
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=Ja6ZlIDONac"
+            },
+            new()
+            {
+                Name = "Ring Curl",
+                Description = "Bicep curl using gymnastic rings at an angle with bodyweight",
+                ExerciseType = "isolation",
+                Equipment = "Gymnastic Rings",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=6AOo5BtcqO4"
             },
 
             // ==================== ARMS - TRICEPS ====================
@@ -654,6 +816,51 @@ public static class DatabaseSeeder
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=IqtzHGenpNU"
             },
+            new()
+            {
+                Name = "Copenhagen Plank",
+                Description = "Side plank with top leg supported on a bench, targeting adductors and core",
+                ExerciseType = "isolation",
+                Equipment = "Bench",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=aDsaGBnvDQo"
+            },
+            new()
+            {
+                Name = "L-Sit",
+                Description = "Isometric hold with legs extended horizontally while supporting on hands or bars",
+                ExerciseType = "compound",
+                Equipment = "Parallettes or Pull-Up Bar",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=nNM1cqHG8CI"
+            },
+            new()
+            {
+                Name = "Hollow Body Hold",
+                Description = "Supine isometric hold with arms and legs extended off the ground",
+                ExerciseType = "isolation",
+                Equipment = "Bodyweight",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=BQCdzRPE9Ao"
+            },
+            new()
+            {
+                Name = "Toes to Bar",
+                Description = "Hanging from a bar and raising toes to touch the bar",
+                ExerciseType = "compound",
+                Equipment = "Pull-Up Bar",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=AkD1V1TIZ08"
+            },
+            new()
+            {
+                Name = "Superman Hold",
+                Description = "Prone hold with arms and legs extended off the ground",
+                ExerciseType = "isolation",
+                Equipment = "Bodyweight",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=tYMHYWVvFjs"
+            },
 
             // ==================== LOWER BODY ====================
             // Glutes
@@ -730,6 +937,60 @@ public static class DatabaseSeeder
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=Fmjj7wFJWRE"
             },
+            new()
+            {
+                Name = "Pistol Squat",
+                Description = "Single-leg squat to full depth with the other leg extended forward",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=-U-TwEl411U"
+            },
+            new()
+            {
+                Name = "Sissy Squat",
+                Description = "Knee-forward squat leaning backward to isolate the quadriceps",
+                ExerciseType = "isolation",
+                Equipment = "Bodyweight or Sissy Squat Bench",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=FTmbNjUu7CI"
+            },
+            new()
+            {
+                Name = "Horse Stance",
+                Description = "Wide stance isometric squat hold with thighs parallel to the ground",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=cmWW5OOk1R0"
+            },
+            new()
+            {
+                Name = "Wall Sit",
+                Description = "Isometric squat hold with back flat against a wall",
+                ExerciseType = "isolation",
+                Equipment = "Bodyweight",
+                IsTimeBased = true,
+                ExampleMedia = "https://www.youtube.com/watch?v=6Li55TURhVg"
+            },
+            new()
+            {
+                Name = "Shrimp Squat",
+                Description = "Single-leg squat holding the rear foot behind with knee touching the ground",
+                ExerciseType = "compound",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=FcQ77QxcotE"
+            },
+            new()
+            {
+                Name = "Step-Up",
+                Description = "Single-leg step onto an elevated surface with bodyweight or weights",
+                ExerciseType = "compound",
+                Equipment = "Bench or Box",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=rPrKLs6xCGA"
+            },
             // Hamstrings
             new()
             {
@@ -757,6 +1018,24 @@ public static class DatabaseSeeder
                 Equipment = "Nordic Curl Station or Partner",
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=_e9vFU9-tkc"
+            },
+            new()
+            {
+                Name = "Reverse Nordic",
+                Description = "Kneeling backward lean targeting quadriceps through eccentric loading",
+                ExerciseType = "isolation",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=PvJDjcfZe1c"
+            },
+            new()
+            {
+                Name = "Jefferson Curl",
+                Description = "Slow weighted spinal flexion from standing for hamstring and back flexibility",
+                ExerciseType = "compound",
+                Equipment = "Barbell or Dumbbell",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=YGlAdtSKQaU"
             },
             // Hip Flexors
             new()
@@ -1122,6 +1401,39 @@ public static class DatabaseSeeder
         AddMapping("Dips", "Triceps", "primary");
         AddMapping("Dips", "Front Delts", "secondary");
 
+        AddMapping("Ring Dips", "Lower Chest", "primary");
+        AddMapping("Ring Dips", "Triceps", "primary");
+        AddMapping("Ring Dips", "Front Delts", "secondary");
+
+        AddMapping("Straight Bar Dips", "Lower Chest", "primary");
+        AddMapping("Straight Bar Dips", "Triceps", "primary");
+        AddMapping("Straight Bar Dips", "Front Delts", "secondary");
+
+        AddMapping("Diamond Push-Up", "Triceps", "primary");
+        AddMapping("Diamond Push-Up", "Upper Chest", "secondary");
+        AddMapping("Diamond Push-Up", "Front Delts", "secondary");
+
+        AddMapping("Archer Push-Up", "Upper Chest", "primary");
+        AddMapping("Archer Push-Up", "Lower Chest", "primary");
+        AddMapping("Archer Push-Up", "Triceps", "secondary");
+
+        AddMapping("Pike Push-Up", "Front Delts", "primary");
+        AddMapping("Pike Push-Up", "Triceps", "secondary");
+        AddMapping("Pike Push-Up", "Upper Chest", "secondary");
+
+        AddMapping("Pseudo Planche Push-Up", "Upper Chest", "primary");
+        AddMapping("Pseudo Planche Push-Up", "Front Delts", "primary");
+        AddMapping("Pseudo Planche Push-Up", "Triceps", "secondary");
+
+        AddMapping("Ring Push-Up", "Upper Chest", "primary");
+        AddMapping("Ring Push-Up", "Lower Chest", "primary");
+        AddMapping("Ring Push-Up", "Triceps", "secondary");
+        AddMapping("Ring Push-Up", "Front Delts", "secondary");
+
+        AddMapping("Handstand Push-Up", "Front Delts", "primary");
+        AddMapping("Handstand Push-Up", "Triceps", "primary");
+        AddMapping("Handstand Push-Up", "Upper Traps", "secondary");
+
         // ==================== BACK ====================
         // Lats
         AddMapping("Pull-Up", "Lats", "primary");
@@ -1153,6 +1465,34 @@ public static class DatabaseSeeder
         AddMapping("Ring Row", "Biceps", "secondary");
         AddMapping("Ring Row", "Rear Delts", "secondary");
 
+        AddMapping("One Arm Pulldown", "Lats", "primary");
+        AddMapping("One Arm Pulldown", "Biceps", "secondary");
+
+        AddMapping("Archer Pull-Up", "Lats", "primary");
+        AddMapping("Archer Pull-Up", "Biceps", "secondary");
+        AddMapping("Archer Pull-Up", "Rhomboids", "secondary");
+
+        AddMapping("Typewriter Pull-Up", "Lats", "primary");
+        AddMapping("Typewriter Pull-Up", "Biceps", "secondary");
+        AddMapping("Typewriter Pull-Up", "Rhomboids", "secondary");
+
+        AddMapping("Muscle-Up", "Lats", "primary");
+        AddMapping("Muscle-Up", "Upper Chest", "secondary");
+        AddMapping("Muscle-Up", "Triceps", "secondary");
+        AddMapping("Muscle-Up", "Biceps", "secondary");
+
+        AddMapping("Front Lever", "Lats", "primary");
+        AddMapping("Front Lever", "Abs", "primary");
+        AddMapping("Front Lever", "Rhomboids", "secondary");
+
+        AddMapping("Back Lever", "Front Delts", "primary");
+        AddMapping("Back Lever", "Upper Chest", "primary");
+        AddMapping("Back Lever", "Biceps", "secondary");
+
+        AddMapping("Skin the Cat", "Lats", "primary");
+        AddMapping("Skin the Cat", "Front Delts", "primary");
+        AddMapping("Skin the Cat", "Biceps", "secondary");
+
         // Traps
         AddMapping("Shrugs", "Upper Traps", "primary");
         AddMapping("Lower Trap Raise", "Lower Traps", "primary");
@@ -1167,6 +1507,10 @@ public static class DatabaseSeeder
         AddMapping("Back Extension", "Lower Back", "primary");
         AddMapping("Back Extension", "Glutes", "secondary");
         AddMapping("Back Extension", "Hamstrings", "secondary");
+
+        AddMapping("Reverse Hyper", "Glutes", "primary");
+        AddMapping("Reverse Hyper", "Hamstrings", "primary");
+        AddMapping("Reverse Hyper", "Lower Back", "secondary");
 
         // ==================== SHOULDERS ====================
         // Front Delts
@@ -1204,6 +1548,10 @@ public static class DatabaseSeeder
         AddMapping("Band External Rotation", "Rotator Cuff", "primary");
         AddMapping("Band Internal Rotation", "Rotator Cuff", "primary");
 
+        AddMapping("Handstand", "Front Delts", "primary");
+        AddMapping("Handstand", "Upper Traps", "secondary");
+        AddMapping("Handstand", "Triceps", "secondary");
+
         // ==================== ARMS - BICEPS ====================
         AddMapping("Barbell Curl", "Biceps", "primary");
         AddMapping("Barbell Curl", "Forearms", "secondary");
@@ -1215,6 +1563,9 @@ public static class DatabaseSeeder
         AddMapping("Hammer Curl", "Forearms", "primary");
 
         AddMapping("Preacher Curl", "Biceps", "primary");
+
+        AddMapping("Ring Curl", "Biceps", "primary");
+        AddMapping("Ring Curl", "Forearms", "secondary");
 
         // ==================== ARMS - TRICEPS ====================
         AddMapping("Tricep Pushdown", "Triceps", "primary");
@@ -1270,6 +1621,24 @@ public static class DatabaseSeeder
         AddMapping("Side Back Extension", "Obliques", "primary");
         AddMapping("Side Back Extension", "Lower Back", "secondary");
 
+        AddMapping("Copenhagen Plank", "Adductors", "primary");
+        AddMapping("Copenhagen Plank", "Obliques", "primary");
+        AddMapping("Copenhagen Plank", "Abs", "secondary");
+
+        AddMapping("L-Sit", "Abs", "primary");
+        AddMapping("L-Sit", "Hip Flexors", "primary");
+        AddMapping("L-Sit", "Triceps", "secondary");
+
+        AddMapping("Hollow Body Hold", "Abs", "primary");
+        AddMapping("Hollow Body Hold", "Hip Flexors", "secondary");
+
+        AddMapping("Toes to Bar", "Abs", "primary");
+        AddMapping("Toes to Bar", "Hip Flexors", "primary");
+        AddMapping("Toes to Bar", "Lats", "secondary");
+
+        AddMapping("Superman Hold", "Lower Back", "primary");
+        AddMapping("Superman Hold", "Glutes", "primary");
+
         // ==================== LOWER BODY ====================
         // Glutes
         AddMapping("Hip Thrust", "Glutes", "primary");
@@ -1301,6 +1670,26 @@ public static class DatabaseSeeder
         AddMapping("Bulgarian Split Squat", "Glutes", "primary");
         AddMapping("Bulgarian Split Squat", "Hamstrings", "secondary");
 
+        AddMapping("Pistol Squat", "Quadriceps", "primary");
+        AddMapping("Pistol Squat", "Glutes", "primary");
+        AddMapping("Pistol Squat", "Hamstrings", "secondary");
+
+        AddMapping("Sissy Squat", "Quadriceps", "primary");
+
+        AddMapping("Horse Stance", "Quadriceps", "primary");
+        AddMapping("Horse Stance", "Glutes", "primary");
+        AddMapping("Horse Stance", "Adductors", "secondary");
+
+        AddMapping("Wall Sit", "Quadriceps", "primary");
+
+        AddMapping("Shrimp Squat", "Quadriceps", "primary");
+        AddMapping("Shrimp Squat", "Glutes", "primary");
+        AddMapping("Shrimp Squat", "Hamstrings", "secondary");
+
+        AddMapping("Step-Up", "Quadriceps", "primary");
+        AddMapping("Step-Up", "Glutes", "primary");
+        AddMapping("Step-Up", "Hamstrings", "secondary");
+
         // Hamstrings
         AddMapping("Romanian Deadlift", "Hamstrings", "primary");
         AddMapping("Romanian Deadlift", "Glutes", "primary");
@@ -1308,6 +1697,12 @@ public static class DatabaseSeeder
 
         AddMapping("Leg Curl", "Hamstrings", "primary");
         AddMapping("Nordic Curl", "Hamstrings", "primary");
+
+        AddMapping("Reverse Nordic", "Quadriceps", "primary");
+
+        AddMapping("Jefferson Curl", "Hamstrings", "primary");
+        AddMapping("Jefferson Curl", "Lower Back", "primary");
+        AddMapping("Jefferson Curl", "Glutes", "secondary");
 
         // Hip Flexors
         AddMapping("Hip Flexor Raise", "Hip Flexors", "primary");
