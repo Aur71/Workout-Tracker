@@ -33,6 +33,7 @@ public partial class SessionExerciseDisplay : ObservableObject
         "isolation" => "Isolation",
         "cardio" => "Cardio",
         "mobility" => "Mobility",
+        "plyometric" => "Plyometric",
         _ => ExerciseType ?? ""
     };
 
@@ -46,6 +47,8 @@ public partial class SessionExerciseDisplay : ObservableObject
             ? Color.FromArgb("#1A2A3D") : Color.FromArgb("#EEF4FF"),
         "mobility" => Application.Current!.RequestedTheme == AppTheme.Dark
             ? Color.FromArgb("#2A2A1A") : Color.FromArgb("#FFF8EE"),
+        "plyometric" => Application.Current!.RequestedTheme == AppTheme.Dark
+            ? Color.FromArgb("#2D1A3D") : Color.FromArgb("#F3EEFF"),
         _ => Colors.Transparent
     };
 
@@ -55,6 +58,7 @@ public partial class SessionExerciseDisplay : ObservableObject
         "isolation" => Color.FromArgb("#FF6B5B"),
         "cardio" => Color.FromArgb("#4A6CF7"),
         "mobility" => Color.FromArgb("#F59E0B"),
+        "plyometric" => Color.FromArgb("#8B5CF6"),
         _ => Colors.Gray
     };
 

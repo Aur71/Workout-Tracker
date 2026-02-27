@@ -852,6 +852,136 @@ public static class DatabaseSeeder
                 IsTimeBased = true,
             },
 
+            // ==================== PLYOMETRICS ====================
+            new()
+            {
+                Name = "Box Jump",
+                Description = "Explosive jump onto a box or platform",
+                ExerciseType = "plyometric",
+                Equipment = "Plyo Box",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=k7dmYdknbac"
+            },
+            new()
+            {
+                Name = "Depth Jump",
+                Description = "Step off a box and immediately jump upon landing",
+                ExerciseType = "plyometric",
+                Equipment = "Plyo Box",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=AzPJZHOmGEg"
+            },
+            new()
+            {
+                Name = "Broad Jump",
+                Description = "Explosive horizontal jump for distance",
+                ExerciseType = "plyometric",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=uhz-ia-2UcM"
+            },
+            new()
+            {
+                Name = "Tuck Jump",
+                Description = "Vertical jump bringing knees to chest at peak",
+                ExerciseType = "plyometric",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=r7oBejx1PHM"
+            },
+            new()
+            {
+                Name = "Plyo Push-Up",
+                Description = "Explosive push-up where hands leave the ground",
+                ExerciseType = "plyometric",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=hDP-oskzYUs"
+            },
+            new()
+            {
+                Name = "Lateral Bound",
+                Description = "Explosive side-to-side single-leg jumps",
+                ExerciseType = "plyometric",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=soqQy4dzEts"
+            },
+            new()
+            {
+                Name = "Squat Jump",
+                Description = "Bodyweight squat with explosive jump at the top",
+                ExerciseType = "plyometric",
+                Equipment = "Bodyweight",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=BRfxI2Es2lE"
+            },
+            new()
+            {
+                Name = "Single-Leg Box Jump",
+                Description = "Explosive single-leg jump onto a box",
+                ExerciseType = "plyometric",
+                Equipment = "Plyo Box",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=HVkjI6GY-OI"
+            },
+
+            // Boxing Plyometrics
+            new()
+            {
+                Name = "Band Punch",
+                Description = "Explosive punches against resistance band tension",
+                ExerciseType = "plyometric",
+                Equipment = "Resistance Band",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=eUSo-64Dt-Y"
+            },
+            new()
+            {
+                Name = "Medicine Ball Chest Pass",
+                Description = "Explosive two-handed push throw from the chest for punching power",
+                ExerciseType = "plyometric",
+                Equipment = "Medicine Ball",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=V5Stj1U_Cfw"
+            },
+            new()
+            {
+                Name = "Medicine Ball Rotational Throw",
+                Description = "Explosive rotational throw against a wall for hook and cross power",
+                ExerciseType = "plyometric",
+                Equipment = "Medicine Ball",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=o9BC7lgN1bo"
+            },
+            new()
+            {
+                Name = "Medicine Ball Slam",
+                Description = "Overhead slam driving the ball into the ground with full body power",
+                ExerciseType = "plyometric",
+                Equipment = "Medicine Ball",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=QxYhFwMd1Ks"
+            },
+            new()
+            {
+                Name = "Medicine Ball Overhead Throw",
+                Description = "Explosive backward overhead throw for hip extension and punching power",
+                ExerciseType = "plyometric",
+                Equipment = "Medicine Ball",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=u9-nFW_NyCU"
+            },
+            new()
+            {
+                Name = "Medicine Ball Scoop Toss",
+                Description = "Underhand upward throw from a squat position for uppercut power",
+                ExerciseType = "plyometric",
+                Equipment = "Medicine Ball",
+                IsTimeBased = false,
+                ExampleMedia = "https://www.youtube.com/watch?v=mxf1D3NtxMo"
+            },
+
             // ==================== MOBILITY ====================
             new()
             {
@@ -1195,6 +1325,69 @@ public static class DatabaseSeeder
         // Calves
         AddMapping("Calf Raise", "Calves", "primary");
         AddMapping("Reverse Calf Raise", "Calves", "primary");
+
+        // ==================== PLYOMETRICS ====================
+        AddMapping("Box Jump", "Quadriceps", "primary");
+        AddMapping("Box Jump", "Glutes", "primary");
+        AddMapping("Box Jump", "Calves", "secondary");
+        AddMapping("Box Jump", "Hamstrings", "secondary");
+
+        AddMapping("Depth Jump", "Quadriceps", "primary");
+        AddMapping("Depth Jump", "Glutes", "primary");
+        AddMapping("Depth Jump", "Calves", "secondary");
+        AddMapping("Depth Jump", "Hamstrings", "secondary");
+
+        AddMapping("Broad Jump", "Quadriceps", "primary");
+        AddMapping("Broad Jump", "Glutes", "primary");
+        AddMapping("Broad Jump", "Hamstrings", "secondary");
+
+        AddMapping("Tuck Jump", "Quadriceps", "primary");
+        AddMapping("Tuck Jump", "Hip Flexors", "secondary");
+        AddMapping("Tuck Jump", "Calves", "secondary");
+
+        AddMapping("Plyo Push-Up", "Upper Chest", "primary");
+        AddMapping("Plyo Push-Up", "Lower Chest", "primary");
+        AddMapping("Plyo Push-Up", "Triceps", "secondary");
+        AddMapping("Plyo Push-Up", "Front Delts", "secondary");
+
+        AddMapping("Lateral Bound", "Glutes", "primary");
+        AddMapping("Lateral Bound", "Abductors", "primary");
+        AddMapping("Lateral Bound", "Quadriceps", "secondary");
+        AddMapping("Lateral Bound", "Adductors", "secondary");
+
+        AddMapping("Squat Jump", "Quadriceps", "primary");
+        AddMapping("Squat Jump", "Glutes", "primary");
+        AddMapping("Squat Jump", "Calves", "secondary");
+
+        AddMapping("Single-Leg Box Jump", "Quadriceps", "primary");
+        AddMapping("Single-Leg Box Jump", "Glutes", "primary");
+        AddMapping("Single-Leg Box Jump", "Calves", "secondary");
+
+        // Boxing Plyometrics
+        AddMapping("Band Punch", "Upper Chest", "primary");
+        AddMapping("Band Punch", "Front Delts", "primary");
+        AddMapping("Band Punch", "Triceps", "secondary");
+
+        AddMapping("Medicine Ball Chest Pass", "Upper Chest", "primary");
+        AddMapping("Medicine Ball Chest Pass", "Lower Chest", "primary");
+        AddMapping("Medicine Ball Chest Pass", "Triceps", "secondary");
+        AddMapping("Medicine Ball Chest Pass", "Front Delts", "secondary");
+
+        AddMapping("Medicine Ball Rotational Throw", "Obliques", "primary");
+        AddMapping("Medicine Ball Rotational Throw", "Upper Chest", "secondary");
+        AddMapping("Medicine Ball Rotational Throw", "Front Delts", "secondary");
+
+        AddMapping("Medicine Ball Slam", "Abs", "primary");
+        AddMapping("Medicine Ball Slam", "Lats", "primary");
+        AddMapping("Medicine Ball Slam", "Front Delts", "secondary");
+
+        AddMapping("Medicine Ball Overhead Throw", "Glutes", "primary");
+        AddMapping("Medicine Ball Overhead Throw", "Hamstrings", "primary");
+        AddMapping("Medicine Ball Overhead Throw", "Front Delts", "secondary");
+
+        AddMapping("Medicine Ball Scoop Toss", "Quadriceps", "primary");
+        AddMapping("Medicine Ball Scoop Toss", "Glutes", "primary");
+        AddMapping("Medicine Ball Scoop Toss", "Front Delts", "secondary");
 
         await AppDatabase.Database.InsertAllAsync(exerciseMuscles);
     }

@@ -20,7 +20,7 @@ public class Exercise
     public string? Equipment { get; set; }
 
     [MaxLength(50)]
-    public string? ExerciseType { get; set; } // compound, isolation, cardio, mobility
+    public string? ExerciseType { get; set; } // compound, isolation, cardio, mobility, plyometric
 
     [MaxLength(500)]
     public string? ExampleMedia { get; set; }

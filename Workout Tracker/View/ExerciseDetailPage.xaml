@@ -117,6 +117,7 @@
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                                             <Label Text="{Binding Role}"
                                                    FontSize="11"
+                                                   IsVisible="{Binding IsPrimary}"
                                                    TextColor="{Binding IsPrimary, Converter={StaticResource SelectedBorderConverter}}" />
                                         </HorizontalStackLayout>
                                     </Border>
