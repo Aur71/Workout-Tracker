@@ -1465,7 +1465,8 @@ public class DatabaseService
         Dictionary<(int sessionIndex, int exerciseId), (int setsToAdd, int everyNCycles)> volumeConfigs,
         Dictionary<int, double> rpeIncrements,
         Dictionary<int, int> stepCyclesMap,
-        Dictionary<int, int> doubleCyclesMap)
+        Dictionary<int, int> doubleCyclesMap,
+        Dictionary<int, bool> includeBaseCycleMap)
     {
         await Task.Run(async () =>
         {
@@ -1532,11 +1533,12 @@ public class DatabaseService
                         var rpeInc = rpeIncrements.GetValueOrDefault(si, 0.5);
                         var stepCyc = stepCyclesMap.GetValueOrDefault(si, 2);
                         var doubleCyc = doubleCyclesMap.GetValueOrDefault(si, 3);
+                        var includeBase = includeBaseCycleMap.GetValueOrDefault(si, false);
 
                         var newSets = ApplyOverloadMethod(
                             baseSets, cycle, sessionMethod, increment,
                             setsToAdd, everyNCycles,
-                            rpeInc, stepCyc, doubleCyc);
+                            rpeInc, stepCyc, doubleCyc, includeBase);
 
                         foreach (var newSet in newSets)
                         {
@@ -1589,7 +1591,8 @@ public class DatabaseService
         int everyNCycles,
         double rpeIncrementPerCycle,
         int stepCycles,
-        int doubleProgressionCycles)
+        int doubleProgressionCycles,
+        bool includeBaseCycle)
     {
         var result = new List<Set>();
 
@@ -1612,8 +1615,9 @@ public class DatabaseService
                     if (!s.IsWarmup)
                     {
                         int cyclesBeforeJump = Math.Max(1, doubleProgressionCycles);
-                        int weightPhase = (cycleIndex - 1) / cyclesBeforeJump;
-                        int positionInPhase = (cycleIndex - 1) % cyclesBeforeJump;
+                        int doubleOffset = includeBaseCycle ? cycleIndex : cycleIndex - 1;
+                        int weightPhase = doubleOffset / cyclesBeforeJump;
+                        int positionInPhase = doubleOffset % cyclesBeforeJump;
 
                         if (s.PlannedWeight.HasValue)
                             n.PlannedWeight = s.PlannedWeight.Value + (weightIncrement * weightPhase);
@@ -1643,7 +1647,8 @@ public class DatabaseService
                 }
                 if (lastWorkingSet != null)
                 {
-                    int volumeSteps = cycleIndex / Math.Max(1, everyNCycles);
+                    int volumeOffset = includeBaseCycle ? cycleIndex + 1 : cycleIndex;
+                    int volumeSteps = volumeOffset / Math.Max(1, everyNCycles);
                     int extraSets = setsToAdd * volumeSteps;
                     for (int i = 0; i < extraSets; i++)
                     {
@@ -1670,7 +1675,8 @@ public class DatabaseService
                     var n = CloneSetPlanned(s);
                     if (!s.IsWarmup && s.PlannedWeight.HasValue)
                     {
-                        int step = (cycleIndex - 1) / Math.Max(1, stepCycles);
+                        int stepOffset = includeBaseCycle ? cycleIndex : cycleIndex - 1;
+                        int step = stepOffset / Math.Max(1, stepCycles);
                         n.PlannedWeight = s.PlannedWeight + (weightIncrement * step);
                     }
                     result.Add(n);

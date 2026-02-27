@@ -295,6 +295,18 @@
                                         </Border>
                                     </Grid>
 
+                                    <!-- Include Base Cycle -->
+                                    <HorizontalStackLayout Spacing="8"
+                                                           IsVisible="{Binding ShowIncludeBaseCycle}">
+                                        <CheckBox IsChecked="{Binding IncludeBaseCycle}"
+                                                  Color="{StaticResource Primary}"
+                                                  VerticalOptions="Center" />
+                                        <Label Text="Include base cycle in count"
+                                               FontSize="13"
+                                               VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                    </HorizontalStackLayout>
+
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>

@@ -142,7 +142,8 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
                     var previewEx = BuildPreviewExercise(
                         method, config.ExerciseName, config.SessionLabel,
                         workingSets, cycle, increment, setsToAdd, everyN,
-                        rpeIncrement, stepCyc, doubleCyc);
+                        rpeIncrement, stepCyc, doubleCyc,
+                        sessionConfig.IncludeBaseCycle);
 
                     cyclePreview.Exercises.Add(previewEx);
                 }
@@ -166,7 +167,8 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
         int everyNCycles,
         double rpeIncrement,
         int stepCyc,
-        int doubleCyc)
+        int doubleCyc,
+        bool includeBaseCycle)
     {
         var first = workingSets.First();
         int setCount = workingSets.Count;
@@ -188,8 +190,9 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
 
             case OverloadMethod.Double:
                 int cyclesBeforeJump = Math.Max(1, doubleCyc);
-                int weightPhase = (cycleIndex - 1) / cyclesBeforeJump;
-                int posInPhase = (cycleIndex - 1) % cyclesBeforeJump;
+                int doubleOffset = includeBaseCycle ? cycleIndex : cycleIndex - 1;
+                int weightPhase = doubleOffset / cyclesBeforeJump;
+                int posInPhase = doubleOffset % cyclesBeforeJump;
 
                 if (weight.HasValue)
                     weight = weight.Value + (weightIncrement * weightPhase);
@@ -209,7 +212,8 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
                 break;
 
             case OverloadMethod.Volume:
-                int volumeSteps = cycleIndex / Math.Max(1, everyNCycles);
+                int volumeOffset = includeBaseCycle ? cycleIndex + 1 : cycleIndex;
+                int volumeSteps = volumeOffset / Math.Max(1, everyNCycles);
                 int extraSets = setsToAdd * volumeSteps;
                 setCount += extraSets;
                 if (extraSets > 0)
@@ -227,7 +231,8 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
                 break;
 
             case OverloadMethod.StepLoading:
-                int step = (cycleIndex - 1) / Math.Max(1, stepCyc);
+                int stepOffset = includeBaseCycle ? cycleIndex : cycleIndex - 1;
+                int step = stepOffset / Math.Max(1, stepCyc);
                 if (weight.HasValue && step > 0)
                 {
                     weight = weight.Value + (weightIncrement * step);
@@ -275,6 +280,7 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
             var rpeIncrements = new Dictionary<int, double>();
             var stepCyclesMap = new Dictionary<int, int>();
             var doubleCyclesMap = new Dictionary<int, int>();
+            var includeBaseCycleMap = new Dictionary<int, bool>();
             var weightIncrements = new Dictionary<(int, int), double>();
             var volumeConfigs = new Dictionary<(int, int), (int setsToAdd, int everyNCycles)>();
 
@@ -290,6 +296,8 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
 
                 int.TryParse(sc.DoubleProgressionCyclesText, out var doubleCyc);
                 doubleCyclesMap[sc.SessionIndex] = doubleCyc;
+
+                includeBaseCycleMap[sc.SessionIndex] = sc.IncludeBaseCycle;
 
                 foreach (var ex in sc.Exercises)
                 {
@@ -307,7 +315,8 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
             await _db.GenerateProgressiveOverloadAsync(
                 _programId, CycleCount, sessionMethods,
                 weightIncrements, volumeConfigs,
-                rpeIncrements, stepCyclesMap, doubleCyclesMap);
+                rpeIncrements, stepCyclesMap, doubleCyclesMap,
+                includeBaseCycleMap);
 
             await Shell.Current.GoToAsync("..");
         }, "Generating...");

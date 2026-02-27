@@ -12,6 +12,9 @@ public partial class SessionOverloadConfig : ObservableObject
     private OverloadMethod _selectedMethod = OverloadMethod.Linear;
 
     [ObservableProperty]
+    private bool _includeBaseCycle;
+
+    [ObservableProperty]
     private string _rpeIncrementText = "0.5";
 
     [ObservableProperty]
@@ -31,6 +34,9 @@ public partial class SessionOverloadConfig : ObservableObject
     public bool ShowStepCycles => SelectedMethod == OverloadMethod.StepLoading;
     public bool ShowDoubleProgressionCycles => SelectedMethod == OverloadMethod.Double;
 
+    public bool ShowIncludeBaseCycle => SelectedMethod is OverloadMethod.Volume
+        or OverloadMethod.StepLoading or OverloadMethod.Double;
+
     partial void OnSelectedMethodChanged(OverloadMethod value)
     {
         OnPropertyChanged(nameof(ShowWeightIncrement));
@@ -38,6 +44,7 @@ public partial class SessionOverloadConfig : ObservableObject
         OnPropertyChanged(nameof(ShowRpeIncrement));
         OnPropertyChanged(nameof(ShowStepCycles));
         OnPropertyChanged(nameof(ShowDoubleProgressionCycles));
+        OnPropertyChanged(nameof(ShowIncludeBaseCycle));
 
         foreach (var chip in MethodChips)
             chip.IsSelected = chip.Method == value;
