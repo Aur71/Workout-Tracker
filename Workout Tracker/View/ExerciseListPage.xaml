@@ -10,7 +10,7 @@
 
     <Grid RowDefinitions="*,Auto">
 
-        <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20,0">
+        <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="14,0">
 
             <!-- Header -->
             <Label Text="Exercises"

@@ -155,7 +155,7 @@
         <!-- Add Button -->
         <Border Grid.Row="3"
                 StrokeThickness="0"
-                Padding="20,12,20,24"
+                Padding="14,10,14,20"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
             <Button Text="{Binding ButtonText}"
                     Command="{Binding ConfirmCommand}"

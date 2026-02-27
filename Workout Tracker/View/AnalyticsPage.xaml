@@ -8,7 +8,7 @@
              Shell.NavBarIsVisible="False">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20,52,20,20" Spacing="24">
+        <VerticalStackLayout Padding="14,48,14,20" Spacing="20">
 
             <!-- Header -->
             <Label Text="Analytics"
@@ -62,17 +62,17 @@
                        TextColor="{StaticResource Primary}"
                        FontAttributes="Bold" />
 
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
                     <!-- Sessions -->
                     <Border StrokeThickness="0"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
+                            Padding="12">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="6">
+                        <VerticalStackLayout Spacing="4">
                             <Label Text="{Binding TotalSessionsDisplay}"
-                                   FontSize="28"
+                                   FontSize="24"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                             <Label Text="Sessions"
@@ -85,13 +85,13 @@
                     <Border Grid.Column="1"
                             StrokeThickness="0"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
+                            Padding="12">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="6">
+                        <VerticalStackLayout Spacing="4">
                             <Label Text="{Binding TotalSetsDisplay}"
-                                   FontSize="28"
+                                   FontSize="24"
                                    FontAttributes="Bold"
                                    TextColor="{StaticResource Secondary}" />
                             <Label Text="Sets Completed"
@@ -104,13 +104,13 @@
                     <Border Grid.Row="1"
                             StrokeThickness="0"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
+                            Padding="12">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="6">
+                        <VerticalStackLayout Spacing="4">
                             <Label Text="{Binding TotalVolumeDisplay}"
-                                   FontSize="28"
+                                   FontSize="22"
                                    FontAttributes="Bold"
                                    TextColor="#4A6CF7" />
                             <Label Text="Volume (kg)"
@@ -123,14 +123,14 @@
                     <Border Grid.Row="1" Grid.Column="1"
                             StrokeThickness="0"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
+                            Padding="12">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="6">
+                        <VerticalStackLayout Spacing="4">
                             <HorizontalStackLayout Spacing="2">
                                 <Label Text="{Binding AvgDurationDisplay}"
-                                       FontSize="28"
+                                       FontSize="24"
                                        FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                                 <Label Text="min"

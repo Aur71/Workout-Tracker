@@ -11,7 +11,7 @@
     <Grid RowDefinitions="*,Auto">
 
         <!-- Form Content -->
-        <ScrollView Padding="20,0,20,20">
+        <ScrollView Padding="14,0,14,16">
             <VerticalStackLayout Spacing="16">
 
                 <!-- Header -->
@@ -33,7 +33,7 @@
                 <!-- Date & Notes Card -->
                 <Border StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
+                        Padding="12">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
@@ -44,7 +44,7 @@
                                 Opacity="0.08" />
                     </Border.Shadow>
 
-                    <VerticalStackLayout Spacing="20">
+                    <VerticalStackLayout Spacing="16">
 
                         <!-- Date Field -->
                         <VerticalStackLayout Spacing="8">
@@ -159,7 +159,7 @@
                 <!-- Exercises Section -->
                 <Border StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                        Padding="16">
+                        Padding="10">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
@@ -191,7 +191,7 @@
                                 <DataTemplate x:DataType="model:SessionExerciseDisplay">
                                     <Border StrokeThickness="1"
                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                            Padding="12,10"
+                                            Padding="8,6"
                                             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark=#252525}">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="10" />
@@ -200,7 +200,7 @@
                                         <VerticalStackLayout Spacing="8">
 
                                             <!-- Exercise Header -->
-                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="6">
+                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="4">
                                                 <!-- Name + info -->
                                                 <VerticalStackLayout Spacing="2">
                                                     <Label Text="{Binding ExerciseName}"
@@ -300,61 +300,63 @@
                                                 <!-- Rep-based header + rows -->
                                                 <VerticalStackLayout Spacing="4"
                                                                      IsVisible="{Binding IsTimeBased, Converter={StaticResource InvertedBoolConverter}}">
-                                                    <Grid ColumnDefinitions="30,*,*,*,50,40,28" ColumnSpacing="6" Padding="0,4,0,0">
-                                                        <Label Text="Set" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                    <Grid ColumnDefinitions="22,*,*,*,36,24,22" ColumnSpacing="2" Padding="0,4,0,0">
+                                                        <Label Text="Set" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="1" Text="Rep Min" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="1" Text="Min" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="2" Text="Rep Max" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="2" Text="Max" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="3" Text="Weight" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="3" Text="Weight" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="4" Text="RPE" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="4" Text="RPE" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="5" Text="Warm" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="5" Text="W" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                                     </Grid>
                                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}" Spacing="4">
                                                         <BindableLayout.ItemTemplate>
                                                             <DataTemplate x:DataType="model:SetDisplay">
-                                                                <Grid ColumnDefinitions="30,*,*,*,50,40,28" ColumnSpacing="6">
-                                                                    <Label Text="{Binding DisplayLabel}" FontSize="13" FontAttributes="Bold"
+                                                                <Grid ColumnDefinitions="22,*,*,*,36,24,22" ColumnSpacing="2">
+                                                                    <Label Text="{Binding DisplayLabel}" FontSize="12" FontAttributes="Bold"
                                                                            HorizontalTextAlignment="Center" VerticalOptions="Center"
                                                                            TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                                                                     <Border Grid.Column="1" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="8,0" HeightRequest="40"
+                                                                            Padding="3,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding RepMinText}" Keyboard="Numeric" Placeholder="min"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
                                                                     <Border Grid.Column="2" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="8,0" HeightRequest="40"
+                                                                            Padding="3,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding RepMaxText}" Keyboard="Numeric" Placeholder="max"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
                                                                     <Border Grid.Column="3" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="8,0" HeightRequest="40"
+                                                                            Padding="3,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding WeightText}" Keyboard="Numeric" Placeholder="kg"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
                                                                     <Border Grid.Column="4" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="4,0" HeightRequest="40"
+                                                                            Padding="2,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding RpeText}" Keyboard="Numeric" Placeholder="rpe"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
-                                                                    <Switch Grid.Column="5" IsToggled="{Binding IsWarmup}" Scale="0.6"
-                                                                            HorizontalOptions="Center" VerticalOptions="Center" OnColor="{StaticResource Primary}" />
+                                                                    <CheckBox Grid.Column="5" IsChecked="{Binding IsWarmup}"
+                                                                              Color="{StaticResource Primary}" Scale="0.55"
+                                                                              MinimumWidthRequest="0" MinimumHeightRequest="0"
+                                                                              HorizontalOptions="Center" VerticalOptions="Center" />
                                                                     <Label Grid.Column="6" Text="&#x2715;" FontSize="14"
                                                                            TextColor="{StaticResource Error}"
                                                                            HorizontalTextAlignment="Center" VerticalOptions="Center"
@@ -373,61 +375,63 @@
                                                 <!-- Time-based header + rows -->
                                                 <VerticalStackLayout Spacing="4"
                                                                      IsVisible="{Binding IsTimeBased}">
-                                                    <Grid ColumnDefinitions="30,*,*,*,50,40,28" ColumnSpacing="6" Padding="0,4,0,0">
-                                                        <Label Text="Set" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                    <Grid ColumnDefinitions="22,*,*,*,36,24,22" ColumnSpacing="2" Padding="0,4,0,0">
+                                                        <Label Text="Set" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="1" Text="Dur Min" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="1" Text="Min" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="2" Text="Dur Max" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="2" Text="Max" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="3" Text="Weight" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="3" Text="Weight" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="4" Text="RPE" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="4" Text="RPE" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                                        <Label Grid.Column="5" Text="Warm" FontSize="11" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                                        <Label Grid.Column="5" Text="W" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                                     </Grid>
                                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}" Spacing="4">
                                                         <BindableLayout.ItemTemplate>
                                                             <DataTemplate x:DataType="model:SetDisplay">
-                                                                <Grid ColumnDefinitions="30,*,*,*,50,40,28" ColumnSpacing="6">
-                                                                    <Label Text="{Binding DisplayLabel}" FontSize="13" FontAttributes="Bold"
+                                                                <Grid ColumnDefinitions="22,*,*,*,36,24,22" ColumnSpacing="2">
+                                                                    <Label Text="{Binding DisplayLabel}" FontSize="12" FontAttributes="Bold"
                                                                            HorizontalTextAlignment="Center" VerticalOptions="Center"
                                                                            TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                                                                     <Border Grid.Column="1" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="8,0" HeightRequest="40"
+                                                                            Padding="3,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding DurationMinText}" Keyboard="Numeric" Placeholder="sec"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
                                                                     <Border Grid.Column="2" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="8,0" HeightRequest="40"
+                                                                            Padding="3,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding DurationMaxText}" Keyboard="Numeric" Placeholder="sec"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
                                                                     <Border Grid.Column="3" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="8,0" HeightRequest="40"
+                                                                            Padding="3,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding WeightText}" Keyboard="Numeric" Placeholder="kg"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
                                                                     <Border Grid.Column="4" StrokeThickness="1"
                                                                             Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                            Padding="4,0" HeightRequest="40"
+                                                                            Padding="2,0" HeightRequest="36"
                                                                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                                                         <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                                         <Entry Text="{Binding RpeText}" Keyboard="Numeric" Placeholder="rpe"
-                                                                               FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                               FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                                     </Border>
-                                                                    <Switch Grid.Column="5" IsToggled="{Binding IsWarmup}" Scale="0.6"
-                                                                            HorizontalOptions="Center" VerticalOptions="Center" OnColor="{StaticResource Primary}" />
+                                                                    <CheckBox Grid.Column="5" IsChecked="{Binding IsWarmup}"
+                                                                              Color="{StaticResource Primary}" Scale="0.55"
+                                                                              MinimumWidthRequest="0" MinimumHeightRequest="0"
+                                                                              HorizontalOptions="Center" VerticalOptions="Center" />
                                                                     <Label Grid.Column="6" Text="&#x2715;" FontSize="14"
                                                                            TextColor="{StaticResource Error}"
                                                                            HorizontalTextAlignment="Center" VerticalOptions="Center"
@@ -483,7 +487,7 @@
         <!-- Save Button -->
         <Border Grid.Row="1"
                 StrokeThickness="0"
-                Padding="20,12,20,24"
+                Padding="14,10,14,20"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
             <Button Text="Save Session"
                     Command="{Binding SaveCommand}"

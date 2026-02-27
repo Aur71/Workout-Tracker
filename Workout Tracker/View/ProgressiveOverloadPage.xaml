@@ -11,7 +11,7 @@
     <Grid RowDefinitions="Auto,*">
 
         <!-- Header -->
-        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="0">
+        <Grid Padding="14,16,14,0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="0">
             <Label Text="Back"
                    FontSize="15"
                    TextColor="{StaticResource Primary}"
@@ -41,7 +41,7 @@
         </Grid>
 
         <!-- Content -->
-        <ScrollView Grid.Row="1" Padding="20,16,20,20">
+        <ScrollView Grid.Row="1" Padding="14,12,14,16">
             <VerticalStackLayout Spacing="14">
 
                 <!-- ═══ Per-Session Config Cards ═══ -->

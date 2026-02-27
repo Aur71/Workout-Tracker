@@ -14,7 +14,7 @@
 
         <!-- Top Bar -->
         <Border StrokeThickness="0"
-                Padding="20,16"
+                Padding="14,12"
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
                 <!-- Back -->
@@ -74,14 +74,14 @@
         </Border>
 
         <!-- Exercise List -->
-        <ScrollView Grid.Row="1" Padding="20,16,20,16">
+        <ScrollView Grid.Row="1" Padding="14,12,14,12">
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Exercises}"
                                  Spacing="14">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="model:ActiveExerciseDisplay">
                         <Border StrokeThickness="0"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                                Padding="16">
+                                Padding="12">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
@@ -182,7 +182,7 @@
                                     <!-- Rep-based header + rows -->
                                     <VerticalStackLayout Spacing="4"
                                                          IsVisible="{Binding IsTimeBased, Converter={StaticResource InvertedBoolConverter}}">
-                                        <Grid ColumnDefinitions="28,60,*,*,44,36" ColumnSpacing="4" Padding="0,4,0,0">
+                                        <Grid ColumnDefinitions="24,50,*,*,36,28" ColumnSpacing="2" Padding="0,4,0,0">
                                             <Label Text="Set" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                             <Label Grid.Column="1" Text="Target" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
@@ -199,7 +199,7 @@
                                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}" Spacing="4">
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate x:DataType="model:ActiveSetDisplay">
-                                                    <Grid ColumnDefinitions="28,60,*,*,44,36" ColumnSpacing="4">
+                                                    <Grid ColumnDefinitions="24,50,*,*,36,28" ColumnSpacing="2">
                                                         <!-- Set # -->
                                                         <Label Text="{Binding DisplayLabel}" FontSize="13" FontAttributes="Bold"
                                                                HorizontalTextAlignment="Center" VerticalOptions="Center"
@@ -211,32 +211,32 @@
                                                         <!-- Reps input -->
                                                         <Border Grid.Column="2" StrokeThickness="1"
                                                                 Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                Padding="6,0" HeightRequest="38"
+                                                                Padding="3,0" HeightRequest="36"
                                                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark=#252525}">
                                                             <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                             <Entry Text="{Binding RepsText}" Keyboard="Numeric" Placeholder="reps"
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                   FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                   FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
                                                         <!-- Weight input -->
                                                         <Border Grid.Column="3" StrokeThickness="1"
                                                                 Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                Padding="6,0" HeightRequest="38"
+                                                                Padding="3,0" HeightRequest="36"
                                                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark=#252525}">
                                                             <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                             <Entry Text="{Binding WeightText}" Keyboard="Numeric" Placeholder="kg"
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                   FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                   FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
                                                         <!-- RPE input -->
                                                         <Border Grid.Column="4" StrokeThickness="1"
                                                                 Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                Padding="4,0" HeightRequest="38"
+                                                                Padding="2,0" HeightRequest="36"
                                                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark=#252525}">
                                                             <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                             <Entry Text="{Binding RpeText}" Keyboard="Numeric" Placeholder="-"
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                   FontSize="12" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                   FontSize="12" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
                                                         <!-- Completed icon (auto-computed from reps) -->
                                                         <Label Grid.Column="5"
@@ -263,12 +263,12 @@
                                     <!-- Time-based header + rows -->
                                     <VerticalStackLayout Spacing="4"
                                                          IsVisible="{Binding IsTimeBased}">
-                                        <Grid ColumnDefinitions="28,60,*,*,44,36" ColumnSpacing="4" Padding="0,4,0,0">
+                                        <Grid ColumnDefinitions="24,50,*,*,36,28" ColumnSpacing="2" Padding="0,4,0,0">
                                             <Label Text="Set" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                             <Label Grid.Column="1" Text="Target" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
-                                            <Label Grid.Column="2" Text="Duration (s)" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                                            <Label Grid.Column="2" Text="Dur (s)" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                             <Label Grid.Column="3" Text="Weight" FontSize="10" FontAttributes="Bold" HorizontalTextAlignment="Center"
                                                    TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
@@ -278,7 +278,7 @@
                                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}" Spacing="4">
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate x:DataType="model:ActiveSetDisplay">
-                                                    <Grid ColumnDefinitions="28,60,*,*,44,36" ColumnSpacing="4">
+                                                    <Grid ColumnDefinitions="24,50,*,*,36,28" ColumnSpacing="2">
                                                         <!-- Set # -->
                                                         <Label Text="{Binding DisplayLabel}" FontSize="13" FontAttributes="Bold"
                                                                HorizontalTextAlignment="Center" VerticalOptions="Center"
@@ -290,32 +290,32 @@
                                                         <!-- Duration input -->
                                                         <Border Grid.Column="2" StrokeThickness="1"
                                                                 Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                Padding="6,0" HeightRequest="38"
+                                                                Padding="3,0" HeightRequest="36"
                                                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark=#252525}">
                                                             <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                             <Entry Text="{Binding DurationText}" Keyboard="Numeric" Placeholder="sec"
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                   FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                   FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
                                                         <!-- Weight input -->
                                                         <Border Grid.Column="3" StrokeThickness="1"
                                                                 Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                Padding="6,0" HeightRequest="38"
+                                                                Padding="3,0" HeightRequest="36"
                                                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark=#252525}">
                                                             <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                             <Entry Text="{Binding WeightText}" Keyboard="Numeric" Placeholder="kg"
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                   FontSize="14" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                   FontSize="13" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
                                                         <!-- RPE input -->
                                                         <Border Grid.Column="4" StrokeThickness="1"
                                                                 Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                                Padding="4,0" HeightRequest="38"
+                                                                Padding="2,0" HeightRequest="36"
                                                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark=#252525}">
                                                             <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
                                                             <Entry Text="{Binding RpeText}" Keyboard="Numeric" Placeholder="-"
                                                                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type model:ActiveExerciseDisplay}}, Path=IsEditable}"
-                                                                   FontSize="12" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                                                   FontSize="12" MinimumWidthRequest="0" HorizontalTextAlignment="Center" VerticalOptions="Center" />
                                                         </Border>
                                                         <!-- Completed icon (auto-computed from duration) -->
                                                         <Label Grid.Column="5"
@@ -351,7 +351,7 @@
         <!-- Bottom Bar (hidden in read-only mode) -->
         <Border Grid.Row="2"
                 StrokeThickness="0"
-                Padding="20,12,20,24"
+                Padding="14,10,14,20"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
                 IsVisible="{Binding IsReadOnly, Converter={StaticResource InvertedBoolConverter}}">
             <Grid>

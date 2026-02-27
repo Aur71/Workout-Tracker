@@ -10,7 +10,7 @@
     <Grid RowDefinitions="*,Auto">
 
         <!-- Form Content -->
-        <ScrollView Padding="20,0,20,20">
+        <ScrollView Padding="14,0,14,16">
             <VerticalStackLayout Spacing="16">
 
                 <!-- Header -->
@@ -259,7 +259,7 @@
         <!-- Bottom Buttons -->
         <Border Grid.Row="1"
                 StrokeThickness="0"
-                Padding="20,12,20,24"
+                Padding="14,10,14,20"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}">
             <VerticalStackLayout Spacing="10">
                 <Button Text="Save Log"

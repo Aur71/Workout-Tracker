@@ -11,7 +11,7 @@
     <Grid RowDefinitions="Auto,*">
 
         <!-- Header -->
-        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="0">
+        <Grid Padding="14,16,14,0" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="0">
             <Label Text="Back"
                    FontSize="15"
                    TextColor="{StaticResource Primary}"
@@ -22,8 +22,8 @@
             </Label>
             <Label Grid.Column="2"
                    Text="Share"
-                   FontSize="15"
-                   Padding="0,0,12,0"
+                   FontSize="14"
+                   Padding="0,0,8,0"
                    TextColor="{StaticResource Primary}"
                    VerticalOptions="Center">
                 <Label.GestureRecognizers>
@@ -36,9 +36,9 @@
                      Color="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
                      VerticalOptions="Center" />
             <Label Grid.Column="4"
-                   Text="Duplicate"
-                   FontSize="15"
-                   Padding="12,0,12,0"
+                   Text="Copy"
+                   FontSize="14"
+                   Padding="8,0,8,0"
                    TextColor="{StaticResource Primary}"
                    VerticalOptions="Center">
                 <Label.GestureRecognizers>
@@ -52,8 +52,8 @@
                      VerticalOptions="Center" />
             <Label Grid.Column="6"
                    Text="Edit"
-                   Padding="12,0,0,0"
-                   FontSize="15"
+                   Padding="8,0,0,0"
+                   FontSize="14"
                    TextColor="{StaticResource Primary}"
                    VerticalOptions="Center">
                 <Label.GestureRecognizers>
@@ -63,7 +63,7 @@
         </Grid>
 
         <!-- Content -->
-        <ScrollView Grid.Row="1" Padding="20,16,20,20">
+        <ScrollView Grid.Row="1" Padding="14,12,14,16">
             <VerticalStackLayout Spacing="20"
                                  x:DataType="vm:ProgramDetailViewModel">
 
@@ -233,7 +233,7 @@
 
                 <!-- Sessions Section -->
                 <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
                         <Label Text="Sessions"
                                FontSize="18"
                                FontAttributes="Bold"
@@ -252,7 +252,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding EditScheduleCommand}" />
                             </Border.GestureRecognizers>
-                            <Label Text="Edit Schedule"
+                            <Label Text="Schedule"
                                    FontSize="13"
                                    FontAttributes="Bold"
                                    TextColor="{StaticResource Primary}"
@@ -311,7 +311,7 @@
                             <DataTemplate x:DataType="model:SessionDisplay">
                                 <Border StrokeThickness="1"
                                         Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                        Padding="14,12"
+                                        Padding="12,10"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10" />

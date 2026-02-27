@@ -9,7 +9,7 @@
              Shell.NavBarIsVisible="False">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20,52,20,20" Spacing="24">
+        <VerticalStackLayout Padding="14,48,14,20" Spacing="20">
 
             <!-- Header Section -->
             <Grid ColumnDefinitions="*" Padding="0,0,0,0">
@@ -40,7 +40,7 @@
                         <DataTemplate x:DataType="model:DashboardSessionDisplay">
                             <Border StrokeThickness="0"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                                    Padding="20">
+                                    Padding="16">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="16" />
                                 </Border.StrokeShape>
@@ -164,17 +164,17 @@
                        FontAttributes="Bold"
                        TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
 
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                     <!-- Workouts Stat -->
                     <Border StrokeThickness="0"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
+                            Padding="12">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="8">
+                        <VerticalStackLayout Spacing="6">
                             <Label Text="{Binding WeeklyWorkoutCount}"
-                                   FontSize="32"
+                                   FontSize="24"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                             <Label Text="Workouts"
@@ -187,13 +187,13 @@
                     <Border Grid.Column="1"
                             StrokeThickness="0"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
+                            Padding="12">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="8">
+                        <VerticalStackLayout Spacing="6">
                             <Label Text="{Binding WeeklySetCount}"
-                                   FontSize="32"
+                                   FontSize="24"
                                    FontAttributes="Bold"
                                    TextColor="{StaticResource Secondary}" />
                             <Label Text="Sets"
@@ -206,13 +206,13 @@
                     <Border Grid.Column="2"
                             StrokeThickness="0"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource CardBackground}}"
-                            Padding="16">
+                            Padding="12">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="8">
+                        <VerticalStackLayout Spacing="6">
                             <Label Text="{Binding WeeklyVolumeDisplay}"
-                                   FontSize="32"
+                                   FontSize="22"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                             <Label Text="kg Volume"

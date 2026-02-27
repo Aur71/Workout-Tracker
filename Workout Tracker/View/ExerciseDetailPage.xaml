@@ -11,7 +11,7 @@
     <Grid RowDefinitions="Auto,*">
 
         <!-- Header -->
-        <Grid Padding="20,20,20,0" ColumnDefinitions="Auto,*,Auto">
+        <Grid Padding="14,16,14,0" ColumnDefinitions="Auto,*,Auto">
             <Label Text="Back"
                    FontSize="15"
                    TextColor="{StaticResource Primary}"
@@ -32,7 +32,7 @@
         </Grid>
 
         <!-- Content -->
-        <ScrollView Grid.Row="1" Padding="20,16,20,20">
+        <ScrollView Grid.Row="1" Padding="14,12,14,16">
             <VerticalStackLayout Spacing="20">
 
                 <!-- Exercise Title & Type -->

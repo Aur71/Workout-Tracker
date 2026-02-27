@@ -8,7 +8,7 @@
              Shell.NavBarIsVisible="False">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
+        <VerticalStackLayout Padding="14" Spacing="14">
 
             <!-- Header -->
             <Label Text="Settings"
