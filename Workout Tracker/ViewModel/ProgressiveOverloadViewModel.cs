@@ -95,65 +95,78 @@ public partial class ProgressiveOverloadViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void GeneratePreview()
+    private async Task GeneratePreview()
     {
-        Preview.Clear();
-
-        if (_baseData.Count == 0 || CycleCount <= 0)
+        await _loading.RunAsync(async () =>
         {
-            HasPreview = false;
-            return;
-        }
+            Preview.Clear();
 
-        for (int cycle = 1; cycle <= CycleCount; cycle++)
-        {
-            var cyclePreview = new OverloadPreviewCycle
+            if (_baseData.Count == 0 || CycleCount <= 0)
             {
-                CycleNumber = cycle,
-                SessionCount = _baseData.Count,
-                WeekLabel = $"Cycle {cycle}"
-            };
-
-            for (int si = 0; si < _baseData.Count; si++)
-            {
-                var (_, sessionExercises, _) = _baseData[si];
-                var sessionConfig = SessionConfigs.FirstOrDefault(c => c.SessionIndex == si);
-                if (sessionConfig == null) continue;
-
-                var method = sessionConfig.SelectedMethod;
-                double.TryParse(sessionConfig.RpeIncrementText, out var rpeIncrement);
-                int.TryParse(sessionConfig.StepCyclesText, out var stepCyc);
-                int.TryParse(sessionConfig.DoubleProgressionCyclesText, out var doubleCyc);
-
-                foreach (var (se, sets) in sessionExercises)
-                {
-                    var workingSets = sets.Where(s => !s.IsWarmup).ToList();
-                    if (workingSets.Count == 0) continue;
-
-                    var config = sessionConfig.Exercises.FirstOrDefault(
-                        c => c.ExerciseId == se.ExerciseId);
-                    if (config == null) continue;
-
-                    double.TryParse(config.IncrementText, out var increment);
-                    int.TryParse(config.SetsToAddText, out var setsToAdd);
-                    int.TryParse(config.EveryNCyclesText, out var everyN);
-                    if (everyN < 1) everyN = 1;
-
-                    var previewEx = BuildPreviewExercise(
-                        method, config.ExerciseName, config.SessionLabel,
-                        workingSets, cycle, increment, setsToAdd, everyN,
-                        rpeIncrement, stepCyc, doubleCyc,
-                        sessionConfig.IncludeBaseCycle);
-
-                    cyclePreview.Exercises.Add(previewEx);
-                }
+                HasPreview = false;
+                return;
             }
 
-            Preview.Add(cyclePreview);
-        }
+            var cycles = await Task.Run(() =>
+            {
+                var result = new List<OverloadPreviewCycle>();
 
-        TotalSessionsToGenerate = CycleCount * _baseData.Count;
-        HasPreview = true;
+                for (int cycle = 1; cycle <= CycleCount; cycle++)
+                {
+                    var cyclePreview = new OverloadPreviewCycle
+                    {
+                        CycleNumber = cycle,
+                        SessionCount = _baseData.Count,
+                        WeekLabel = $"Cycle {cycle}"
+                    };
+
+                    for (int si = 0; si < _baseData.Count; si++)
+                    {
+                        var (_, sessionExercises, _) = _baseData[si];
+                        var sessionConfig = SessionConfigs.FirstOrDefault(c => c.SessionIndex == si);
+                        if (sessionConfig == null) continue;
+
+                        var method = sessionConfig.SelectedMethod;
+                        double.TryParse(sessionConfig.RpeIncrementText, out var rpeIncrement);
+                        int.TryParse(sessionConfig.StepCyclesText, out var stepCyc);
+                        int.TryParse(sessionConfig.DoubleProgressionCyclesText, out var doubleCyc);
+
+                        foreach (var (se, sets) in sessionExercises)
+                        {
+                            var workingSets = sets.Where(s => !s.IsWarmup).ToList();
+                            if (workingSets.Count == 0) continue;
+
+                            var config = sessionConfig.Exercises.FirstOrDefault(
+                                c => c.ExerciseId == se.ExerciseId);
+                            if (config == null) continue;
+
+                            double.TryParse(config.IncrementText, out var increment);
+                            int.TryParse(config.SetsToAddText, out var setsToAdd);
+                            int.TryParse(config.EveryNCyclesText, out var everyN);
+                            if (everyN < 1) everyN = 1;
+
+                            var previewEx = BuildPreviewExercise(
+                                method, config.ExerciseName, config.SessionLabel,
+                                workingSets, cycle, increment, setsToAdd, everyN,
+                                rpeIncrement, stepCyc, doubleCyc,
+                                sessionConfig.IncludeBaseCycle);
+
+                            cyclePreview.Exercises.Add(previewEx);
+                        }
+                    }
+
+                    result.Add(cyclePreview);
+                }
+
+                return result;
+            });
+
+            foreach (var cycle in cycles)
+                Preview.Add(cycle);
+
+            TotalSessionsToGenerate = CycleCount * _baseData.Count;
+            HasPreview = true;
+        }, "Generating preview...");
     }
 
     private static OverloadPreviewExercise BuildPreviewExercise(
