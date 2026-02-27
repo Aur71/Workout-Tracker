@@ -14,9 +14,49 @@ public class DataTransferService
         WriteIndented = true
     };
 
-    public async Task<string> ExportAsync()
+    public async Task<string> ExportAsync(bool includePerformed = true)
     {
         var db = AppDatabase.Database;
+
+        var sessions = await db.Table<Session>().ToListAsync();
+        var sets = await db.Table<Set>().ToListAsync();
+
+        if (!includePerformed)
+        {
+            sessions = sessions.Select(s => new Session
+            {
+                Id = s.Id,
+                ProgramId = s.ProgramId,
+                Date = s.Date,
+                Notes = s.Notes,
+                Week = s.Week,
+                Day = s.Day,
+                IsCompleted = false,
+                StartTime = null,
+                EndTime = null,
+                EnergyLevel = null
+            }).ToList();
+
+            sets = sets.Select(s => new Set
+            {
+                Id = s.Id,
+                SessionExerciseId = s.SessionExerciseId,
+                SetNumber = s.SetNumber,
+                IsWarmup = s.IsWarmup,
+                RepMin = s.RepMin,
+                RepMax = s.RepMax,
+                DurationMin = s.DurationMin,
+                DurationMax = s.DurationMax,
+                PlannedWeight = s.PlannedWeight,
+                PlannedRpe = s.PlannedRpe,
+                RestSeconds = s.RestSeconds,
+                Reps = null,
+                Weight = null,
+                DurationSeconds = null,
+                Rpe = null,
+                Completed = false
+            }).ToList();
+        }
 
         var exportData = new ExportData
         {
@@ -29,9 +69,9 @@ public class DataTransferService
                 Exercises = await db.Table<Exercise>().ToListAsync(),
                 ExerciseMuscles = await db.Table<ExerciseMuscle>().ToListAsync(),
                 Programs = await db.Table<Program>().ToListAsync(),
-                Sessions = await db.Table<Session>().ToListAsync(),
+                Sessions = sessions,
                 SessionExercises = await db.Table<SessionExercise>().ToListAsync(),
-                Sets = await db.Table<Set>().ToListAsync(),
+                Sets = sets,
                 BodyMetrics = await db.Table<BodyMetric>().ToListAsync(),
                 RecoveryLogs = await db.Table<RecoveryLog>().ToListAsync(),
                 CalorieLogs = await db.Table<CalorieLog>().ToListAsync(),
@@ -66,7 +106,7 @@ public class DataTransferService
 
     // ── Program Export (XLSX) ──
 
-    public async Task<string> ExportProgramAsync(int programId)
+    public async Task<string> ExportProgramAsync(int programId, bool includePerformed = false)
     {
         var db = AppDatabase.Database;
 
@@ -113,11 +153,11 @@ public class DataTransferService
             .GroupBy(t => t.SessionId)
             .ToDictionary(g => g.Key, g => string.Join(", ", g.Select(t => t.TagName)));
 
-        // Sort sessions by Week then Day, then by Date
+        // Sort sessions chronologically, then by Week/Day within the same date
         var orderedSessions = sessions
-            .OrderBy(s => s.Week ?? int.MaxValue)
+            .OrderBy(s => s.Date)
+            .ThenBy(s => s.Week ?? int.MaxValue)
             .ThenBy(s => s.Day ?? int.MaxValue)
-            .ThenBy(s => s.Date)
             .ToList();
 
         // Build lookup tables
@@ -227,7 +267,18 @@ public class DataTransferService
                         if (set.PlannedWeight.HasValue)
                             workoutSheet.Cell(wkRow, 6).Value = set.PlannedWeight.Value;
 
-                        // Tracking columns (7-10) empty (clean template export)
+                        // Tracking columns (7-10)
+                        if (includePerformed)
+                        {
+                            if (set.Reps.HasValue)
+                                workoutSheet.Cell(wkRow, 7).Value = set.Reps.Value;
+                            if (set.Weight.HasValue)
+                                workoutSheet.Cell(wkRow, 8).Value = set.Weight.Value;
+                            if (set.DurationSeconds.HasValue)
+                                workoutSheet.Cell(wkRow, 9).Value = set.DurationSeconds.Value;
+                            if (set.Rpe.HasValue)
+                                workoutSheet.Cell(wkRow, 10).Value = set.Rpe.Value;
+                        }
                         wkRow++;
                     }
 
@@ -252,7 +303,7 @@ public class DataTransferService
         workoutSheet.Column(1).Width = Math.Max(workoutSheet.Column(1).Width, 25);
 
         // ── Sheet 3: Sessions (now that we know workout row ranges) ──
-        BuildSessionsSheet(workbook, orderedSessions, sessionWorkoutRowRanges, tagsBySession);
+        BuildSessionsSheet(workbook, orderedSessions, sessionWorkoutRowRanges, tagsBySession, includePerformed);
 
         // Reorder sheets so Sessions comes before Workout
         workbook.Worksheet("Sessions").Position = 3;
@@ -334,7 +385,8 @@ public class DataTransferService
         XLWorkbook workbook,
         List<Session> orderedSessions,
         List<(int StartRow, int EndRow)> workoutRowRanges,
-        Dictionary<int, string> tagsBySession)
+        Dictionary<int, string> tagsBySession,
+        bool includePerformed = false)
     {
         var sheet = workbook.Worksheets.Add("Sessions");
         var headers = new[] { "Week", "Day", "Date", "Start Time", "End Time", "Energy", "Notes", "Completed", "Tags" };
@@ -353,7 +405,17 @@ public class DataTransferService
             if (s.Week.HasValue) sheet.Cell(row, 1).Value = s.Week.Value;
             if (s.Day.HasValue) sheet.Cell(row, 2).Value = s.Day.Value;
             sheet.Cell(row, 3).Value = s.Date.ToString("yyyy-MM-dd");
-            // StartTime, EndTime, EnergyLevel stripped (clean template)
+
+            if (includePerformed)
+            {
+                if (s.StartTime.HasValue)
+                    sheet.Cell(row, 4).Value = s.StartTime.Value.ToString();
+                if (s.EndTime.HasValue)
+                    sheet.Cell(row, 5).Value = s.EndTime.Value.ToString();
+                if (s.EnergyLevel.HasValue)
+                    sheet.Cell(row, 6).Value = s.EnergyLevel.Value;
+            }
+
             sheet.Cell(row, 7).Value = s.Notes ?? "";
 
             // Completed formula: auto-calculate from Workout tracking data
@@ -397,7 +459,7 @@ public class DataTransferService
 
     // ── Program Import (XLSX) ──
 
-    public async Task<int> ImportProgramAsync(Stream stream)
+    public async Task<int> ImportProgramAsync(Stream stream, bool includePerformed = false)
     {
         XLWorkbook workbook;
         try
@@ -524,9 +586,9 @@ public class DataTransferService
                     session.Week = sd2.Week;
                     session.Day = sd2.Day;
                     session.Date = sd2.Date;
-                    session.StartTime = sd2.StartTime;
-                    session.EndTime = sd2.EndTime;
-                    session.EnergyLevel = sd2.EnergyLevel;
+                    session.StartTime = includePerformed ? sd2.StartTime : null;
+                    session.EndTime = includePerformed ? sd2.EndTime : null;
+                    session.EnergyLevel = includePerformed ? sd2.EnergyLevel : null;
                     session.Notes = sd2.Notes;
                 }
                 else
@@ -543,7 +605,7 @@ public class DataTransferService
                 }
 
                 // Determine IsCompleted: true if any set has tracking data
-                session.IsCompleted = block.Exercises
+                session.IsCompleted = includePerformed && block.Exercises
                     .SelectMany(e => e.Sets)
                     .Any(s => s.Reps.HasValue || s.Weight.HasValue || s.DurationSeconds.HasValue);
 
@@ -595,11 +657,11 @@ public class DataTransferService
                             DurationMin = setData.DurationMin,
                             DurationMax = setData.DurationMax,
                             PlannedWeight = setData.PlannedWeight,
-                            Reps = setData.Reps,
-                            Weight = setData.Weight,
-                            DurationSeconds = setData.DurationSeconds,
-                            Rpe = setData.Rpe,
-                            Completed = setData.Reps.HasValue || setData.Weight.HasValue || setData.DurationSeconds.HasValue
+                            Reps = includePerformed ? setData.Reps : null,
+                            Weight = includePerformed ? setData.Weight : null,
+                            DurationSeconds = includePerformed ? setData.DurationSeconds : null,
+                            Rpe = includePerformed ? setData.Rpe : null,
+                            Completed = includePerformed && (setData.Reps.HasValue || setData.Weight.HasValue || setData.DurationSeconds.HasValue)
                         };
                         await db.InsertAsync(set);
                     }
@@ -900,7 +962,7 @@ public class DataTransferService
 
     // ── Full Backup Import (JSON) ──
 
-    public async Task ImportAsync(Stream stream)
+    public async Task ImportAsync(Stream stream, bool includePerformed = true)
     {
         ExportData? data;
         try
@@ -930,6 +992,26 @@ public class DataTransferService
         payload.RecoveryLogs ??= [];
         payload.CalorieLogs ??= [];
         payload.SessionTags ??= [];
+
+        if (!includePerformed)
+        {
+            foreach (var s in payload.Sessions)
+            {
+                s.IsCompleted = false;
+                s.StartTime = null;
+                s.EndTime = null;
+                s.EnergyLevel = null;
+            }
+
+            foreach (var s in payload.Sets)
+            {
+                s.Reps = null;
+                s.Weight = null;
+                s.DurationSeconds = null;
+                s.Rpe = null;
+                s.Completed = false;
+            }
+        }
 
         var db = AppDatabase.Database;
 

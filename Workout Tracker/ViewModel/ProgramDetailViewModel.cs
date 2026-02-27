@@ -172,9 +172,15 @@ public partial class ProgramDetailViewModel : ObservableObject, IRecipient<Sessi
 
         try
         {
+            bool includePerformed = await Shell.Current.DisplayAlertAsync(
+                "Export Options",
+                "Do you want to include completed workout data (performed reps, weights, times)?",
+                "Include",
+                "Template Only");
+
             await _loading.RunAsync(async () =>
             {
-                var filePath = await _transfer.ExportProgramAsync(Program.Id);
+                var filePath = await _transfer.ExportProgramAsync(Program.Id, includePerformed);
 
                 await Share.Default.RequestAsync(new ShareFileRequest
                 {

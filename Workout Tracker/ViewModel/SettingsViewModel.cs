@@ -29,9 +29,17 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IsExporting = true;
+
+            var page = Shell.Current.CurrentPage;
+            bool includePerformed = await page.DisplayAlert(
+                "Export Options",
+                "Do you want to include completed workout data (performed reps, weights, times)?",
+                "Include",
+                "Template Only");
+
             await _loading.RunAsync(async () =>
             {
-                var filePath = await _transfer.ExportAsync();
+                var filePath = await _transfer.ExportAsync(includePerformed);
 
                 await Share.Default.RequestAsync(new ShareFileRequest
                 {
@@ -83,12 +91,18 @@ public partial class SettingsViewModel : ObservableObject
 
             if (!confirm) return;
 
+            bool includePerformed = await page.DisplayAlert(
+                "Import Options",
+                "Do you want to include completed workout data (performed reps, weights, times)?",
+                "Include",
+                "Template Only");
+
             IsImporting = true;
 
             await _loading.RunAsync(async () =>
             {
                 using var stream = await result.OpenReadAsync();
-                await _transfer.ImportAsync(stream);
+                await _transfer.ImportAsync(stream, includePerformed);
             }, "Importing...");
 
             await page.DisplayAlert("Import Complete", "Your data has been restored successfully.", "OK");

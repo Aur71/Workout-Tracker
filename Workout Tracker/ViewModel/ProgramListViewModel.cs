@@ -117,10 +117,16 @@ public partial class ProgramListViewModel : ObservableObject
 
             if (result == null) return;
 
+            bool includePerformed = await Shell.Current.DisplayAlertAsync(
+                "Import Options",
+                "Do you want to include completed workout data (performed reps, weights, times)?",
+                "Include",
+                "Template Only");
+
             await _loading.RunAsync(async () =>
             {
                 using var stream = await result.OpenReadAsync();
-                await _transfer.ImportProgramAsync(stream);
+                await _transfer.ImportProgramAsync(stream, includePerformed);
             }, "Importing...");
 
             await Shell.Current.DisplayAlertAsync(
