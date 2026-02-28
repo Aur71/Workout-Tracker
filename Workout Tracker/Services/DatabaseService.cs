@@ -206,22 +206,21 @@ public class DatabaseService
 
     public async Task DeleteProgramAsync(int id)
     {
-        await Task.Run(async () =>
+        var db = AppDatabase.Database;
+        await db.RunInTransactionAsync(tran =>
         {
-            var db = AppDatabase.Database;
-            var sessions = await db.Table<Session>()
-                .Where(s => s.ProgramId == id).ToListAsync();
+            var sessions = tran.Table<Session>().Where(s => s.ProgramId == id).ToList();
             foreach (var session in sessions)
             {
-                var sessionExercises = await db.Table<SessionExercise>()
-                    .Where(se => se.SessionId == session.Id).ToListAsync();
+                var sessionExercises = tran.Table<SessionExercise>()
+                    .Where(se => se.SessionId == session.Id).ToList();
                 foreach (var se in sessionExercises)
-                    await db.Table<Set>().DeleteAsync(s => s.SessionExerciseId == se.Id);
-                await db.Table<SessionExercise>().DeleteAsync(se => se.SessionId == session.Id);
-                await db.Table<SessionTag>().DeleteAsync(t => t.SessionId == session.Id);
-                await db.DeleteAsync(session);
+                    tran.Table<Set>().Delete(s => s.SessionExerciseId == se.Id);
+                tran.Table<SessionExercise>().Delete(se => se.SessionId == session.Id);
+                tran.Table<SessionTag>().Delete(t => t.SessionId == session.Id);
+                tran.Delete(session);
             }
-            await db.DeleteAsync(new Program { Id = id });
+            tran.Delete(new Program { Id = id });
         });
     }
 
@@ -261,20 +260,20 @@ public class DatabaseService
 
     public async Task DeleteSessionAsync(int sessionId)
     {
-        await Task.Run(async () =>
+        var db = AppDatabase.Database;
+        await db.RunInTransactionAsync(tran =>
         {
-            var db = AppDatabase.Database;
             // Delete sets for all session exercises
-            var sessionExercises = await db.Table<SessionExercise>()
-                .Where(se => se.SessionId == sessionId).ToListAsync();
+            var sessionExercises = tran.Table<SessionExercise>()
+                .Where(se => se.SessionId == sessionId).ToList();
             foreach (var se in sessionExercises)
-                await db.Table<Set>().DeleteAsync(s => s.SessionExerciseId == se.Id);
+                tran.Table<Set>().Delete(s => s.SessionExerciseId == se.Id);
             // Delete session exercises
-            await db.Table<SessionExercise>().DeleteAsync(se => se.SessionId == sessionId);
+            tran.Table<SessionExercise>().Delete(se => se.SessionId == sessionId);
             // Delete session tags
-            await db.Table<SessionTag>().DeleteAsync(t => t.SessionId == sessionId);
+            tran.Table<SessionTag>().Delete(t => t.SessionId == sessionId);
             // Delete session
-            await db.DeleteAsync(new Session { Id = sessionId });
+            tran.Delete(new Session { Id = sessionId });
         });
     }
 
@@ -414,9 +413,9 @@ public class DatabaseService
 
     public async Task SaveSessionExercisesWithSetsAsync(int sessionId, List<SessionExerciseDisplay> exercises)
     {
-        await Task.Run(async () =>
+        var db = AppDatabase.Database;
+        await db.RunInTransactionAsync(tran =>
         {
-            var db = AppDatabase.Database;
             foreach (var ex in exercises)
             {
                 int.TryParse(ex.RestSecondsText, out var restSec);
@@ -428,7 +427,7 @@ public class DatabaseService
                     Notes = ex.Notes,
                     RestSeconds = restSec > 0 ? restSec : 120
                 };
-                await db.InsertAsync(sessionExercise);
+                tran.Insert(sessionExercise);
 
                 foreach (var set in ex.Sets)
                 {
@@ -453,7 +452,7 @@ public class DatabaseService
                         PlannedRpe = plannedRpe > 0 ? plannedRpe : null,
                         Completed = false
                     };
-                    await db.InsertAsync(dbSet);
+                    tran.Insert(dbSet);
                 }
             }
         });
@@ -461,14 +460,14 @@ public class DatabaseService
 
     public async Task DeleteSessionExercisesAndSetsAsync(int sessionId)
     {
-        await Task.Run(async () =>
+        var db = AppDatabase.Database;
+        await db.RunInTransactionAsync(tran =>
         {
-            var db = AppDatabase.Database;
-            var sessionExercises = await db.Table<SessionExercise>()
-                .Where(se => se.SessionId == sessionId).ToListAsync();
+            var sessionExercises = tran.Table<SessionExercise>()
+                .Where(se => se.SessionId == sessionId).ToList();
             foreach (var se in sessionExercises)
-                await db.Table<Set>().DeleteAsync(s => s.SessionExerciseId == se.Id);
-            await db.Table<SessionExercise>().DeleteAsync(se => se.SessionId == sessionId);
+                tran.Table<Set>().Delete(s => s.SessionExerciseId == se.Id);
+            tran.Table<SessionExercise>().Delete(se => se.SessionId == sessionId);
         });
     }
 
@@ -1096,7 +1095,13 @@ public class DatabaseService
 
             var durationsMinutes = completedSessions
                 .Where(s => s.StartTime.HasValue && s.EndTime.HasValue)
-                .Select(s => (s.EndTime!.Value - s.StartTime!.Value).TotalMinutes)
+                .Select(s =>
+                {
+                    var duration = s.EndTime!.Value - s.StartTime!.Value;
+                    if (duration.TotalSeconds < 0)
+                        duration += TimeSpan.FromHours(24);
+                    return duration.TotalMinutes;
+                })
                 .ToList();
 
             var energyLevels = completedSessions

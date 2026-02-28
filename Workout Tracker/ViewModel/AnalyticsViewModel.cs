@@ -11,6 +11,7 @@ public partial class AnalyticsViewModel : ObservableObject
     private readonly DatabaseService _db;
     private bool _exercisesLoaded;
     private bool _isLoadingData;
+    private bool _pendingReload;
 
     private readonly LoadingService _loading;
 
@@ -101,9 +102,20 @@ public partial class AnalyticsViewModel : ObservableObject
 
     // ── Commands ──
 
-    partial void OnStartDateChanged(DateTime value) => _ = LoadAsync();
+    partial void OnStartDateChanged(DateTime value) => _ = RequestLoadAsync();
 
-    partial void OnEndDateChanged(DateTime value) => _ = LoadAsync();
+    partial void OnEndDateChanged(DateTime value) => _ = RequestLoadAsync();
+
+    private async Task RequestLoadAsync()
+    {
+        if (_isLoadingData)
+        {
+            _pendingReload = true;
+            return;
+        }
+
+        await LoadAsync();
+    }
 
     partial void OnSelectedExerciseChanged(ExercisePickerItem? value)
     {
@@ -115,8 +127,8 @@ public partial class AnalyticsViewModel : ObservableObject
 
     public async Task LoadAsync()
     {
-        if (_isLoadingData) return;
         _isLoadingData = true;
+        _pendingReload = false;
 
         try
         {
@@ -172,6 +184,8 @@ public partial class AnalyticsViewModel : ObservableObject
         finally
         {
             _isLoadingData = false;
+            if (_pendingReload)
+                _ = RequestLoadAsync();
         }
     }
 
