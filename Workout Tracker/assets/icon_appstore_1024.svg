@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background - no transparency, no rounded corners (Apple adds them) -->
+    <rect x="0" y="0" width="1024" height="1024" fill="#0D0D0D"/>
+    <!-- Weight plate disc - outer ring (scaled from 456 to 1024 with 0.65 foreground scale) -->
+    <circle cx="512" cy="512" r="255.5" fill="none" stroke="#ffffff" stroke-width="80.3"/>
+    <!-- Inner ridge -->
+    <circle cx="512" cy="512" r="146" fill="none" stroke="#ffffff" stroke-width="8.75"/>
+    <!-- Center hub hole -->
+    <circle cx="512" cy="512" r="73" fill="none" stroke="#ffffff" stroke-width="20.44"/>
+</svg>
