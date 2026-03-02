@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>IronLog — Play Store Screenshots</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D0D0D;
+    --teal: #00D9A5;
+    --coral: #FF6B5B;
+    --blue: #4A6CF7;
+    --card: #1A1A1A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 80px;
+    padding: 80px 0;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .frame {
+    width: 1080px;
+    height: 1920px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Gradient backgrounds with unique angles per frame ── */
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .frame[data-variant="1"]::before {
+    background:
+      radial-gradient(ellipse 70% 40% at 20% 15%, rgba(0,217,165,0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 85% 80%, rgba(74,108,247,0.08) 0%, transparent 65%),
+      var(--bg);
+  }
+  .frame[data-variant="2"]::before {
+    background:
+      radial-gradient(ellipse 60% 45% at 80% 10%, rgba(74,108,247,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 15% 75%, rgba(0,217,165,0.07) 0%, transparent 60%),
+      var(--bg);
+  }
+  .frame[data-variant="3"]::before {
+    background:
+      radial-gradient(ellipse 55% 50% at 50% 8%, rgba(0,217,165,0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 35% at 10% 90%, rgba(74,108,247,0.06) 0%, transparent 55%),
+      var(--bg);
+  }
+  .frame[data-variant="4"]::before {
+    background:
+      radial-gradient(ellipse 65% 40% at 90% 20%, rgba(255,107,91,0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 45% at 10% 60%, rgba(0,217,165,0.09) 0%, transparent 60%),
+      var(--bg);
+  }
+  .frame[data-variant="5"]::before {
+    background:
+      radial-gradient(ellipse 50% 55% at 30% 12%, rgba(74,108,247,0.13) 0%, transparent 65%),
+      radial-gradient(ellipse 55% 30% at 75% 85%, rgba(0,217,165,0.08) 0%, transparent 60%),
+      var(--bg);
+  }
+  .frame[data-variant="6"]::before {
+    background:
+      radial-gradient(ellipse 70% 35% at 60% 5%, rgba(0,217,165,0.11) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 20% 70%, rgba(74,108,247,0.10) 0%, transparent 65%),
+      var(--bg);
+  }
+  .frame[data-variant="7"]::before {
+    background:
+      radial-gradient(ellipse 45% 50% at 75% 15%, rgba(255,107,91,0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 25% 80%, rgba(0,217,165,0.10) 0%, transparent 60%),
+      var(--bg);
+  }
+  .frame[data-variant="8"]::before {
+    background:
+      radial-gradient(ellipse 65% 45% at 40% 10%, rgba(74,108,247,0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 35% at 80% 75%, rgba(0,217,165,0.07) 0%, transparent 55%),
+      var(--bg);
+  }
+  .frame[data-variant="9"]::before {
+    background:
+      radial-gradient(ellipse 55% 40% at 15% 8%, rgba(0,217,165,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 45% at 70% 85%, rgba(74,108,247,0.07) 0%, transparent 60%),
+      var(--bg);
+  }
+  .frame[data-variant="10"]::before {
+    background:
+      radial-gradient(ellipse 60% 50% at 85% 12%, rgba(74,108,247,0.11) 0%, transparent 65%),
+      radial-gradient(ellipse 45% 40% at 20% 70%, rgba(255,107,91,0.06) 0%, transparent 55%),
+      var(--bg);
+  }
+  .frame[data-variant="11"]::before {
+    background:
+      radial-gradient(ellipse 50% 45% at 50% 5%, rgba(0,217,165,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 65% 35% at 85% 80%, rgba(74,108,247,0.09) 0%, transparent 65%),
+      var(--bg);
+  }
+  .frame[data-variant="12"]::before {
+    background:
+      radial-gradient(ellipse 70% 40% at 25% 15%, rgba(74,108,247,0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 80% 70%, rgba(0,217,165,0.08) 0%, transparent 60%),
+      var(--bg);
+  }
+  .frame[data-variant="13"]::before {
+    background:
+      radial-gradient(ellipse 55% 50% at 70% 8%, rgba(0,217,165,0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 15% 80%, rgba(74,108,247,0.10) 0%, transparent 60%),
+      var(--bg);
+  }
+  .frame[data-variant="14"]::before {
+    background:
+      radial-gradient(ellipse 60% 45% at 45% 10%, rgba(255,107,91,0.08) 0%, transparent 65%),
+      radial-gradient(ellipse 55% 40% at 60% 85%, rgba(0,217,165,0.09) 0%, transparent 60%),
+      var(--bg);
+  }
+
+  /* ── Texture overlay ── */
+  .frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.018;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(255,255,255,0.4) 3px,
+      rgba(255,255,255,0.4) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* ── Headline area ── */
+  .frame-header {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    padding: 60px 80px 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .frame-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 82px;
+    color: #fff;
+    letter-spacing: 4px;
+    line-height: 1.05;
+    text-shadow: 0 4px 40px rgba(0,0,0,0.5);
+  }
+
+  /* Accent word coloring */
+  .frame-header h1 .accent-teal { color: var(--teal); }
+  .frame-header h1 .accent-blue { color: var(--blue); }
+  .frame-header h1 .accent-coral { color: var(--coral); }
+
+  /* Subtitle / descriptor */
+  .frame-header .subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    font-size: 42px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 20px;
+  }
+
+  /* ── Accent bar under headline ── */
+  .accent-bar {
+    width: 100px;
+    height: 5px;
+    border-radius: 3px;
+    margin: 30px auto 0;
+    position: relative;
+    z-index: 5;
+  }
+
+  .accent-bar.teal { background: linear-gradient(90deg, var(--teal), rgba(0,217,165,0.3)); }
+  .accent-bar.blue { background: linear-gradient(90deg, var(--blue), rgba(74,108,247,0.3)); }
+  .accent-bar.coral { background: linear-gradient(90deg, var(--coral), rgba(255,107,91,0.3)); }
+  .accent-bar.mixed { background: linear-gradient(90deg, var(--teal), var(--blue)); }
+
+  /* ── Phone screenshot container ── */
+  .phone-wrap {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 16px 0 0;
+    width: 100%;
+  }
+
+  .phone {
+    width: 680px;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.06),
+      0 40px 100px rgba(0,0,0,0.6),
+      0 10px 40px rgba(0,0,0,0.4);
+    position: relative;
+    background: #000;
+  }
+
+  .phone img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Subtle inner glow on phone */
+  .phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 40px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+
+  /* ── Bottom text ── */
+  .frame-footer {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    padding: 20px 80px 40px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .frame-footer p {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: rgba(255,255,255,0.40);
+    letter-spacing: 1px;
+    line-height: 1.4;
+  }
+
+  .frame-footer p .highlight {
+    color: rgba(0,217,165,0.6);
+    font-weight: 500;
+  }
+
+  /* ── Separator between frames (visual only, not part of screenshot) ── */
+  .separator {
+    width: 400px;
+    height: 2px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. Dashboard -->
+<div class="frame" data-variant="1">
+  <div class="frame-header">
+    <h1>Your <span class="accent-teal">Fitness</span> Hub</h1>
+    <div class="accent-bar teal"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="dashboard.png" alt="Dashboard"></div>
+  </div>
+  <div class="frame-footer"><p>Today's workout, weekly stats, and upcoming sessions</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 2. Active Workout -->
+<div class="frame" data-variant="2">
+  <div class="frame-header">
+    <h1>Track <span class="accent-blue">Every</span> Rep</h1>
+    <div class="accent-bar blue"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="active workout.png" alt="Active Workout"></div>
+  </div>
+  <div class="frame-footer"><p>Log sets, reps, weight, and RPE in real time</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 3. Exercises -->
+<div class="frame" data-variant="3">
+  <div class="frame-header">
+    <h1><span class="accent-teal">135+</span> Exercises</h1>
+    <div class="accent-bar teal"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="exercies.png" alt="Exercises"></div>
+  </div>
+  <div class="frame-footer"><p>Compound, isolation, cardio, and mobility exercises</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 4. Logs -->
+<div class="frame" data-variant="4">
+  <div class="frame-header">
+    <h1>Recovery & <span class="accent-coral">Nutrition</span> Logs</h1>
+    <div class="accent-bar coral"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="logs.png" alt="Logs"></div>
+  </div>
+  <div class="frame-footer"><p>Track sleep, soreness, stress, and calories</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 5. Analytics 1 -->
+<div class="frame" data-variant="5">
+  <div class="frame-header">
+    <h1>In-Depth <span class="accent-blue">Analytics</span></h1>
+    <div class="accent-bar blue"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="analytics 1.png" alt="Analytics Overview"></div>
+  </div>
+  <div class="frame-footer"><p>Sessions, volume, muscle groups, and more</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 6. Analytics 2 -->
+<div class="frame" data-variant="6">
+  <div class="frame-header">
+    <h1>Strength <span class="accent-teal">Progression</span></h1>
+    <div class="accent-bar teal"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="analytics 2.png" alt="Strength Progression"></div>
+  </div>
+  <div class="frame-footer"><p>Estimated 1RM, volume trends, and plan adherence</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 7. Analytics 3 -->
+<div class="frame" data-variant="7">
+  <div class="frame-header">
+    <h1>Body <span class="accent-coral">Composition</span></h1>
+    <div class="accent-bar coral"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="analytics 3.png" alt="Body Composition"></div>
+  </div>
+  <div class="frame-footer"><p>Track weight, body fat, and calorie progression</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 8. Calendar -->
+<div class="frame" data-variant="8">
+  <div class="frame-header">
+    <h1>Plan Your <span class="accent-blue">Week</span></h1>
+    <div class="accent-bar blue"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="calendar.png" alt="Calendar"></div>
+  </div>
+  <div class="frame-footer"><p>See scheduled workouts at a glance</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 9. Programs -->
+<div class="frame" data-variant="9">
+  <div class="frame-header">
+    <h1>Training <span class="accent-teal">Programs</span></h1>
+    <div class="accent-bar teal"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="programs.png" alt="Programs"></div>
+  </div>
+  <div class="frame-footer"><p>Create, manage, and follow structured programs</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 10. Program Details -->
+<div class="frame" data-variant="10">
+  <div class="frame-header">
+    <h1>Program <span class="accent-blue">Overview</span></h1>
+    <div class="accent-bar blue"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="program details.png" alt="Program Details"></div>
+  </div>
+  <div class="frame-footer"><p>Track progress, sessions, and notes</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 11. Edit Schedule -->
+<div class="frame" data-variant="11">
+  <div class="frame-header">
+    <h1>Flexible <span class="accent-teal">Scheduling</span></h1>
+    <div class="accent-bar mixed"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="edit schedule.png" alt="Edit Schedule"></div>
+  </div>
+  <div class="frame-footer"><p>Organize and reorder your training sessions</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 12. Session Details -->
+<div class="frame" data-variant="12">
+  <div class="frame-header">
+    <h1>Session <span class="accent-blue">Builder</span></h1>
+    <div class="accent-bar blue"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="session details.png" alt="Session Details"></div>
+  </div>
+  <div class="frame-footer"><p>Customize exercises, sets, reps, and rest times</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 13. Progressive Overload -->
+<div class="frame" data-variant="13">
+  <div class="frame-header">
+    <h1>Progressive <span class="accent-teal">Overload</span></h1>
+    <div class="accent-bar teal"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="overload.png" alt="Progressive Overload"></div>
+  </div>
+  <div class="frame-footer"><p>Auto-generate progression with multiple methods</p></div>
+</div>
+<div class="separator"></div>
+
+<!-- 14. Settings -->
+<div class="frame" data-variant="14">
+  <div class="frame-header">
+    <h1>Backup & <span class="accent-coral">Restore</span></h1>
+    <div class="accent-bar coral"></div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone"><img src="settings.png" alt="Settings"></div>
+  </div>
+  <div class="frame-footer"><p>Export and import your data anytime</p></div>
+</div>
+
+</body>
+</html>
