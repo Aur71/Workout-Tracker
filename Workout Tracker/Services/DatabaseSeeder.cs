@@ -383,6 +383,14 @@ public static class DatabaseSeeder
                 IsTimeBased = false,
                 ExampleMedia = "https://www.youtube.com/watch?v=9lRTjZNDfrY"
             },
+            new()
+            {
+                Name = "Lat Pullover",
+                Description = "Lying dumbbell pullover targeting the lats with arms extended overhead",
+                ExerciseType = "isolation",
+                Equipment = "Dumbbell, Bench",
+                IsTimeBased = false
+            },
             // Traps
             new()
             {
@@ -1492,6 +1500,11 @@ public static class DatabaseSeeder
         AddMapping("Skin the Cat", "Lats", "primary");
         AddMapping("Skin the Cat", "Front Delts", "primary");
         AddMapping("Skin the Cat", "Biceps", "secondary");
+
+        AddMapping("Lat Pullover", "Lats", "primary");
+        AddMapping("Lat Pullover", "Upper Chest", "secondary");
+        AddMapping("Lat Pullover", "Triceps", "secondary");
+        AddMapping("Lat Pullover", "Serratus", "secondary");
 
         // Traps
         AddMapping("Shrugs", "Upper Traps", "primary");
