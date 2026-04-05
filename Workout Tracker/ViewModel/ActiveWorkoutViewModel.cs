@@ -93,26 +93,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         foreach (var ex in exercises)
         {
             ex.IsReadOnly = isCompleted;
-
-            // Subscribe to set completion changes (only for active workouts)
-            if (!isCompleted)
-            {
-                foreach (var set in ex.Sets)
-                {
-                    PropertyChangedEventHandler handler = (_, args) =>
-                    {
-                        if (args.PropertyName == nameof(ActiveSetDisplay.Completed))
-                        {
-                            ex.RefreshCompletedCount();
-                            UpdateProgress();
-                        }
-                    };
-                    set.PropertyChanged += handler;
-                    _setSubscriptions.Add((set, handler));
-                }
-            }
             Exercises.Add(ex);
         }
+
+        // Subscribe to set completion changes (only for active workouts)
+        if (!isCompleted)
+            SubscribeToSets();
 
         UpdateProgress();
 
@@ -152,6 +138,26 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         foreach (var (set, handler) in _setSubscriptions)
             set.PropertyChanged -= handler;
         _setSubscriptions.Clear();
+    }
+
+    private void SubscribeToSets()
+    {
+        foreach (var ex in Exercises)
+        {
+            foreach (var set in ex.Sets)
+            {
+                PropertyChangedEventHandler handler = (_, args) =>
+                {
+                    if (args.PropertyName == nameof(ActiveSetDisplay.Completed))
+                    {
+                        ex.RefreshCompletedCount();
+                        UpdateProgress();
+                    }
+                };
+                set.PropertyChanged += handler;
+                _setSubscriptions.Add((set, handler));
+            }
+        }
     }
 
     private void UpdateProgress()
@@ -240,6 +246,46 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                 WeakReferenceMessenger.Default.Send(new SessionCompletedMessage(_session.Id));
                 await Shell.Current.GoToAsync("..");
             }, "Saving...");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ResumeWorkout()
+    {
+        if (_session == null || IsBusy) return;
+        IsBusy = true;
+
+        try
+        {
+            // Calculate previously elapsed duration so the timer continues from where it ended
+            var previousElapsed = TimeSpan.Zero;
+            if (_session.StartTime.HasValue && _session.EndTime.HasValue)
+            {
+                previousElapsed = _session.EndTime.Value - _session.StartTime.Value;
+                if (previousElapsed.TotalSeconds < 0)
+                    previousElapsed += TimeSpan.FromHours(24);
+            }
+
+            _session.IsCompleted = false;
+            _session.EndTime = null;
+            await _db.UpdateSessionAsync(_session);
+
+            IsReadOnly = false;
+            IsWorkoutActive = true;
+
+            foreach (var ex in Exercises)
+                ex.IsReadOnly = false;
+
+            SubscribeToSets();
+
+            // Offset start time back by the previous duration so the timer picks up where it left off
+            _workoutStartDateTime = DateTime.Now - previousElapsed;
+            StartTimer();
+            UpdateProgress();
         }
         finally
         {

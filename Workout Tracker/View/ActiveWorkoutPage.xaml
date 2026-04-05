@@ -379,6 +379,22 @@
             </Grid>
         </Border>
 
+        <!-- Resume Workout Bar (completed workouts only) -->
+        <Border Grid.Row="2"
+                StrokeThickness="0"
+                Padding="14,10,14,20"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource OffBlack}}"
+                IsVisible="{Binding IsReadOnly}">
+            <Button Text="Resume Workout"
+                    Command="{Binding ResumeWorkoutCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="{StaticResource Black}"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="52"
+                    CornerRadius="12" />
+        </Border>
+
     </Grid>
 
     <!-- Video Overlay -->

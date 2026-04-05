@@ -30,7 +30,10 @@ public partial class ActiveExerciseDisplay : ObservableObject
     [ObservableProperty]
     private bool _isExpanded = true;
 
-    public bool IsReadOnly { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsEditable))]
+    private bool _isReadOnly;
+
     public bool IsEditable => !IsReadOnly;
 
     public ObservableCollection<ActiveSetDisplay> Sets { get; } = [];
